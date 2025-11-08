@@ -183,27 +183,34 @@
   }
 }
 
-/* Small screens: switch to single-column layout */
+/* Small screens: switch to single-column centered layout */
 @media screen and (max-width: 700px) {
   .timeline:before {
-    left: 8px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .direction-l,
   .direction-r {
     float: none;
     width: 100%;
-    text-align: left;
+    text-align: center;
   }
 
   .flag {
     background: rgb(255, 255, 255);
+    position: relative;
+    display: inline-block;
+    text-align: left;
+    margin: 0 auto;
+    padding: 10px 15px;
   }
 
   .direction-l .flag:before,
   .direction-r .flag:before {
-    left: -25px;
-    top: 0.6em;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -20px;
   }
 
   .direction-l .flag:after,
@@ -212,9 +219,11 @@
   }
 
   .desc {
-    margin: 1em 1em 0 2.5em;
+    margin: 1em auto 0;
     padding: 1em;
     background: rgb(245, 245, 245);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+    max-width: 85%;
+    text-align: left;
   }
 }
