@@ -448,6 +448,10 @@ body.gpx-page .navbar-link[href*="gpx"] {
     flex-direction: column;
   }
 
+  .ingredients-image img {
+    margin-top: 0.5em;
+  }
+
   .ingredients-image::after {
     display: none; /* disable fade on small screens */
   }
