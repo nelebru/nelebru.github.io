@@ -403,10 +403,12 @@ there.
 
 
 /* Larger than mobile */
-@media (min-width: 400px) {}
+@media (min-width: 400px) {
+}
 
 /* Larger than phablet (also point when grid becomes active) */
-@media (min-width: 550px) {}
+@media (min-width: 550px) {
+}
 
 /* Larger than tablet */
 @media (min-width: 750px) {}
@@ -416,3 +418,11 @@ there.
 
 /* Larger than Desktop HD */
 @media (min-width: 1200px) {}
+
+@media (max-width: 550px) {
+    .u-max-full-width {
+    max-width: 50%;
+    position: relative;
+    left: 25%;
+  }
+}
