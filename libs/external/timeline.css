@@ -20,7 +20,7 @@
   background: linear-gradient(
     to bottom,
     rgba(80,80,80,0) 0%,
-    pink 20%,    /* rosybrown 15%, */
+    pink 20%,
     mediumpurple 60%,
     rgba(80,80,80,0) 100%
   );
@@ -88,7 +88,7 @@
   background: #fff;
   border-radius: 10px;
   border: 4px solid rgb(51, 0, 111);
-  z-index: 19;
+  z-index: 10;
 }
 
 .direction-l .flag:before {
@@ -159,6 +159,22 @@
   margin: 1em 0 0 0.75em;
 }
 
+/* --- Fade-in animation for the timeline items --- */
+.timeline li > div {
+  opacity: 0;
+  transform: translateY(70px);
+  transition: opacity 1.3s ease-out, transform 1.3s ease-out;
+}
+
+.timeline li.visible {
+  opacity: 1;
+}
+
+.timeline li.visible > div {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* ================ Timeline Media Queries ================ */
 
 @media screen and (max-width: 1000px) {
@@ -181,13 +197,25 @@
   .direction-r {
     width: 280px;
   }
+
+  /* Adjust dot positions for narrower layout */
+  .direction-l .flag:before {
+    right: -30px;
+  }
+
+  .direction-r .flag:before {
+    left: -30px;
+  }
 }
 
 @media screen and (max-width: 660px) {
   .timeline {
-    width: 100%;
-    left: 50%;
     padding: 4em 0 1em 0;
+  }
+
+  .timeline:before {
+    margin-left: -3px;
+    z-index: 0;
   }
 
   .timeline li {
@@ -197,7 +225,6 @@
   .direction-l,
   .direction-r {
     float: none;
-    width: 100%;
     text-align: center;
   }
 
@@ -207,34 +234,28 @@
 
   .flag {
     background: rgb(255,255,255);
-    z-index: 30;
+    z-index: 5;
   }
 
   .direction-l .flag:before,
   .direction-r .flag:before {
-    position: absolute;
     top: -30px;
-    left: 50%;
     content: ' ';
     display: block;
     width: 12px;
     height: 12px;
-    margin-left: -9px;
     background: #fff;
     border-radius: 10px;
     border: 4px solid rgb(51, 0, 111);
-    z-index: 30;
+    z-index: 10;
   }
 
   .direction-l .flag:after,
   .direction-r .flag:after {
     content: "";
-    position: absolute;
-    left: 50%;
     top: -8px;
     height: 0;
     width: 0;
-    margin-left: -8px;
     border: solid transparent;
     border-bottom-color: rgb(255,255,255);
     border-width: 8px;
@@ -245,7 +266,7 @@
     display: block;
     position: relative;
     margin: 4px 0 0 0;
-    z-index: 14;
+    z-index: 5;
   }
 
   .desc {
@@ -254,7 +275,7 @@
     padding: 1em;
     background: rgb(245,245,245);
     box-shadow: 0 0 1px rgba(0,0,0,0.2);
-    z-index: 15;
+    z-index: 5;
   }
 }
 
@@ -264,20 +285,4 @@
   .direction-r .desc {
     margin: 1em 4em 0 4em;
   }
-}
-
-/* --- Fade-in animation for the timeline items --- */
-
-.timeline li > div {
-  transform: translateY(70px);
-  transition: transform 1.3s ease-out;
-}
-
-/* When visible */
-.timeline li.visible {
-  opacity: 1;
-}
-
-.timeline li.visible > div {
-  transform: translateY(0);
 }
