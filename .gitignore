@@ -1,0 +1,8 @@
+.DS_Store
+*/.DS_Store
+.jekyll-cache
+_site/*
+*/_site/*
+_snap_md5.txt
+
+.idea/

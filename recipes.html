@@ -1,0 +1,71 @@
+---
+layout: default
+title: Recipes
+permalink: /recipes/
+---
+
+<h2 class="recipe-title">Recipes</h2>
+
+<div class="recipes-intro">
+  <p>Welcome to my recipe collection 🌱</p>
+  <input type="text" id="recipeSearch" placeholder="Search recipes..." onkeyup="filterRecipes()" />
+</div>
+
+<div class="recipe-categories">
+
+  <!-- Cakes and Cookies -->
+  <div class="recipe-category">
+    <h3>Cakes</h3>
+    <div class="recipe-grid">
+      <a href="{{ site.baseurl }}/recipes/banana-bread.html" class="recipe-tile">Banana Bread</a>
+      <a href="{{ site.baseurl }}/recipes/lagkage.html" class="recipe-tile">Lagkage</a>
+      <a href="{{ site.baseurl }}/recipes/brownies.html" class="recipe-tile">Super Fudgy Brownies</a>
+      <a href="{{ site.baseurl }}/recipes/apple-crumble.html" class="recipe-tile">Apple Crumble</a>
+      <a href="{{ site.baseurl }}/recipes/apfelzimtschmand.html" class="recipe-tile">Apple Sour Cream Cake</a>
+    </div>
+  </div>
+
+  <!-- Other Sweet Treats -->
+  <div class="recipe-category">
+    <h3>Other Sweet Treats </h3>
+    <div class="recipe-grid">
+      <a href="{{ site.baseurl }}/recipes/cookies-schokolinsen.html" class="recipe-tile">The Perfect Soft-Baked Cookies</a>
+      <a href="{{ site.baseurl }}/recipes/vanillekipferl.html" class="recipe-tile">Renates Vanillekipferl</a>
+      <a href="{{ site.baseurl }}/recipes/mandelhoernchen.html" class="recipe-tile">Mandelhörnchen</a>
+      <a href="{{ site.baseurl }}/recipes/schmalzplaetzchen.html" class="recipe-tile">Schmalzplätzchen</a>
+      <a href="{{ site.baseurl }}/recipes/waffles.html" class="recipe-tile">Mamas Waffeln</a>
+    </div>
+  </div>
+
+  <!-- Soups, Dips & Sauces -->
+  <div class="recipe-category">
+    <h3>Soups, Dips & Sauces </h3>
+    <div class="recipe-grid">
+      <a href="{{ site.baseurl }}/recipes/Kombucha.html" class="recipe-tile">Kombucha</a>
+      <a href="{{ site.baseurl }}/recipes/kuerbissuppe.html" class="recipe-tile">Pumpkin Soup</a>
+      <a href="{{ site.baseurl }}/recipes/datteldip.html" class="recipe-tile">Datteldip</a>
+    </div>
+  </div>
+
+  <!-- Bread -->
+  <div class="recipe-category">
+    <h3>Bread </h3>
+    <div class="recipe-grid">
+      <a href="{{ site.baseurl }}/recipes/fladenbrot.html" class="recipe-tile">Flatbread</a>
+      <a href="{{ site.baseurl }}/recipes/naan.html" class="recipe-tile">Naan</a>
+      <a href="{{ site.baseurl }}/recipes/pizza.html" class="recipe-tile">Pizza Dough</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function filterRecipes() {
+  const input = document.getElementById('recipeSearch').value.toLowerCase();
+  const tiles = document.querySelectorAll('.recipe-tile');
+  tiles.forEach(tile => {
+    tile.style.display = tile.textContent.toLowerCase().includes(input) ? '' : 'none';
+  });
+}
+</script>
+

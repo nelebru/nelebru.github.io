@@ -1,0 +1,128 @@
+[
+  {
+    "name": "According To Olli This Is Paradise",
+    "file": "./assets/gpx\\According_to_Olli_this_is_paradise.gpx",
+    "location": "Stockelsdorf",
+    "elevation_gain": 274.4,
+    "distance": 59.2
+  },
+  {
+    "name": "Hausrunde",
+    "file": "./assets/gpx\\Hausrunde.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 121.8,
+    "distance": 36.6
+  },
+  {
+    "name": "Hilly Curvy Afterwork",
+    "file": "./assets/gpx\\Hilly-curvy-afterwork.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 156.5,
+    "distance": 45.2
+  },
+  {
+    "name": "Schaalsee Extended",
+    "file": "./assets/gpx\\Schaalsee_extended.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 581.3,
+    "distance": 115.7
+  },
+  {
+    "name": "Intervals And Duechelsdorf Hill",
+    "file": "./assets/gpx\\Intervals_and_Duechelsdorf_Hill.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 204.3,
+    "distance": 47.4
+  },
+  {
+    "name": "Grinau Linau Lankau",
+    "file": "./assets/gpx\\Grinau-Linau-Lankau.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 719.3,
+    "distance": 73.2
+  },
+  {
+    "name": "(Ein)Schenkenberg",
+    "file": "./assets/gpx\\(Ein)Schenkenberg.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 250.0,
+    "distance": 54.2
+  },
+  {
+    "name": "The Shortest Course On Salem Asphalt",
+    "file": "./assets/gpx\\The-shortest-course-on-Salem-asphalt.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 402.8,
+    "distance": 73.7
+  },
+  {
+    "name": "Bahntrasse Sl",
+    "file": "./assets/gpx/Bahntrasse_SL.gpx",
+    "location": "Schleswig",
+    "elevation_gain": 126.7,
+    "distance": 47.4
+  },
+  {
+    "name": "Rund um Ratzeburg",
+    "file": "./assets/gpx/Rund_um_Ratzeburg.gpx",
+    "location": "L\u00fcbeck",
+    "elevation_gain": 368.8,
+    "distance": 90.7
+  },
+  {
+    "name": "Gro\u00dfe Pl\u00f6nrunde",
+    "file": "./assets/gpx/Gro\u00dfe Pl\u00f6nrunde.gpx",
+    "location": "Stockelsdorf",
+    "elevation_gain": 860.5,
+    "distance": 162.5
+  },
+  {
+    "name": "60K Nord",
+    "file": "./assets/gpx/60k_Nord.gpx",
+    "location": "Stockelsdorf",
+    "elevation_gain": 274.4,
+    "distance": 59.2
+  },
+  {
+    "name": "Bungsberggegravel",
+    "file": "./assets/gpx/Bungsberggegravel.gpx",
+    "location": "Stockelsdorf",
+    "elevation_gain": 415.6,
+    "distance": 63.1
+  },
+  {
+    "name": "Gro\u00dfe Schleitour",
+    "file": "./assets/gpx/Gro\u00dfe_Schleitour.gpx",
+    "location": "Schleswig",
+    "elevation_gain": 336.0,
+    "distance": 85.5
+  },
+  {
+    "name": "Kleine Schleitour",
+    "file": "./assets/gpx/Kleine_Schleitour.gpx",
+    "location": "Schleswig",
+    "elevation_gain": 379.0,
+    "distance": 57.8
+  },
+  {
+    "name": "Pronstorfrunde",
+    "file": "./assets/gpx/Pronstorfrunde.gpx",
+    "location": "Stockeldsdorf",
+    "elevation_gain": 180.6,
+    "distance": 49.1
+  },
+  {
+    "name": "Schlei-Hunni",
+    "file": "./assets/gpx/Schlei-Hunni.gpx",
+    "location": "Schleswig",
+    "elevation_gain": 356.0,
+    "distance": 103.2
+  },
+  {
+    "name": "TdF(ranzi)",
+    "file": "./assets/gpx/TdF(ranzi).gpx",
+    "location": "Stockelsdorf",
+    "elevation_gain": 541.0,
+    "distance": 73.1
+  }
+]

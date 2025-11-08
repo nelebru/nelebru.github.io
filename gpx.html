@@ -1,0 +1,59 @@
+---
+layout: default
+title: GPX
+permalink: /gpx/
+---
+
+<div class="gpx-header">
+  <div class="gpx-title-block">
+    <h1 class="gpxpage-title">GPX courses</h1>
+    <p class="gpx-intro">Feel free to steal.</p>
+  </div>
+
+  <div class="filters-tile">
+    <h5>Filter courses</h5>
+    <div class="filters">
+      <label for="minDistance">Min Distance (km):</label>
+      <input type="number" id="minDistance" placeholder="0" min="0" step="10">
+      <label for="maxDistance">Max Distance (km):</label>
+      <input type="number" id="maxDistance" placeholder="999" min="0" step="10">
+      <label for="locationFilter">Location:</label>
+      <select id="locationFilter">
+        <option value="">All</option>
+        <option value="Luebeck">Lübeck</option>
+        <option value="Hamburg">Hamburg</option>
+        <option value="Stockelsdorf">Stockelsdorf</option>
+        <option value="Schleswig">Schleswig</option>
+      </select>
+
+      <div class="filter-buttons">
+        <button id="applyFilter">Filter</button>
+        <button id="resetFilter">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="gpxList" class="gpx"></div>
+
+
+<script>
+  const gpxJsonUrl = "{{ site.baseurl }}/assets/data/gpx_courses.json";
+  const baseUrl = "{{ site.baseurl }}";
+</script>
+<script src="{{ site.baseurl }}/assets/js/my_js.js"></script>
+
+<!-- Leaflet CSS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Leaflet GPX plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+<script src="{{ site.baseurl }}/assets/js/my_js.js"></script>
+
+
+

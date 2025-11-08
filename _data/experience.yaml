@@ -1,0 +1,39 @@
+experiences:
+
+- place: "DFKI"
+  time: "2022 - now"
+  title: "Researcher and PhD Student"
+  subtitle: "Differential Privacy in the Medical Domain"
+  category: "work"
+
+- place: "University of Luebeck"
+  time: "2021 - 2022"
+  title: "Research Scholarship"
+  subtitle: "AI-based medical image and video analysis for tic detection in Tourette syndrome patients"
+  category: "work"
+
+- place: "Drägerwerk AG & Co. KGaA"
+  time: "10/2020 - 05/2021"
+  title: "Master's Thesis"
+  subtitle: "Deep sleep stage clustering and multi-task Gaussian process regression for the detection of sleep cycles in premature infants, <a href='https://ieeexplore.ieee.org/document/9747086' target='_blank'>Paper (on Gaussian Process regression)</a>"
+  category: "school"
+
+- place: "University of Luebeck"
+  time: "2019 - 2021"
+  title: "Master of Science"
+  subtitle: "Medical Engineering Science <br>Specialisation: Medical image processing"
+  category: "school"
+
+- place: "Drägerwerk AG & Co. KGaA"
+  time: "10/2019 - 03/2020"
+  title: "Intern"
+  subtitle: "Explainable AI for estimating the respiratory drive of ventilated patients from sEMG"
+  category: "work"
+
+
+- place: "University of Luebeck"
+  time: "2015 - 2019"
+  title: "Bachelor of Science"
+  # add html link
+  subtitle: "Medical Engineering Science<br>Bachelor Thesis: Reccurent Neural Networks for Hand Gesture Recognition Based on sEMG and IMU Data, <a href='https://ieeexplore.ieee.org/document/8682986' target='_blank'>Paper</a>"
+  category: "school"

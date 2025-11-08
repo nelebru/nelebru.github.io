@@ -1,0 +1,50 @@
+papers:
+
+  - title: "Bag-Level Multiple Instance Learning for Acute Stress Detection from Video Data"
+    authors: "<b>Nele Sophie Brügge</b>, Alexandra Korda, Stefan Borgwardt, Christina Andreou, Giorgos Giannakakis, Heinz Handels"
+    venue: "International Conference on Health Informatics (HEALTHINF) 2025."
+    paper_link: "https://www.scitepress.org/Papers/2025/133649/133649.pdf"
+    # code: "https://github.com/etc..."
+    selected: y
+
+  - title: "Automated Motor Tic Detection: A Machine Learning Approach"
+    authors: "<b>Nele Sophie Brügge</b>, Gesine Marie Sallandt, Ronja Schappert, Frédéric Li, Alina Siekmann, Marcin Grzegorzek, Tobias Bäumer, Christian Frings, Christian Beste, Roland Stenger, Veit Roessner, Sebastian Fudickar, Heinz Handels, Alexander Münchau"
+    venue: "Movement Disorders, vol. 38, no. 7, pp. 1327-1335, 2023."
+    paper_link: "https://doi.org/10.1002/mds.29439"
+    selected: y
+
+  - title: "Multi-Task Gaussian Process Regression for the Detection of Sleep Cycles in Premature Infants"
+    authors: "<b>Nele Sophie Brügge</b>, Jan Graßhoff, Arne Weigenand, Philipp Rostalski"
+    venue: "ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Processing, pp. 1341-1345, 2022."
+    paper_link: "https://doi.org/10.1109/ICASSP43922.2022.9747086"
+    selected: y
+
+  - title: "Automated Video-Based Approach for the Diagnosis of Tourette Syndrome"
+    authors: "Ronja Schappert, Julius Verrel, <b>Nele Sophie Brügge</b>, Frédéric Li, Theresa Paulus, Leonie Becker, Tobias Bäumer, Christian Beste, Veit Roessner, Sebastian Fudickar, Alexander Münchau"
+    venue: "Movement Disorders Clinical Practice, vol. 11, no. 9, pp. 1136-1140, 2024."
+    paper_link: "https://doi.org/10.1002/mdc3.14158"
+    selected: n
+
+  - title: "Extended Head Pose Estimation on Synthesized Avatars for Determining the Severity of Cervical Dystonia"
+    authors: "Roland Stenger, Sebastian Löns, Feline Hamami, <b>Nele Sophie Brügge</b>, Tobias Bäumer, Sebastian Fudickar"
+    venue: "HEALTHINF 2023, pp. 354-359, 2023."
+    paper_link: "https://doi.org/10.5220/0011677600003414"
+    selected: n
+
+  - title: "Eye Blinking Abnormalities in Tourette Syndrome: Blink More or Blink Differently?"
+    authors: "Julius Verrel, Ronja Schappert, <b>Nele Sophie Brügge</b>, Tina Rawish, Tobias Bäumer, Yifan Hao, Roland Stenger, Christian Beste, Sebastian Fudickar, Veit Roessner, Alexander Münchau"
+    venue: "Preprint, 2025."
+    paper_link: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5372846"
+    selected: n
+
+  - title: "Analysis of Facial Expressions Recorded from Patients During Psychiatric Interviews"
+    authors: "Lea Mineur, Marco Heide, Sofia Eickhoff, Mihai Avram, Léon Franzen, Frederike Buschmann, Frederike Schröpfer, Helena Rogg, Christina Andreou, <b>Nele Sophie Brügge</b>, Heinz Handels, Stefan Borgwardt, Alexandra Korda"
+    venue: "medRxiv, 2024.09.19.24313994, 2024."
+    paper_link: "https://doi.org/10.1101/2024.09.19.24313994"
+    selected: n
+
+  - title: "Towards Privacy and Utility in Tourette Tic Detection Through Pretraining Based on Publicly Available Video Data of Healthy Subjects"
+    authors: "<b>Nele Sophie Brügge</b>, Esfandiar Mohammadi, Alexander Münchau, Tobias Bäumer, Christian Frings, Christian Beste, Veit Roessner, Heinz Handels"
+    venue: "ICASSP 2023 - IEEE International Conference on Acoustics, Speech and Signal Processing, 2023."
+    paper_link: "https://doi.org/10.1109/ICASSP49357.2023.10095309"
+    selected: y

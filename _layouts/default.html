@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>{{ site.data.main_info.name }} | {{ page.title }}</title>
+  <meta name="description" content="Nele Brügge">
+  <meta name="author" content="Nele Brügge">
+  <meta property="og:title" content="Nele Brügge" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://www.nelebruegge.com" />
+  <meta property="og:site_name" content="Nele Brügge" />
+  <link rel="canonical" href="http://www.nelebruegge.com" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href='https://fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href={{ "/libs/external/skeleton/normalize.css" | prepend: site.baseurl }}>
+  <link rel="stylesheet" href={{ "/libs/external/skeleton/skeleton.css" | prepend: site.baseurl }}>
+  <link rel="stylesheet" href={{ "/libs/custom/my_css.css" | prepend: site.baseurl }}>
+
+  <!-- JQuery
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <script src={{ "/libs/external/jquery-3.1.1.min.js" | prepend: site.baseurl }}></script>
+
+  <!-- Font-Awesome
+  –––––––––––––––––––––––––––––––––––––––––––––––––– 
+  <link rel="stylesheet" href={{ "/libs/external/font-awesome-4.7.0/css/font-awesome.min.css" | prepend: site.baseurl }}> -->
+  <link rel="stylesheet" href={{ "/libs/external/fontawesome-free-6.6.0-web/css/all.min.css" | prepend: site.baseurl }}>
+
+  <!-- Academicons
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href={{ "/libs/external/academicons-1.8.6/css/academicons.min.css" | prepend: site.baseurl }}>
+
+  <!-- Skeleton tabs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href={{ "/libs/external/skeleton_tabs/skeleton-tabs.css" | prepend: site.baseurl }}>
+  <script src={{ "/libs/external/skeleton_tabs/skeleton-tabs.js" | prepend: site.baseurl }}></script>
+
+  <!-- Timeline
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href={{ "/libs/external/timeline.css" | prepend: site.baseurl }}>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const items = document.querySelectorAll(".timeline li");
+
+    const observer = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target); // animate only once
+          }
+        });
+      },
+      {
+        threshold: 0.2, // when 20% visible
+      }
+    );
+
+    items.forEach(item => {
+      observer.observe(item);
+    });
+  });
+  </script>
+
+  <!-- Scripts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!--<link rel="stylesheet" href={{ "/libs/external/github-prettify-theme.css" | prepend: site.baseurl }}>-->
+  <!--<script src={{ "/libs/custom/my_js.js" | prepend: site.baseurl }}></script>-->
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href={{ "/libs/icon.png" | prepend: site.baseurl }}>
+  <link rel="shortcut icon" type="image/png" href={{ "/libs/icon.png" | prepend: site.baseurl }}>
+
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+4H1LGfvdZ9bfzj+8PZpZe3JqUf+2N0z6R6LS1dQk="
+    crossorigin=""
+  />
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1j7M2K6p+e+YtG8MzD2D3I/jQJwBDR8M8N9mD+Jk="
+    crossorigin=""
+  ></script>
+
+  <!-- Load leaflet-gpx plugin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+
+</head>
+<body class="{{ page.title | downcase | replace: ' ', '-' }}-page">
+
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container">
+
+    <section class="header">
+      <div class="row">
+        <div class="three columns">
+          <a href="{{ site.baseurl }}/"><img class="u-max-full-width" src='{{ site.baseurl }}{{ site.data.main_info.profile_pic }}'></a>
+        </div>
+        <div class="nine columns main-description">
+            <h1>{{ site.data.main_info.name }}</h1>
+            <p>{{ site.data.main_info.title }}</p>
+            <p>{{ site.data.main_info.email }}</p>
+            <p>
+              <span onclick="window.open('{{ site.data.main_info.linkedin }}')" style="cursor: pointer">
+                <i class="fa-brands fa-linkedin fa-lg"></i>
+              </span>
+
+              <span onclick="window.open('{{ site.data.main_info.github }}')" style="cursor: pointer">
+                <i class="fa-brands fa-github fa-lg"></i>
+              </span>
+
+              <span onclick="window.open('{{ site.data.main_info.google_scholar }}')" style="cursor: pointer">
+                <i class="ai ai-google-scholar ai-lg" aria-hidden="true"></i>
+              </span>
+
+              <span onclick="window.open('{{ site.data.main_info.researchgate }}')" style="cursor: pointer">
+                <i class="ai ai-researchgate ai-lg" aria-hidden="true"></i>
+                </span>
+            </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="navbar-spacer"></div>
+    <nav class="navbar">
+      <div class="container">
+        <ul class="navbar-list">
+          <li class="navbar-item"><a class="navbar-link" href={{ "/index.html#bio" | prepend: site.baseurl }}>Bio</a></li>
+          <li class="navbar-item"><a class="navbar-link" href={{ "/index.html#resume" | prepend: site.baseurl }}>Vita</a></li>
+          <li class="navbar-item"><a class="navbar-link" href={{ "/index.html#publications" | prepend: site.baseurl }}>Publications</a></li>
+          <li class="navbar-item"><a class="navbar-link" href="{{ site.baseurl }}/recipes/">Recipes</a></li>
+          <li class="navbar-item"><a class="navbar-link" href="{{ site.baseurl }}/gpx/">GPX</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    {{ content}}
+
+  <div class="footer">
+      <div class="row">
+        <div class="four columns">
+          {{ site.data.main_info.name }}
+        </div>
+
+        <div class="four columns site-credit">
+          {% if page.title == "Home" %}
+          Code for this website:
+            <a href="https://github.com/nelebru/about-nele.git" target="_blank">nelebru</a>
+            (inspired by
+            <a href="https://github.com/msaveski/www_personal" target="_blank">msaveski</a>).
+          {% else %}
+          {{ site.data.main_info.email }}
+          {% endif %}
+        </div>
+
+        <div class="four columns">
+            <span onclick="window.open('{{ site.data.main_info.linkedin }}')" style="cursor: pointer">
+            <i class="fa-brands fa-linkedin"></i>
+          </span>
+
+          <span onclick="window.open('{{ site.data.main_info.github }}')" style="cursor: pointer">
+            <i class="fa-brands fa-github"></i>
+          </span>
+
+          <span onclick="window.open('{{ site.data.main_info.google_scholar }}')" style="cursor: pointer">
+            <i class="ai ai-google-scholar" aria-hidden="true"></i>
+              <!-- icons -->
+            </span>
+
+          <span onclick="window.open('{{ site.data.main_info.researchgate }}')" style="cursor: pointer">
+            <i class="ai ai-researchgate" aria-hidden="true"></i>
+            </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Analytics -->
+  {% include google_analytics.html %}
+
+  <!-- do not remove -->
+  <span id="62cd7b7da1aff3196fdc26b60e396df9"></span>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>
