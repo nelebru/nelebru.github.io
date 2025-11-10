@@ -602,3 +602,20 @@ a:focus {
   z-index: 2000 !important;
 }
 
+.aligned-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.aligned-list li {
+  position: relative;
+  padding-left: 1.5em;
+}
+
+.aligned-list li::before {
+  content: "➢";
+  position: absolute;
+  left: 0;
+}
+
