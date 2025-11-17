@@ -10,3 +10,6 @@ collections:
     output: true
   recipes:
     output: true
+
+plugins:
+  - jekyll-sitemap
