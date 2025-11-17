@@ -57,3 +57,52 @@ permalink: ./gpx/
 
 
 
+<!-- javascript for map -->
+<script>
+document.getElementById("showMapBtn").addEventListener("click", function () {
+    const container = document.getElementById("visitedMapContainer");
+
+    if (container.style.display === "none") {
+        container.style.display = "block";
+        this.textContent = "Hide map";
+        initializeVisitedMap();
+    } else {
+        container.style.display = "none";
+        this.textContent = "Show map";
+    }
+});
+
+let visitedMapInitialised = false;
+
+function initializeVisitedMap() {
+    if (visitedMapInitialised) return;
+    visitedMapInitialised = true;
+
+    const map = L.map('visitedMap').setView([53.86, 10.68], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const geoUrl = "{{ site.baseurl }}/assets/data/all_routes.geojson";
+
+    fetch(geoUrl)
+        .then(res => res.json())
+        .then(geojson => {
+            const layer = L.geoJSON(geojson, {
+                style: {
+                    color: "blueviolet",
+                    weight: 3,
+                    opacity: 0.8
+                }
+            }).addTo(map);
+
+            try {
+                map.fitBounds(layer.getBounds());
+            } catch (e) {
+                console.warn("Could not fit bounds (geojson empty?).");
+            }
+        })
+        .catch(err => console.error("Error loading geojson:", err));
+}
+</script>

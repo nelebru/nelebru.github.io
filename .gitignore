@@ -6,3 +6,9 @@ _site/*
 _snap_md5.txt
 
 .idea/
+.env
+*/.env
+
+*/tmp_gpx
+
+/.idea/
