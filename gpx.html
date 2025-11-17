@@ -1,13 +1,14 @@
 ---
 layout: default
 title: GPX
-permalink: ./gpx/
+permalink: /gpx/
 ---
 
 <div class="gpx-header">
   <div class="gpx-title-block">
     <h1 class="gpxpage-title">GPX courses</h1>
     <p class="gpx-intro">Feel free to steal.</p>
+    <button id="showMapBtn" class="show-map-button">Show map</button>
   </div>
 
   <div class="filters-tile">
@@ -34,6 +35,12 @@ permalink: ./gpx/
   </div>
 </div>
 
+<div class="map-wrapper">
+  <div id="visitedMapContainer" style="display:none; ">
+    <h3>Visited streets</h3>
+      <div id="visitedMap" style="height: 500px; border: 1px solid #ccc;"></div>
+    </div>
+</div>
 
 <div id="gpxList" class="gpx"></div>
 
@@ -54,7 +61,6 @@ permalink: ./gpx/
 <!-- Leaflet GPX plugin -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
 <script src="{{ site.baseurl }}/assets/js/my_js.js"></script>
-
 
 
 <!-- javascript for map -->
@@ -106,3 +112,4 @@ function initializeVisitedMap() {
         .catch(err => console.error("Error loading geojson:", err));
 }
 </script>
+
