@@ -633,4 +633,30 @@ a:focus {
   border-radius: 6px;
 }
 
+/* Mobile: stack vertically, map first, filters second to keep it close to its button*/
+@media (max-width: 749px) {
+  .gpx-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gpx-header {
+    display: contents;
+  }
+
+  .gpx-title-block {
+    order: 1;
+  }
+
+  .map-wrapper {
+    order: 2;
+    width: 100%;
+  }
+
+  .filters-tile {
+    order: 3;
+    width: 100%;
+    box-sizing: border-box; /* Add this */
+  }
+}
 

@@ -9,42 +9,44 @@ permalink: /gpx/
   <meta name="description" content="Download my favourite GPX course data for running and cycling routes.">
 </head>
 
-<div class="gpx-header">
-  <div class="gpx-title-block">
-    <h1 class="gpxpage-title">GPX courses</h1>
-    <p class="gpx-intro">Feel free to steal.</p>
-    <button id="showMapBtn" class="show-map-button">Show map</button>
-  </div>
+<div class="gpx-container">
+  <div class="gpx-header">
+    <div class="gpx-title-block">
+      <h1 class="gpxpage-title">GPX courses</h1>
+      <p class="gpx-intro">Feel free to steal.</p>
+      <button id="showMapBtn" class="show-map-button">Show map</button>
+    </div>
 
-  <div class="filters-tile">
-    <h5>Filter courses</h5>
-    <div class="filters">
-      <label for="minDistance">Min Distance (km):</label>
-      <input type="number" id="minDistance" placeholder="0" min="0" step="10">
-      <label for="maxDistance">Max Distance (km):</label>
-      <input type="number" id="maxDistance" placeholder="999" min="0" step="10">
-      <label for="locationFilter">Location:</label>
-      <select id="locationFilter">
-        <option value="">All</option>
-        <option value="Luebeck">Lübeck</option>
-        <option value="Hamburg">Hamburg</option>
-        <option value="Stockelsdorf">Stockelsdorf</option>
-        <option value="Schleswig">Schleswig</option>
-      </select>
+    <div class="filters-tile">
+      <h5>Filter courses</h5>
+      <div class="filters">
+        <label for="minDistance">Min Distance (km):</label>
+        <input type="number" id="minDistance" placeholder="0" min="0" step="10">
+        <label for="maxDistance">Max Distance (km):</label>
+        <input type="number" id="maxDistance" placeholder="999" min="0" step="10">
+        <label for="locationFilter">Location:</label>
+        <select id="locationFilter">
+          <option value="">All</option>
+          <option value="Luebeck">Lübeck</option>
+          <option value="Hamburg">Hamburg</option>
+          <option value="Stockelsdorf">Stockelsdorf</option>
+          <option value="Schleswig">Schleswig</option>
+        </select>
 
-      <div class="filter-buttons">
-        <button id="applyFilter">Filter</button>
-        <button id="resetFilter">Reset</button>
+        <div class="filter-buttons">
+          <button id="applyFilter">Filter</button>
+          <button id="resetFilter">Reset</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="map-wrapper">
-  <div id="visitedMapContainer" style="display:none; ">
-    <h3>Visited streets</h3>
+  <div class="map-wrapper">
+    <div id="visitedMapContainer" style="display:none;">
+      <h3>Visited streets</h3>
       <div id="visitedMap" style="height: 500px; border: 1px solid #ccc;"></div>
     </div>
+  </div>
 </div>
 
 <div id="gpxList" class="gpx"></div>
