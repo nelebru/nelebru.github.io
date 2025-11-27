@@ -2,8 +2,8 @@ papers:
 
   - title: "Eye Blinking Abnormalities in Tourette Syndrome: Blink More or Blink Differently?"
     authors: "Julius Verrel, Ronja Schappert, <b>Nele Sophie Brügge</b>, Tina Rawish, Tobias Bäumer, Yifan Hao, Roland Stenger, Christian Beste, Sebastian Fudickar, Veit Roessner, Alexander Münchau"
-    venue: "Preprint, 2025."
-    paper_link: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5372846"
+    venue: "Parkinsonism & Related Disorders"
+    paper_link: "https://linkinghub.elsevier.com/retrieve/pii/S1353802025008703"
     selected: n
 
   - title: "Bag-Level Multiple Instance Learning for Acute Stress Detection from Video Data"
