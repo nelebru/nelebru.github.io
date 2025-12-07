@@ -1,14 +1,8 @@
 ---
 layout: default
 title: Recipes
-permalink: ./recipes/
+permalink: /recipes/
 ---
-
-<head>
-  <title>Nele Brügge | Recipes </title>
-  <meta name="description" content="Welcome to my recipe collection. Here you can find my all-time favorite recipes,
-  for example for cakes, cookies, soups, breads, and more. Enjoy!">
-</head>
 
 <h2 class="recipe-title">Recipes</h2>
 
@@ -21,21 +15,28 @@ permalink: ./recipes/
 
   <!-- Cakes and Cookies -->
   <div class="recipe-category">
-    <h3>Cakes</h3>
-    <div class="recipe-grid">
-      <a href="{{ site.baseurl }}/recipes/banana-bread.html" class="recipe-tile">Banana Bread</a>
+    <h3 class="category-header collapsed" onclick="toggleCategory(this)">
+      <span class="toggle-icon"></span>
+      Cakes
+    </h3>
+    <div class="recipe-grid collapsed">
+      <a href="{{ site.baseurl }}/recipes/carrot-cake.html" class="recipe-tile">Carrot Cake</a>
       <a href="{{ site.baseurl }}/recipes/lagkage.html" class="recipe-tile">Lagkage</a>
       <a href="{{ site.baseurl }}/recipes/brownies.html" class="recipe-tile">Fudgy Brownies</a>
       <a href="{{ site.baseurl }}/recipes/apple-crumble.html" class="recipe-tile">Apple Crumble</a>
-      <a href="{{ site.baseurl }}/recipes/carrot-cake.html" class="recipe-tile">Carrot Cake</a>
+      <a href="{{ site.baseurl }}/recipes/banana-bread.html" class="recipe-tile">Banana Bread</a>
       <a href="{{ site.baseurl }}/recipes/apfelzimtschmand.html" class="recipe-tile">Apple Sour Cream Cake</a>
     </div>
   </div>
 
   <!-- Other Sweet Treats -->
   <div class="recipe-category">
-    <h3>Other Sweet Treats </h3>
-    <div class="recipe-grid">
+    <h3 class="category-header collapsed" onclick="toggleCategory(this)">
+      <span class="toggle-icon"></span>
+      Other Sweet Treats
+    </h3>
+    <div class="recipe-grid collapsed">
+      <a href="{{ site.baseurl }}/recipes/mango-sticky-rice.html" class="recipe-tile">Mango Sticky Rice</a>
       <a href="{{ site.baseurl }}/recipes/cookies-schokolinsen.html" class="recipe-tile">Soft-Baked Cookies</a>
       <a href="{{ site.baseurl }}/recipes/vanillekipferl.html" class="recipe-tile">Renates Vanillekipferl</a>
       <a href="{{ site.baseurl }}/recipes/mandelhoernchen.html" class="recipe-tile">Mandelhörnchen</a>
@@ -44,10 +45,24 @@ permalink: ./recipes/
     </div>
   </div>
 
+    <!-- Main Dishes -->
+  <div class="recipe-category">
+    <h3 class="category-header collapsed" onclick="toggleCategory(this)">
+      <span class="toggle-icon"></span>
+        Main Dishes
+    </h3>
+    <div class="recipe-grid collapsed">
+        <a href="{{ site.baseurl }}/recipes/miso-peanut-ramen.html" class="recipe-tile">Miso Peanut Ramen</a>
+    </div>
+  </div>
+
   <!-- Soups, Dips & Sauces -->
   <div class="recipe-category">
-    <h3>Soups, Dips & Sauces </h3>
-    <div class="recipe-grid">
+    <h3 class="category-header collapsed" onclick="toggleCategory(this)">
+      <span class="toggle-icon"></span>
+      Soups, Dips, Drinks & Sauces
+    </h3>
+    <div class="recipe-grid collapsed">
       <a href="{{ site.baseurl }}/recipes/Kombucha.html" class="recipe-tile">Kombucha</a>
       <a href="{{ site.baseurl }}/recipes/kuerbissuppe.html" class="recipe-tile">Pumpkin Soup</a>
       <a href="{{ site.baseurl }}/recipes/datteldip.html" class="recipe-tile">Datteldip</a>
@@ -56,8 +71,11 @@ permalink: ./recipes/
 
   <!-- Bread -->
   <div class="recipe-category">
-    <h3>Bread </h3>
-    <div class="recipe-grid">
+    <h3 class="category-header collapsed" onclick="toggleCategory(this)">
+      <span class="toggle-icon"></span>
+      Bread
+    </h3>
+    <div class="recipe-grid collapsed">
       <a href="{{ site.baseurl }}/recipes/fladenbrot.html" class="recipe-tile">Flatbread</a>
       <a href="{{ site.baseurl }}/recipes/naan.html" class="recipe-tile">Naan</a>
       <a href="{{ site.baseurl }}/recipes/pizza.html" class="recipe-tile">Pizza Dough</a>
@@ -67,12 +85,27 @@ permalink: ./recipes/
 </div>
 
 <script>
+function toggleCategory(header) {
+  const grid = header.nextElementSibling;
+
+  grid.classList.toggle('collapsed');
+  header.classList.toggle('collapsed');
+}
+
 function filterRecipes() {
   const input = document.getElementById('recipeSearch').value.toLowerCase();
   const tiles = document.querySelectorAll('.recipe-tile');
+
   tiles.forEach(tile => {
     tile.style.display = tile.textContent.toLowerCase().includes(input) ? '' : 'none';
   });
+
+  // Show all categories when searching
+  if (input) {
+    document.querySelectorAll('.recipe-grid').forEach(grid => {
+      grid.classList.remove('collapsed');
+      grid.previousElementSibling.classList.remove('collapsed');
+    });
+  }
 }
 </script>
-
