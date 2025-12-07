@@ -269,6 +269,7 @@ html {
     border-bottom-color: #33C3F0; }
 }
 
+
 /* RECIPE PAGE STYLES */
 
 body.recipes-page .navbar-link[href*="recipes"] {
@@ -279,12 +280,6 @@ body.recipes-page .navbar-link[href*="recipes"] {
 .recipe-title {
   text-align: center;
   margin: 50px 0 10px 0;
-}
-
-.recipe-category {
-  font-size: 0.8em;
-  margin-bottom: 10px;
-  color: #303030;
 }
 
 .recipes-intro {
@@ -302,6 +297,8 @@ body.recipes-page .navbar-link[href*="recipes"] {
 }
 
 .recipe-category {
+  font-size: 0.8em;
+  color: #303030;
   margin-bottom: 1em;
   margin-top: 1em;
   text-align: center;
@@ -337,16 +334,26 @@ body.recipes-page .navbar-link[href*="recipes"] {
   transform: translateX(-50%);
 }
 
-
 .recipe-grid {
   display: grid;
   padding-top: 1em;
+  margin-bottom: 0em;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 1.3em;
   max-height: 1000px;
   overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
   opacity: 1;
+}
+
+/* Extra padding when grid is expanded */
+.recipe-grid:not(.collapsed) {
+  margin-bottom: 3em;
+}
+
+.recipe-grid.collapsed {
+  max-height: 0;
+  opacity: 0;
 }
 
 .recipe-tile {
@@ -377,6 +384,7 @@ body.recipes-page .navbar-link[href*="recipes"] {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  font-size: 2.5em;
 }
 
 .category-header:hover {
@@ -395,15 +403,7 @@ body.recipes-page .navbar-link[href*="recipes"] {
 .category-header.collapsed .toggle-icon::before {
   content: '○';
 }
-
-.recipe-grid.collapsed {
-  max-height: 0;
-  opacity: 0;
-}
-
 /* END RECIPE COLLAPSIBLE VIEW ADDON */
-
-
 
 
 body.gpx-page .navbar-link[href*="gpx"] {
