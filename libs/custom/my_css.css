@@ -398,10 +398,10 @@ body.recipes-page .navbar-link[href*="recipes"] {
 }
 
 .category-header:not(.collapsed) .toggle-icon::before {
-  content: '●';
+  content: '';
 }
 .category-header.collapsed .toggle-icon::before {
-  content: '○';
+  content: '';
 }
 /* END RECIPE COLLAPSIBLE VIEW ADDON */
 

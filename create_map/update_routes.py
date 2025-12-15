@@ -8,6 +8,7 @@ from garminconnect import Garmin
 from pathlib import Path
 from datetime import datetime, date
 from dotenv import load_dotenv, find_dotenv
+import argparse
 
 # === CONFIG ===
 load_dotenv("path/to/create_map/.env")
@@ -21,7 +22,6 @@ SAVE_DIR = Path(os.getenv("SAVE_DIR"))
 EXISTING = SAVE_DIR / "all_routes.geojson"
 INFO_FILE = SAVE_DIR / "map_info.json"
 TMP_DIR = DATA_DIR / "tmp_gpx"
-
 HIST_DIR = DATA_DIR / "tmp_gpx"
 
 EXCLUDE_ACTIVITIES = ["virtual_ride", "lap_swimming", "treadmill_running",
@@ -240,7 +240,7 @@ def merge_routes(gpx_files):
         "routes_added": len(new_lines)
     }, indent=2))
 
-    print(f"🗺 Map updated with {len(new_lines)} new lines.")
+    print(f"🗺  Map updated with {len(new_lines)} new lines.")
     return len(new_lines)
 
 def full_update():
@@ -248,7 +248,17 @@ def full_update():
     return merge_routes(gpx_files)
 
 if __name__ == "__main__":
-    # Uncomment line to do a one-time historical import
-    # import_historical_gpx(HIST_DIR)
+    parser = argparse.ArgumentParser(
+        description="Update the unified GPX routes GeoJSON from Garmin Connect."
+    )
+    parser.add_argument(
+        "--import_historical",
+        action="store_true",
+        help="Import historical GPX files from HIST_DIR (one-time operation)."
+    )
+    args = parser.parse_args()
 
-    full_update()
+    if args.import_historical:
+        import_historical_gpx(HIST_DIR)
+    else:
+        full_update()
