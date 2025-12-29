@@ -11,7 +11,7 @@ from dotenv import load_dotenv, find_dotenv
 import argparse
 
 # === CONFIG ===
-load_dotenv("path/to/create_map/.env")
+load_dotenv(r".\create_map\.env")  # adjust path as needed
 print(find_dotenv())
 
 EMAIL = os.getenv("GARMIN_EMAIL")
