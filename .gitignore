@@ -10,5 +10,6 @@ _snap_md5.txt
 */.env
 
 */tmp_gpx
+**/tmp
 
 /.idea/
