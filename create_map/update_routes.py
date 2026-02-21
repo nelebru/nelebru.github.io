@@ -6,7 +6,7 @@ import pandas as pd
 from shapely.geometry import LineString
 from garminconnect import Garmin
 from pathlib import Path
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from dotenv import load_dotenv, find_dotenv
 import argparse
 
@@ -23,9 +23,6 @@ EXISTING = SAVE_DIR / "all_routes.geojson"
 INFO_FILE = SAVE_DIR / "map_info.json"
 TMP_DIR = DATA_DIR / "tmp_gpx"
 HIST_DIR = DATA_DIR / "tmp_gpx"
-
-EXCLUDE_ACTIVITIES = ["virtual_ride", "lap_swimming", "treadmill_running",
-                      "indoor_cycling", "strength_training", "yoga"]
 
 DATA_DIR.mkdir(exist_ok=True)
 TMP_DIR.mkdir(exist_ok=True)
@@ -51,7 +48,8 @@ def gpx_to_lines(gpx_file):
     return lines
 
 # one-time historical download function
-def import_historical_gpx(historical_dir):
+def import_historical_gpx(historical_dir,
+                          exclude_activities=["virtual_ride", "lap_swimming", "indoor_cycling", "strength_training", "yoga"]):
     """
     Import all GPX files in HIST_DIR into the unified GeoJSON.
     """
@@ -60,7 +58,7 @@ def import_historical_gpx(historical_dir):
         return
 
     gpx_files = list(historical_dir.glob("*.gpx"))
-    gpx_files = [f for f in gpx_files if not any(act in f.name for act in EXCLUDE_ACTIVITIES)]
+    gpx_files = [f for f in gpx_files if not any(act in f.name for act in exclude_activities)]
     print(f"Found {len(gpx_files)} historical GPX files.")
 
     if EXISTING.exists():
@@ -98,7 +96,7 @@ def import_historical_gpx(historical_dir):
 
 
 # === MAIN FUNTCIONS ===
-def download_new_gpx():
+def download_new_gpx(exclude_activities=["virtual_ride", "lap_swimming", "indoor_cycling", "strength_training", "yoga"]):
     """Login and download new activities as GPX files with proper pagination."""
     try:
         api = Garmin(EMAIL, PASSWORD)
@@ -108,7 +106,7 @@ def download_new_gpx():
         print("Login failed:", e)
         return []
 
-    last_update = get_last_update()
+    last_update = get_last_update().replace(tzinfo=timezone.utc)
     print(f"Fetching activities since {last_update.date()}")
 
     CHUNK_SIZE = 100
@@ -134,7 +132,7 @@ def download_new_gpx():
 
         # Check the date of the oldest activity in this chunk
         oldest_in_chunk = datetime.fromisoformat(
-            chunk[-1]["startTimeLocal"].replace("Z", "")
+            chunk[-1]["startTimeLocal"].replace("Z", "").replace(tzinfo=timezone.utc)
         )
         print(f"  Oldest activity in chunk: {oldest_in_chunk.date()}")
 
@@ -158,7 +156,7 @@ def download_new_gpx():
     # Filter to only activities newer than last update
     new_acts = []
     for a in all_activities:
-        act_date = datetime.fromisoformat(a["startTimeLocal"].replace("Z", ""))
+        act_date = datetime.fromisoformat(a["startTimeLocal"].replace("Z", "")).replace(tzinfo=timezone.utc)
         if act_date > last_update:
             new_acts.append(a)
 
@@ -171,7 +169,7 @@ def download_new_gpx():
     for i, a in enumerate(new_acts, 1):
         act_type = a["activityType"]["typeKey"]
 
-        if act_type in EXCLUDE_ACTIVITIES:
+        if act_type in exclude_activities:
             continue
 
         act_id = a["activityId"]
@@ -179,20 +177,20 @@ def download_new_gpx():
         filename = f"{act_date}_{act_type}_{act_id}.gpx"
         gpx_path = TMP_DIR / filename
 
-        if not gpx_path.exists():
-            print(f"⬇ [{i}/{len(new_acts)}] Downloading {act_type} on {act_date}")
-            try:
-                gpx_data = api.download_activity(
-                    act_id,
-                    dl_fmt=api.ActivityDownloadFormat.GPX
-                )
+        print(f"⬇ [{i}/{len(new_acts)}] Downloading {act_type} on {act_date}")
+        try:
+            gpx_data = api.download_activity(
+                act_id,
+                dl_fmt=api.ActivityDownloadFormat.GPX
+            )
+            if not gpx_path.exists():
                 with open(gpx_path, "wb") as f:
                     f.write(gpx_data)
-                new_files.append(gpx_path)
-                download_count += 1
-            except Exception as e:
-                print(f"  ⚠ Failed to download {act_id}: {e}")
-                continue
+            new_files.append(gpx_path)
+            download_count += 1
+        except Exception as e:
+            print(f"  ⚠ Failed to download {act_id}: {e}")
+            continue
 
     print(f"\n✓ Downloaded {download_count} new activities.")
     return new_files
@@ -243,13 +241,18 @@ def merge_routes(gpx_files):
     print(f"🗺  Map updated with {len(new_lines)} new lines.")
     return len(new_lines)
 
-def full_update():
-    gpx_files = download_new_gpx()
+def full_update(exclude_activities=["virtual_ride", "lap_swimming", "indoor_cycling", "strength_training", "yoga"]):
+    gpx_files = download_new_gpx(exclude_activities=exclude_activities)
     return merge_routes(gpx_files)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Update the unified GPX routes GeoJSON from Garmin Connect."
+    )
+    parser.add_argument(
+        "--exclude", nargs="+",
+        default=["virtual_ride", "lap_swimming", "indoor_cycling", "strength_training", "yoga"],
+        help="List of activity types to exclude (indoor activities, etc.)"
     )
     parser.add_argument(
         "--import_historical",
@@ -259,6 +262,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.import_historical:
-        import_historical_gpx(HIST_DIR)
+        import_historical_gpx(HIST_DIR, exclude_activities=args.exclude)
     else:
-        full_update()
+        full_update(exclude_activities=args.exclude)
