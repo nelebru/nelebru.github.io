@@ -509,19 +509,66 @@ body.gpx-page .navbar-link[href*="gpx"] {
   pointer-events: none;
 }
 
+/* Instruction image: default (desktop/tablet) */
+.ingredients-image-instruction {
+  display: flex;             /* use flex for easy centering */
+  justify-content: center;   /* center horizontally */
+  align-items: center;       /* center vertically if needed */
+  width: 50%;                /* half the width in non-mobile */
+  margin: 1em auto;          /* vertical spacing + horizontal centering */
+}
+
+.ingredients-image-instruction img {
+  width: 100%;               /* fill container */
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: block;            /* remove inline spacing */
+}
 
 /* modbile: stack vertically */
 @media (max-width: 700px) {
   .ingredients-tile {
+    flex-direction: column; /* stack text and image vertically */
+  }
+
+  .ingredients-image {
+    flex: none;             /* prevent it from stretching */
+    width: 100%;            /* optional: full width */
+    display: flex;
     flex-direction: column;
+    justify-content: center; /* vertical centering if height is constrained */
+    align-items: center;     /* horizontal centering */
+    margin-top: 1em;         /* optional spacing from text */
   }
 
   .ingredients-image img {
-    margin-top: 0.5em;
+    margin: 0;               /* remove previous margins */
+    max-width: 80%;          /* responsive width */
+    height: auto;
+    display: block;
+  }
+
+  .ingredients-image-large {
+    min-width: 100%;
+  }
+
+  .ingredients-image-large img {
+    width: 100%;
+    height: auto;
+    margin-top: 0;
   }
 
   .ingredients-image::after {
-    display: none; /* disable fade on small screens */
+    display: none; /* remove fade effect on mobile */
+  }
+
+  .ingredients-image-instruction {
+    width: 100%;             /* full width */
+  }
+
+  .ingredients-image-instruction img {
+    width: 100%;             /* fill container */
   }
 }
 
