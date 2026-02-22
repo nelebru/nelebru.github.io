@@ -465,7 +465,7 @@ body.gpx-page .navbar-link[href*="gpx"] {
   max-width: 100%;
   height: auto;
   border-radius: 10px;
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 6em;
   margin-right: 2em;
 }
@@ -521,8 +521,6 @@ body.gpx-page .navbar-link[href*="gpx"] {
 .ingredients-image-instruction img {
   width: 100%;               /* fill container */
   height: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: block;            /* remove inline spacing */
 }
 
@@ -583,6 +581,7 @@ a:focus {
   color: deeppink;
 }
 
+
 /* GPX page styles */
 
 .gpx-header {
@@ -612,23 +611,53 @@ a:focus {
 
 .filters-tile {
   flex: 1;
-  background-color: lavender;     /*lavenderblush;*/
+  background-color: lavender;
   border-radius: 12px;
-  box-shadow: 0 0px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
   padding: 1.5rem;
-  gap: 0rem;
-  font-weight: bold;
-  margin-bottom: 1em;
   font-size: 1.1em;
+  font-weight: bold;
   text-align: center;
-  font-color: white;
 }
 
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
 .filters label {
   font-weight: 600;
+  text-align: left;
 }
 
+/* ---------- Sort + location row ---------- */
+
+.filter-row {
+  display: flex;
+  gap: 20px;
+}
+
+.filter-row > div {
+  flex: 1;
+}
+
+.sort-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sort-direction {
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+/* ---------- Buttons ---------- */
 
 .filters button {
   background-color: #333333;   /*hotpink;*/
@@ -643,7 +672,6 @@ a:focus {
 .filters button:hover {
   background-color: blueviolet;  /*deeppink*/
 }
-
 
 .gpx-item:hover {
   background: #ffe6f2;
@@ -660,7 +688,7 @@ a:focus {
   grid-template-columns: 1fr;
   gap: 1.5rem;
   margin-top: 1rem;
-  min-height: 300px; /* Add this */
+  min-height: 300px;
 }
 
 .course-map {
@@ -670,14 +698,9 @@ a:focus {
   flex: 1 1 300px;
   border-radius: 10px;
   overflow: hidden;
-  background-color: #e0e0e0; /* to see if the div is rendering */
+  background-color: #e0e0e0;
 }
 
-@media (max-width: 749px) {
-  .course-map {
-    margin-top: 1rem;
-  }
-}
 
 .course-card {
   display: flex;
@@ -700,9 +723,9 @@ a:focus {
 }
 
 .filters {
-  gap: 2rem 2rem;
+  gap: 1rem 1rem;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .filters label {
@@ -748,30 +771,116 @@ a:focus {
   border-radius: 6px;
 }
 
-/* Mobile: stack vertically, map first, filters second to keep it close to its button*/
+
 @media (max-width: 749px) {
-  .gpx-container {
-    display: flex;
-    flex-direction: column;
-  }
+    .gpx-container {
+      display: flex;
+      flex-direction: column;
+    }
 
-  .gpx-header {
-    display: contents;
-  }
+    .gpx-header {
+      display: contents; /* This makes children act as direct children of gpx-container */
+    }
 
-  .gpx-title-block {
-    order: 1;
-  }
+    .gpx-title-block {
+      order: 1;
+    }
 
-  .map-wrapper {
-    order: 2;
-    width: 100%;
-  }
+    .map-wrapper {
+      order: 2;
+      width: 100%;
+    }
 
-  .filters-tile {
-    order: 3;
-    width: 100%;
-    box-sizing: border-box; /* Add this */
-  }
+    .filters-tile {
+      order: 4;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 2rem;
+    }
+
+    .course-map {
+      margin-top: 1rem;
+    }
 }
 
+
+/* ---------- Dual range slider ---------- */
+.dual-range {
+  position: relative;
+  height: 40px;
+  width: 85%;
+  margin: 0 auto;
+}
+
+.range-track {
+  position: absolute;
+  top: 0%;
+  transform: translateY(-50%);
+  height: 4px;
+  width: 100%;
+  background: #ccc;
+  border-radius: 2px;
+}
+
+.range-fill {
+  position: absolute;
+  top: 0%;
+  transform: translateY(-50%);
+  height: 4px;
+  background: blueviolet;
+  border-radius: 2px;
+}
+
+.dual-range input[type="range"] {
+  position: absolute;
+  left: 0;
+  top: -50%;
+  width: 100%;
+  height: 40px;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+  z-index: 2;
+}
+
+/* slider thumbs */
+.dual-range input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: black;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dual-range input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 14px;
+  height: 14px;
+  background: black;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* hide default tracks */
+.dual-range input[type="range"]::-webkit-slider-runnable-track {
+  background: transparent;
+}
+.dual-range input[type="range"]::-moz-range-track {
+  background: transparent;
+}
+
+.range-values {
+  margin-top: -4rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+#gpxList {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}

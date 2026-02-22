@@ -10,6 +10,8 @@ permalink: /gpx/
 </head>
 
 <div class="gpx-container">
+  <!-- ================= HEADER ================= -->
+
   <div class="gpx-header">
     <div class="gpx-title-block">
       <h1 class="gpxpage-title">GPX courses</h1>
@@ -17,29 +19,65 @@ permalink: /gpx/
       <button id="showMapBtn" class="show-map-button">Show map</button>
     </div>
 
+    <!-- ================= FILTER TILE ================= -->
+
     <div class="filters-tile">
       <h5>Filter courses</h5>
-      <div class="filters">
-        <label for="minDistance">Min Distance (km):</label>
-        <input type="number" id="minDistance" placeholder="0" min="0" step="10">
-        <label for="maxDistance">Max Distance (km):</label>
-        <input type="number" id="maxDistance" placeholder="999" min="0" step="10">
-        <label for="locationFilter">Location:</label>
-        <select id="locationFilter">
-          <option value="">All</option>
-          <option value="Luebeck">Lübeck</option>
-          <option value="Hamburg">Hamburg</option>
-          <option value="Stockelsdorf">Stockelsdorf</option>
-          <option value="Schleswig">Schleswig</option>
-        </select>
 
+      <div class="filters">
+
+        <!-- Sort + Location -->
+        <div class="filter-row">
+
+          <div>
+            <label>Sort by</label>
+            <div class="sort-row">
+              <select id="sortBy">
+                <option value="name">Alphabetical</option>
+                <option value="distance">Distance</option>
+                <option value="elevation_gain">Elevation Gain</option>
+              </select>
+              <button id="sortDir" class="sort-direction" title="Toggle order">▲</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Location</label>
+            <select id="locationFilter">
+              <option value="">All</option>
+              <option value="Hamburg">Hamburg</option>
+              <option value="Luebeck">Lübeck</option>
+              <option value="Stockelsdorf">Stockelsdorf</option>
+              <option value="Schleswig">Schleswig</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Distance slider -->
+        <label>Distance (km)</label>
+
+        <div class="dual-range">
+          <div class="range-track"></div>
+          <div class="range-fill" id="rangeFill"></div>
+          <input type="range" id="minDistance" min="0" max="300" step="5" value="0">
+          <input type="range" id="maxDistance" min="0" max="300" step="5" value="300">
+        </div>
+
+        <div class="range-values">
+          <span id="minDistanceLabel">0</span> –
+          <span id="maxDistanceLabel">300</span> km
+        </div>
+
+        <!-- Buttons -->
         <div class="filter-buttons">
           <button id="applyFilter">Filter</button>
           <button id="resetFilter">Reset</button>
         </div>
+
       </div>
     </div>
-  </div>
+</div>
 
   <div class="map-wrapper">
     <div id="visitedMapContainer" style="display:none;">
@@ -56,7 +94,6 @@ permalink: /gpx/
   const gpxJsonUrl = "{{ site.baseurl }}/assets/data/gpx_courses.json";
   const baseUrl = "{{ site.baseurl }}";
 </script>
-<script src="{{ site.baseurl }}/assets/js/my_js.js"></script>
 
 <!-- Leaflet CSS -->
 <link
@@ -67,8 +104,6 @@ permalink: /gpx/
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <!-- Leaflet GPX plugin -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
-<script src="{{ site.baseurl }}/assets/js/my_js.js"></script>
-
 
 <!-- javascript for map -->
 <script>
@@ -118,5 +153,176 @@ function initializeVisitedMap() {
         })
         .catch(err => console.error("Error loading geojson:", err));
 }
-</script>
 
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ---------- Elements ---------- */
+
+  const minSlider = document.getElementById("minDistance");
+  const maxSlider = document.getElementById("maxDistance");
+  const minLabel  = document.getElementById("minDistanceLabel");
+  const maxLabel  = document.getElementById("maxDistanceLabel");
+  const rangeFill = document.getElementById("rangeFill");
+
+  const locationSelect = document.getElementById("locationFilter");
+  const sortSelect = document.getElementById("sortBy");
+  const sortDirBtn = document.getElementById("sortDir");
+
+  const list = document.getElementById("gpxList");
+
+  let sortAsc = true;
+  let allCourses = [];
+
+  /* ---------- Load data ---------- */
+
+  fetch(gpxJsonUrl)
+  .then(res => res.json())
+  .then(data => {
+    allCourses = data;
+
+    // INITIAL STATE
+    sortSelect.value = "distance"; // default dropdown
+    sortAsc = true;                // ascending
+    sortDirBtn.textContent = "▲";  // arrow matches state
+
+    applyFilters();
+  });
+
+  /* ---------- Slider UI ---------- */
+
+  function updateSliderUI() {
+    let min = +minSlider.value;
+    let max = +maxSlider.value;
+    if (min > max) [min, max] = [max, min];
+
+    minLabel.textContent = min;
+    maxLabel.textContent = max;
+
+    const minPct = (min / 300) * 100;
+    const maxPct = (max / 300) * 100;
+
+    rangeFill.style.left = minPct + "%";
+    rangeFill.style.width = (maxPct - minPct) + "%";
+  }
+
+  minSlider.addEventListener("input", updateSliderUI);
+  maxSlider.addEventListener("input", updateSliderUI);
+
+  /* ---------- Sorting ---------- */
+
+  sortDirBtn.addEventListener("click", () => {
+    sortAsc = !sortAsc;
+    sortDirBtn.textContent = sortAsc ? "▲" : "▼";
+    applyFilters();
+  });
+
+  /* ---------- Buttons ---------- */
+
+  document.getElementById("applyFilter").addEventListener("click", applyFilters);
+
+  document.getElementById("resetFilter").addEventListener("click", () => {
+    minSlider.value = 0;
+    maxSlider.value = 300;
+    locationSelect.value = "";
+    sortSelect.value = "distance";
+    sortAsc = true;
+    sortDirBtn.textContent = "▲";
+    updateSliderUI();
+    applyFilters();
+  });
+
+  /* ---------- Filtering ---------- */
+
+  function normalize(str) {
+    return str.toLowerCase().trim();
+  }
+
+  function applyFilters() {
+    let min = +minSlider.value;
+    let max = +maxSlider.value;
+    if (min > max) [min, max] = [max, min];
+
+    const location = normalize(locationSelect.value);
+    const sortBy = sortSelect.value;
+
+    let filtered = allCourses.filter(c => {
+      return (
+        c.distance >= min &&
+        c.distance <= max &&
+        (!location || normalize(c.location) === location)
+      );
+    });
+
+    filtered.sort((a, b) => {
+      let val =
+        sortBy === "name" ? a.name.localeCompare(b.name) :
+        sortBy === "distance" ? a.distance - b.distance :
+        a.elevation_gain - b.elevation_gain;
+
+      return sortAsc ? val : -val;
+    });
+
+    renderCourses(filtered);
+  }
+
+  /* ---------- Render ---------- */
+
+  function renderCourses(courses) {
+  list.innerHTML = "";
+
+  courses.forEach((c, i) => {
+    const card = document.createElement("div");
+    card.className = "course-card";
+
+    card.innerHTML = `
+      <div class="course-info">
+        <h3>${c.name}</h3>
+        <p>${c.distance} km · ${c.elevation_gain} hm</p>
+        <p>${c.location}</p>
+        <a href="${baseUrl}/${c.file}">Download GPX</a>
+      </div>
+      <div class="course-map" id="map-${i}"></div>
+    `;
+
+    list.appendChild(card);
+
+    // re-create map EVERY time
+    initCourseMap(`map-${i}`, c.file);
+  });
+}
+
+function initCourseMap(containerId, gpxFile) {
+  const map = L.map(containerId, {
+    zoomControl: false,
+    attributionControl: false
+  });
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+    .addTo(map);
+
+  new L.GPX(`${baseUrl}/${gpxFile}`, {
+    async: true,
+
+    // force blueviolet from the beginning
+    polyline_options: {
+      color: "blueviolet",
+      weight: 4,
+      opacity: 0.9
+    },
+
+    // disable default start/end markers
+    marker_options: {
+      startIconUrl: null,
+      endIconUrl: null,
+      shadowUrl: null
+    }
+
+  }).on("loaded", e => {
+    map.fitBounds(e.target.getBounds());
+  }).addTo(map);
+}
+
+  updateSliderUI();
+});
+</script>
