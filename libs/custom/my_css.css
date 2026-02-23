@@ -470,6 +470,23 @@ body.gpx-page .navbar-link[href*="gpx"] {
   margin-right: 2em;
 }
 
+.ingredients-image-transparent {
+  flex: 1;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 150px;
+}
+
+.ingredients-image-transparent img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 6em;
+  margin-right: 2em;
+}
+
 .ingredients-images-stack {
   display: flex;
   flex-direction: column;      /* Stack images vertically */
