@@ -564,6 +564,23 @@ body.gpx-page .navbar-link[href*="gpx"] {
     display: block;
   }
 
+  .ingredients-image-transparent {
+    flex: none;             /* prevent it from stretching */
+    width: 100%;            /* optional: full width */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* vertical centering if height is constrained */
+    align-items: center;     /* horizontal centering */
+    margin-top: 1em;         /* optional spacing from text */
+  }
+
+  .ingredients-image-transparent img {
+    margin: 0;               /* remove previous margins */
+    max-width: 80%;          /* responsive width */
+    height: auto;
+    display: block;
+  }
+
   .ingredients-image-large {
     min-width: 100%;
   }
