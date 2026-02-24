@@ -654,6 +654,13 @@ a:focus {
   text-align: center;
 }
 
+.filters-tile h4 {
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 2.5rem;
+  /* color: #333333; */
+}
+
 .filters {
   display: flex;
   flex-direction: column;
@@ -661,7 +668,7 @@ a:focus {
 }
 
 .filters label {
-  font-weight: 600;
+  font-weight: bold;
   text-align: left;
 }
 
@@ -737,16 +744,24 @@ a:focus {
 
 
 .course-card {
+  align-items: center;
   display: flex;
-  align-items: stretch;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: stretch;
   background-color: #f8f9fa;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   padding: 1.5rem;
   gap: 0rem;
+}
+
+
+.course-card h3 {
+  text-align: left;
+  font-size: 2.1rem;
+  margin-bottom: 2.3rem;   /* more space below the title */
+  line-height: 1.2;
+  font-weight: 600;
 }
 
 .course-info {
@@ -756,14 +771,14 @@ a:focus {
   /* font-size: 0.95rem;*/
 }
 
+.course-card .course-info p:first-of-type {
+  font-weight: 500;
+}
+
 .filters {
   gap: 1rem 1rem;
   align-items: center;
   margin-bottom: 0.5rem;
-}
-
-.filters label {
-  font-weight: bold;
 }
 
 .leaflet-container {
@@ -806,10 +821,24 @@ a:focus {
 }
 
 
-@media (max-width: 749px) {
+@media (max-width: 700px) {
     .gpx-container {
       display: flex;
       flex-direction: column;
+    }
+
+    .course-card .course-info p {
+      margin: 1rem 0;         /* less vertical spacing between lines */
+      line-height: 1.1;         /* tighter line spacing */
+    }
+
+    .filter-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .filter-row label {
+      display: block;
+      text-align: center;
     }
 
     .gpx-header {
@@ -829,14 +858,13 @@ a:focus {
       order: 4;
       width: 100%;
       box-sizing: border-box;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
     }
 
     .course-map {
       margin-top: 1rem;
     }
 }
-
 
 /* ---------- Dual range slider ---------- */
 .dual-range {
