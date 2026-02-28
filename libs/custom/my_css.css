@@ -643,6 +643,12 @@ a:focus {
   font-size: 1.8em;
 }
 
+.gpx-descr {
+      max-width: 100%;
+      margin: 1rem 0 1.5rem;
+      text-align: left;
+}
+
 .filters-tile {
   flex: 1;
   background-color: lavender;
@@ -830,6 +836,12 @@ a:focus {
     .course-card .course-info p {
       margin: 1rem 0;         /* less vertical spacing between lines */
       line-height: 1.1;         /* tighter line spacing */
+    }
+
+    .gpx-descr {
+      max-width: 100%;
+      margin: 1rem 0 1.5rem;
+      text-align: left;
     }
 
     .filter-row {
