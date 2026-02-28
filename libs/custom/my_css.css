@@ -643,10 +643,11 @@ a:focus {
   font-size: 1.8em;
 }
 
-.gpx-descr {
-      max-width: 100%;
-      margin: 1rem 0 1.5rem;
-      text-align: left;
+.gpx-descr{
+  margin: 1rem auto 1.5rem; /* centered, below header */
+  text-align: left;
+  font-size: 1em;
+  max-width: 400px;
 }
 
 .filters-tile {
