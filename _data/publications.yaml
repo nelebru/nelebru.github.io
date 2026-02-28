@@ -1,8 +1,14 @@
 papers:
 
+  - title: "Task-aware multiple instance learning for stress detection from facial video data"
+    authors: "<b>Nele Sophie Brügge</b>, Alexandra Korda, Heinz Handels, Giorgos Giannakakis"
+    venue: "Journal of Affective Disorders, 2026."
+    paper_link: "https://www.sciencedirect.com/science/article/abs/pii/S016503272600323X"
+    selected: y
+
   - title: "Eye Blinking Abnormalities in Tourette Syndrome: Blink More or Blink Differently?"
     authors: "Julius Verrel, Ronja Schappert, <b>Nele Sophie Brügge</b>, Tina Rawish, Tobias Bäumer, Yifan Hao, Roland Stenger, Christian Beste, Sebastian Fudickar, Veit Roessner, Alexander Münchau"
-    venue: "Parkinsonism & Related Disorders"
+    venue: "Parkinsonism & Related Disorders, 2025"
     paper_link: "https://linkinghub.elsevier.com/retrieve/pii/S1353802025008703"
     selected: n
 
