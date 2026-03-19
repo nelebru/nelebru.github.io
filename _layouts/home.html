@@ -1,0 +1,156 @@
+---
+layout: default
+---
+
+<style>
+.header-canvas-wrapper {
+  position: relative;
+  background: white;
+}
+
+#glitter-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.header-canvas-wrapper .header,
+.header-canvas-wrapper .navbar-spacer,
+.header-canvas-wrapper .navbar {
+  position: relative;
+  z-index: 1;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const container = document.querySelector('.container');
+  const header = container.querySelector('.header');
+  const spacer = container.querySelector('.navbar-spacer');
+  const navbar = container.querySelector('.navbar');
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'header-canvas-wrapper';
+
+  const canvas = document.createElement('canvas');
+  canvas.id = 'glitter-canvas';
+
+  container.insertBefore(wrapper, header);
+  wrapper.appendChild(canvas);
+  wrapper.insertBefore(header, canvas.nextSibling);
+  wrapper.appendChild(spacer);
+  wrapper.appendChild(navbar);
+
+  (function () {
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = wrapper.offsetWidth;
+      canvas.height = wrapper.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    let mouseX = 0, mouseY = 0;
+    let mouseActive = false;
+
+    wrapper.addEventListener('mousemove', (e) => {
+      const rect = wrapper.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+      mouseActive = true;
+      // Only 2 particles per move — slow trickle, not explosion
+      if (Math.random() < 3) {
+        particles.push(createParticle(mouseX, mouseY));
+      }
+    });
+    wrapper.addEventListener('mouseleave', () => {
+      mouseActive = false;
+    });
+
+    let hue = 0;
+    let particles = [];
+
+    function createParticle(x, y) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 0.6 + 0.1;  // very slow
+      const size = Math.random() + 1;
+      return {
+        x: x + (Math.random() - 0.5) * 13,  // small spread around cursor
+        y: y + (Math.random() - 0.5) * 13,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,   // centered
+        size,
+        hue: (hue + Math.random() * 60 - 30 + 360) % 360,
+        alpha: Math.random() * 0.5 + 0.5,    // start at varying opacity
+        decay: Math.random() * 0.06 + 0.003, // very slow fade
+        shimmerPhase: Math.random() * Math.PI * 2,
+        shimmerSpeed: Math.random() * 0.04 + 0.01,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.02,
+      };
+    }
+
+    function drawParticle(p) {
+      const twinkle = 0.6 + 0.4 * Math.sin(p.shimmerPhase);
+      ctx.save();
+      ctx.globalAlpha = p.alpha * twinkle;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size * 2);
+      grad.addColorStop(0, `hsl(${p.hue}, 100%, 98%)`);
+      grad.addColorStop(0.3, `hsl(${p.hue}, 100%, 75%)`);
+      grad.addColorStop(1, `hsla(${p.hue}, 100%, 60%, 0)`);
+
+      ctx.fillStyle = grad;
+
+      // Soft 4-point star
+      const s = p.size;
+      ctx.beginPath();
+      ctx.moveTo(0, -s * 2.2);
+      ctx.quadraticCurveTo(s * 0.3, -s * 0.3, s * 2.2, 0);
+      ctx.quadraticCurveTo(s * 0.3, s * 0.3, 0, s * 2.2);
+      ctx.quadraticCurveTo(-s * 0.3, s * 0.3, -s * 2.2, 0);
+      ctx.quadraticCurveTo(-s * 0.3, -s * 0.3, 0, -s * 2.2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function animate() {
+      // Very slow fade so sparkles linger softly
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      hue = (hue + 0.5) % 360;  // slow rainbow cycle
+
+      particles = particles.filter(p => p.alpha > 0.01);
+
+      particles.forEach(p => {
+        p.shimmerPhase += p.shimmerSpeed;
+        p.rotation += p.rotationSpeed;
+        p.vx *= 0.99;
+        p.vy *= 0.99;
+        p.vy -= 0.0;  // very gentle continuous upward float
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.decay;
+        drawParticle(p);
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  })();
+});
+</script>
+
+{{ content }}
