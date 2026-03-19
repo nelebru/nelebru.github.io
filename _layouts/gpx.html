@@ -144,7 +144,7 @@
     <section class="header">
       <div class="row">
         <div class="three columns">
-          <a href="{{ site.baseurl }}/"><img class="u-max-full-width" src='{{ site.baseurl }}{{ site.data.main_info.profile_pic }}'></a>
+          <a href="{{ site.baseurl }}/"><img class="u-max-full-width" src='{{ site.baseurl }}{{ site.data.main_info.profile_pic_cycle }}'></a>
         </div>
         <div class="nine columns main-description">
             <h1>{{ site.data.main_info.name }}</h1>
@@ -269,6 +269,7 @@
       y: Math.random() * canvas.height,
       vx: Math.cos(angle) * 0.5,
       vy: Math.sin(angle) * 0.5,
+      baseAngle: angle,
       color: isLeader ? '#222' : `hsl(${Math.random() * 360}, 60%, 45%)`,
       leader: isLeader
     };
@@ -305,32 +306,35 @@
 
     cyclists.forEach((c, i) => {
       if (!mouseActive) {
-        // randomly move if mouse is not active
-        c.vx += (Math.random() - 0.5) * 0.1;
-        c.vy += (Math.random() - 0.5) * 0.1;
-
+        // Slowly ride in a direction with minor deviations
+        c.baseAngle += (Math.random() - 0.5) * 0.05;
+        const speed = 0.3;
+        c.vx = Math.cos(c.baseAngle) * speed;
+        c.vy = Math.sin(c.baseAngle) * speed;
       }
       else
         if (c.leader) {
           const dx = mouse.x - c.x, dy = mouse.y - c.y;
           const dist = Math.sqrt(dx * dx + dy * dy) + 0.01;
-          c.vx += (dx / dist) * 0.3;
-          c.vy += (dy / dist) * 0.3;
-        } else {
+          c.vx += (dx / dist) * 0.25;
+          c.vy += (dy / dist) * 0.25;
+        }
+        else {
           const dx = leader.x - c.x, dy = leader.y - c.y;
           const dist = Math.sqrt(dx * dx + dy * dy) + 0.01;
           c.vx += (dx / dist) * 0.15;
           c.vy += (dy / dist) * 0.15;
         }
 
-        // Drafting
+        // Collision avoidance - prevent overlapping
         cyclists.forEach((other, j) => {
           if (i === j) return;
           const dx = other.x - c.x, dy = other.y - c.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 80 && dist > 20) {
-            c.vx += (other.vx - c.vx) * 0.03;
-            c.vy += (other.vy - c.vy) * 0.03;
+          if (dist < 20) {
+            const repelForce = (20 - dist) / 20 * 0.5;
+            c.vx -= (dx / dist) * repelForce;
+            c.vy -= (dy / dist) * repelForce;
           }
         });
 
