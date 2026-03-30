@@ -1,4 +1,9 @@
 papers:
+  - title: "Revealing Eye-dentity: Foundation Models Enable Re-identification from Retinal OCT"
+  - authors: "Marc S Seibel, <b>Nele Brügge<\b>, Timo Kepp, Bennet Kahrs, Jan Ehrhardt, Heinz Handels"
+  - venue: "Bildverarbeitung für die Medizin 2026: Proceedings, German Conference on Medical Image Computing, Luebeck, 2026"
+  - paper_link: "https://link.springer.com/chapter/10.1007/978-3-658-51100-5_11"
+  - selected: n
 
   - title: "Task-aware multiple instance learning for stress detection from facial video data"
     authors: "<b>Nele Sophie Brügge</b>, Alexandra Korda, Heinz Handels, Giorgos Giannakakis"
