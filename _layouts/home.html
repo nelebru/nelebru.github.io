@@ -6,6 +6,8 @@ layout: default
 .header-canvas-wrapper {
   position: relative;
   background: white;
+  /* Contain child margins so the canvas reaches right up to the navbar. */
+  display: flow-root;
 }
 
 #glitter-canvas {
@@ -20,8 +22,7 @@ layout: default
 }
 
 .header-canvas-wrapper .header,
-.header-canvas-wrapper .navbar-spacer,
-.header-canvas-wrapper .navbar {
+.header-canvas-wrapper .navbar-spacer {
   position: relative;
   z-index: 1;
 }
@@ -44,7 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
   wrapper.appendChild(canvas);
   wrapper.insertBefore(header, canvas.nextSibling);
   wrapper.appendChild(spacer);
-  wrapper.appendChild(navbar);
+  // Keep navbar outside wrapper so CSS position: sticky works correctly.
+  container.insertBefore(navbar, wrapper.nextSibling);
 
   (function () {
     const ctx = canvas.getContext('2d');
