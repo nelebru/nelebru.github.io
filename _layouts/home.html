@@ -87,9 +87,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     wrapper.addEventListener('mousemove', (e) => {
       const rect = wrapper.getBoundingClientRect();
-      // Multiply by dpr to map CSS pixels to canvas backing pixels
-      mouseX = (e.clientX - rect.left) * (window.devicePixelRatio || 1);
-      mouseY = (e.clientY - rect.top) * (window.devicePixelRatio || 1);
+      // Use CSS pixel coordinates here. The context is scaled by DPR (ctx.setTransform)
+      // so drawing code can work in CSS pixels and remain crisp on high-DPI displays.
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
       mouseActive = true;
       // Only 2 particles per move — slow trickle, not explosion
       if (Math.random() < 3) {
@@ -108,8 +109,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const speed = Math.random() * 0.6 + 0.1;  // very slow
       const size = Math.random() + 1;
       return {
-        x: x + (Math.random() - 0.5) * 13 * (window.devicePixelRatio || 1),  // small spread around cursor
-        y: y + (Math.random() - 0.5) * 13 * (window.devicePixelRatio || 1),
+        // Keep particle coordinates in CSS pixels (context is already scaled)
+        x: x + (Math.random() - 0.5) * 13,  // small spread around cursor
+        y: y + (Math.random() - 0.5) * 13,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,   // centered
         size,
@@ -154,7 +156,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function animate() {
       // Very slow fade so sparkles linger softly
       ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // canvas.width/height are device pixels; because the context is scaled by DPR
+      // we draw using CSS-pixel dimensions (device / dpr)
+      ctx.fillRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
 
       hue = (hue + 0.5) % 360;  // slow rainbow cycle
 
