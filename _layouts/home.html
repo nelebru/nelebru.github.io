@@ -50,21 +50,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
   (function () {
     const ctx = canvas.getContext('2d');
+    let dpr = window.devicePixelRatio || 1;
 
     function resize() {
-      canvas.width = wrapper.offsetWidth;
-      canvas.height = wrapper.offsetHeight;
+      // Use wrapper's CSS size and scale canvas backing store by devicePixelRatio.
+      const cssWidth = Math.max(1, wrapper.clientWidth);
+      const cssHeight = Math.max(1, wrapper.clientHeight);
+      canvas.style.width = cssWidth + 'px';
+      canvas.style.height = cssHeight + 'px';
+      canvas.width = Math.floor(cssWidth * dpr);
+      canvas.height = Math.floor(cssHeight * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // scale drawing operations
     }
+
+    // Ensure initial sizing after layout/paint (fixes first-load offset issues).
     resize();
-    window.addEventListener('resize', resize);
+    // Also resize on next animation frame to catch late layout changes.
+    requestAnimationFrame(resize);
+
+    // Keep canvas size in sync with container changes
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(() => {
+        dpr = window.devicePixelRatio || 1;
+        resize();
+      });
+      ro.observe(wrapper);
+    } else {
+      window.addEventListener('resize', () => {
+        dpr = window.devicePixelRatio || 1;
+        resize();
+      });
+    }
 
     let mouseX = 0, mouseY = 0;
     let mouseActive = false;
 
     wrapper.addEventListener('mousemove', (e) => {
       const rect = wrapper.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
+      // Multiply by dpr to map CSS pixels to canvas backing pixels
+      mouseX = (e.clientX - rect.left) * (window.devicePixelRatio || 1);
+      mouseY = (e.clientY - rect.top) * (window.devicePixelRatio || 1);
       mouseActive = true;
       // Only 2 particles per move — slow trickle, not explosion
       if (Math.random() < 3) {
@@ -83,8 +108,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const speed = Math.random() * 0.6 + 0.1;  // very slow
       const size = Math.random() + 1;
       return {
-        x: x + (Math.random() - 0.5) * 13,  // small spread around cursor
-        y: y + (Math.random() - 0.5) * 13,
+        x: x + (Math.random() - 0.5) * 13 * (window.devicePixelRatio || 1),  // small spread around cursor
+        y: y + (Math.random() - 0.5) * 13 * (window.devicePixelRatio || 1),
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,   // centered
         size,
