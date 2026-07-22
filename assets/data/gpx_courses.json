@@ -1,6 +1,6 @@
 [
   {
-    "name": "According To Olli This Is Paradise",
+    "name": "Ollis Paradise",
     "file": "./assets/gpx\\According_to_Olli_this_is_paradise.gpx",
     "location": "Stockelsdorf",
     "surface": "road",
@@ -8,12 +8,19 @@
     "distance": 59.2
   },
   {
+    "name": "Mausrunde",
+    "file": "./assets/gpx\\Mausrunde.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 100.0,
+    "distance": 34.6
+  },  {
     "name": "Hausrunde",
     "file": "./assets/gpx\\Hausrunde.gpx",
     "location": "Luebeck",
     "surface": "road",
-    "elevation_gain": 121.8,
-    "distance": 36.6
+    "elevation_gain": 190.2,
+    "distance": 46.7
   },
   {
     "name": "Hilly Curvy Afterwork",
@@ -32,12 +39,20 @@
     "distance": 115.7
   },
   {
-    "name": "Intervals And Duechelsdorf Hill",
+    "name": "Duechelsdorf Hill",
     "file": "./assets/gpx\\Intervals_and_Duechelsdorf_Hill.gpx",
     "location": "Luebeck",
     "surface": "road",
     "elevation_gain": 204.3,
     "distance": 47.4
+  },
+  {
+    "name": "TT short",
+    "file": "./assets/gpx\\Time_Trial.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 224.3,
+    "distance": 51.7
   },
   {
     "name": "Grinau Linau Lankau",
@@ -56,7 +71,7 @@
     "distance": 73.7
   },
   {
-    "name": "Bahntrasse Sl",
+    "name": "Bahntrasse SL",
     "file": "./assets/gpx/Bahntrasse_SL.gpx",
     "location": "Schleswig",
     "surface": "gravel",
@@ -64,7 +79,7 @@
     "distance": 47.4
   },
   {
-    "name": "Rund um Ratzeburg",
+    "name": "Don't touch Ratzeburg",
     "file": "./assets/gpx/Rund_um_Ratzeburg.gpx",
     "location": "L\u00fcbeck",
     "surface": "road",
@@ -136,17 +151,17 @@
     "distance": 204.6
   },
   {
-    "name": "Standard Zeitmaschinenstrecke",
+    "name": "Standard-Zeitmaschinenstrecke",
     "file": "./assets/gpx/Standard-Zeitmaschinenstrecke.gpx",
-    "location": "L\u00fcbeck",
+    "location": "Luebeck",
     "surface": "road",
     "elevation_gain": 267.8,
     "distance": 73.1
   },
   {
-    "name": "Zarrentin M\u00f6lln",
+    "name": "Zarrentin-M\u00f6lln",
     "file": "./assets/gpx/Zarrentin-Moelln.gpx",
-    "location": "L\u00fcbeck",
+    "location": "Luebeck",
     "surface": "road",
     "elevation_gain": 748.7,
     "distance": 129.9
