@@ -48,14 +48,6 @@
     "distance": 73.2
   },
   {
-    "name": "(Ein)Schenkenberg",
-    "file": "./assets/gpx\\(Ein)Schenkenberg.gpx",
-    "location": "Luebeck",
-    "surface": "road",
-    "elevation_gain": 250.0,
-    "distance": 54.2
-  },
-  {
     "name": "The Shortest Course On Salem Asphalt",
     "file": "./assets/gpx\\The-shortest-course-on-Salem-asphalt.gpx",
     "location": "Luebeck",
@@ -134,5 +126,37 @@
     "surface": "road",
     "elevation_gain": 541.0,
     "distance": 73.1
+  },
+  {
+    "name": "Selenter See",
+    "file": "./assets/gpx/Selenter See.gpx",
+    "location": "Stockelsdorf",
+    "elevation_gain": 1636.7,
+    "surface": "road",
+    "distance": 204.6
+  },
+  {
+    "name": "Standard Zeitmaschinenstrecke",
+    "file": "./assets/gpx/Standard-Zeitmaschinenstrecke.gpx",
+    "location": "L\u00fcbeck",
+    "surface": "road",
+    "elevation_gain": 267.8,
+    "distance": 73.1
+  },
+  {
+    "name": "Zarrentin M\u00f6lln",
+    "file": "./assets/gpx/Zarrentin-Moelln.gpx",
+    "location": "L\u00fcbeck",
+    "surface": "road",
+    "elevation_gain": 748.7,
+    "distance": 129.9
+  },
+  {
+    "name": "Angeln Short",
+    "file": "./assets/gpx/Angeln short.gpx",
+    "location": "Schleswig",
+    "surface": "road",
+    "elevation_gain": 559.3,
+    "distance": 93.7
   }
 ]
