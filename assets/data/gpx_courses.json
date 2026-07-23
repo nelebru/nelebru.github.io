@@ -121,7 +121,7 @@
   {
     "name": "Pronstorfrunde",
     "file": "./assets/gpx/Pronstorfrunde.gpx",
-    "location": "Stockeldsdorf",
+    "location": "Stockelsdorf",
     "surface": "road",
     "elevation_gain": 180.6,
     "distance": 49.1
@@ -182,7 +182,7 @@
     "surface": "road",
     "distance": 70.5
   },  
- {
+  {
     "name": "CTF-Ride",
     "file": "./assets/gpx/CTF_Ride.gpx",
     "location": "Luebeck",
@@ -190,19 +190,20 @@
     "surface": "gravel",
     "distance": 109.1
   },
- {
+  {
     "name": "Eiscaf\u00e9 Bruhns",
     "file": "./assets/gpx/Eiscafe_Bruhns.gpx",
     "location": "Luebeck",
     "elevation_gain": 429.8,
     "surface": "road",
     "distance": 62.5
-  },  {
+  },  
+  {
     "name": "Gl\u00fchweinride",
     "file": "./assets/gpx/Gluehweinride.gpx",
     "location": "Luebeck",
     "surface": "gravel",
     "elevation_gain": 371.2,
     "distance": 58.0
-  },
+  }
 ]
