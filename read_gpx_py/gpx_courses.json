@@ -1,1 +1,198 @@
-[]
+[
+  {
+    "name": "(Ein)Schenkenberg",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\(Ein)Schenkenberg.gpx",
+    "location": "Unknown",
+    "elevation_gain": 250.0,
+    "distance": 54.2
+  },
+  {
+    "name": "60K Nord",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\60k_Nord.gpx",
+    "location": "Unknown",
+    "elevation_gain": 274.4,
+    "distance": 59.2
+  },
+  {
+    "name": "According To Olli This Is Paradise",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\According_to_Olli_this_is_paradise.gpx",
+    "location": "Unknown",
+    "elevation_gain": 274.4,
+    "distance": 59.2
+  },
+  {
+    "name": "Angeln Short",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Angeln short.gpx",
+    "location": "Unknown",
+    "elevation_gain": 559.3,
+    "distance": 93.7
+  },
+  {
+    "name": "Bahntrasse Sl",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Bahntrasse_SL.gpx",
+    "location": "Unknown",
+    "elevation_gain": 126.7,
+    "distance": 47.4
+  },
+  {
+    "name": "Beautiful South",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Beautiful_South.gpx",
+    "location": "Unknown",
+    "elevation_gain": 419.0,
+    "distance": 70.5
+  },
+  {
+    "name": "Bungsberggegravel",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Bungsberggegravel.gpx",
+    "location": "Unknown",
+    "elevation_gain": 415.6,
+    "distance": 63.1
+  },
+  {
+    "name": "Ctf Ride",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\CTF_Ride.gpx",
+    "location": "Unknown",
+    "elevation_gain": 827.2,
+    "distance": 109.1
+  },
+  {
+    "name": "Eiscaf\u00e9 Bruhns",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Eiscaf\u00e9_Bruhns.gpx",
+    "location": "Unknown",
+    "elevation_gain": 429.8,
+    "distance": 62.5
+  },
+  {
+    "name": "Gl\u00fchweinride",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Gl\u00fchweinride.gpx",
+    "location": "Unknown",
+    "elevation_gain": 371.2,
+    "distance": 58.0
+  },
+  {
+    "name": "Grinau Linau Lankau",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Grinau-Linau-Lankau.gpx",
+    "location": "Unknown",
+    "elevation_gain": 719.3,
+    "distance": 73.2
+  },
+  {
+    "name": "Gro\u00dfe Pl\u00f6nrunde",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Gro\u00dfe Pl\u00f6nrunde.gpx",
+    "location": "Unknown",
+    "elevation_gain": 860.5,
+    "distance": 162.5
+  },
+  {
+    "name": "Gro\u00dfe Schleitour",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Gro\u00dfe_Schleitour.gpx",
+    "location": "Unknown",
+    "elevation_gain": 336.0,
+    "distance": 85.5
+  },
+  {
+    "name": "Hausrunde",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Hausrunde.gpx",
+    "location": "Unknown",
+    "elevation_gain": 249.5,
+    "distance": 46.3
+  },
+  {
+    "name": "Hilly Curvy Afterwork",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Hilly-curvy-afterwork.gpx",
+    "location": "Unknown",
+    "elevation_gain": 156.5,
+    "distance": 45.2
+  },
+  {
+    "name": "Intervals And Duechelsdorf Hill",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Intervals_and_Duechelsdorf_Hill.gpx",
+    "location": "Unknown",
+    "elevation_gain": 204.3,
+    "distance": 47.4
+  },
+  {
+    "name": "Kleine Schleitour",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Kleine_Schleitour.gpx",
+    "location": "Unknown",
+    "elevation_gain": 379.0,
+    "distance": 57.8
+  },
+  {
+    "name": "Mausrunde",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Mausrunde.gpx",
+    "location": "Unknown",
+    "elevation_gain": 157.8,
+    "distance": 34.1
+  },
+  {
+    "name": "Pronstorfrunde",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Pronstorfrunde.gpx",
+    "location": "Unknown",
+    "elevation_gain": 180.6,
+    "distance": 49.1
+  },
+  {
+    "name": "Rund Um Ratzeburg",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Rund_um_Ratzeburg.gpx",
+    "location": "Unknown",
+    "elevation_gain": 368.8,
+    "distance": 90.7
+  },
+  {
+    "name": "Schaalsee Extended",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Schaalsee_extended.gpx",
+    "location": "Unknown",
+    "elevation_gain": 417.9,
+    "distance": 114.8
+  },
+  {
+    "name": "Schlei Hunni",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Schlei-Hunni.gpx",
+    "location": "Unknown",
+    "elevation_gain": 356.0,
+    "distance": 103.2
+  },
+  {
+    "name": "Selenter See",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Selenter See.gpx",
+    "location": "Unknown",
+    "elevation_gain": 1636.7,
+    "distance": 204.6
+  },
+  {
+    "name": "Standard Zeitmaschinenstrecke",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Standard-Zeitmaschinenstrecke.gpx",
+    "location": "Unknown",
+    "elevation_gain": 267.8,
+    "distance": 73.1
+  },
+  {
+    "name": "Tdf(Ranzi)",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\TdF(ranzi).gpx",
+    "location": "Unknown",
+    "elevation_gain": 541.0,
+    "distance": 73.1
+  },
+  {
+    "name": "The Shortest Course On Salem Asphalt",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\The-shortest-course-on-Salem-asphalt.gpx",
+    "location": "Unknown",
+    "elevation_gain": 402.8,
+    "distance": 73.7
+  },
+  {
+    "name": "Time Trial",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Time_Trial.gpx",
+    "location": "Unknown",
+    "elevation_gain": 251.4,
+    "distance": 51.3
+  },
+  {
+    "name": "Zarrentin Moelln",
+    "file": "C:\\Users\\nele\\9_Projekte\\nelebru_github_io\\assets\\gpx\\Zarrentin-Moelln.gpx",
+    "location": "Unknown",
+    "elevation_gain": 748.7,
+    "distance": 129.9
+  }
+]
