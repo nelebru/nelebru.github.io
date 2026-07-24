@@ -63,12 +63,20 @@
     "distance": 73.2
   },
   {
-    "name": "The Shortest Course On Salem Asphalt",
+    "name": "Shortest Course On Salem Tarmac",
     "file": "./assets/gpx\\The-shortest-course-on-Salem-asphalt.gpx",
     "location": "Luebeck",
     "surface": "road",
     "elevation_gain": 402.8,
     "distance": 73.7
+  },  
+  {
+    "name": "More Salem Tarmac",
+    "file": "./assets/gpx\\Salem_Asphalt.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 430.2,
+    "distance": 86.2
   },
   {
     "name": "Bahntrasse SL",
