@@ -205,7 +205,31 @@
     "elevation_gain": 429.8,
     "surface": "road",
     "distance": 62.5
+  },    
+  {
+    "name": "60k Süd",
+    "file": "./assets/gpx/60kSued.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 290.8,
+    "surface": "road",
+    "distance": 60.4
   },  
+  {
+    "name": "60k Süd 2",
+    "file": "./assets/gpx/60kSued2.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 260.1,
+    "surface": "road",
+    "distance": 60.8
+  },  
+  {
+    "name": "50k Süd",
+    "file": "./assets/gpx/50kSued.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 190.0,
+    "surface": "road",
+    "distance": 51.2
+  },    
   {
     "name": "Drägerweg-Gravel",
     "file": "./assets/gpx/Draegerweg-Gravel.gpx",
