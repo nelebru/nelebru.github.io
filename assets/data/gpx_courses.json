@@ -199,6 +199,14 @@
     "distance": 62.5
   },  
   {
+    "name": "Drägerweg-Gravel",
+    "file": "./assets/gpx/Draegerweg-Gravel.gpx",
+    "location": "Luebeck",
+    "elevation_gain": 320.0,
+    "surface": "gravel",
+    "distance": 46.2
+  },
+  {
     "name": "Gl\u00fchweinride",
     "file": "./assets/gpx/Gluehweinride.gpx",
     "location": "Luebeck",
