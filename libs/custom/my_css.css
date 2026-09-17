@@ -1,5 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;800;900&display=swap');
+@font-face {
+  font-family: "Ruigslay";
+  src: url("fonts/Ruigslay.otf") format("opentype"),
+       url("fonts/Ruigslay.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ornable";
+  src: url("fonts/Ornable.otf") format("opentype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Psychedelic";
+  src: url("fonts/Psychedelic.otf") format("opentype"),
+       url("fonts/Psychedelic.ttf") format("truetype");
+  font-display: swap;
+}
 h3 {
   text-align: center;
+  font-family: "Psychedelic";
+  color: #3e2e57;
+}
+h2 {
+  font-family: "Psychedelic";
+  color: #3e2e57;
 }
 h4 {
   letter-spacing: .1rem; }
@@ -9,6 +33,9 @@ h4 {
   margin-top: 60px;
   margin-bottom: 60px; 
   text-align: left; }
+.header .row {
+  display: flex;
+  align-items: center; }
 .main-description h1 {
   margin-bottom: 0px; }
 .main-description p {
@@ -630,18 +657,19 @@ a:focus {
 }
 
 .gpxpage-title {
-  font-size: 3.5em;
+  font-size: 3.2em;
+  font-family: "Ornable";
+  color: #cdbceb;
   margin: 20px 80px 10px 0;
   flex: 2;
   min-width: 180px;
   text-align: left;
 }
 
-
 .gpx-intro {
   margin: 1rem auto 1.5rem; /* centered, below header */
   text-align: left;
-  font-size: 1.8em;
+  font-size: 1.3em;
 }
 
 .gpx-descr{
@@ -663,7 +691,10 @@ a:focus {
 }
 
 .filters-tile h4 {
-  font-size: 1.5em;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.3em;
+  color: #3e2e57;
+  font-weight: 600;
   margin-top: 0;
   margin-bottom: 2.5rem;
   /* color: #333333; */
@@ -677,6 +708,7 @@ a:focus {
 
 .filters label {
   font-weight: bold;
+  color: #3e2e57;
   text-align: left;
 }
 
@@ -766,6 +798,7 @@ a:focus {
 
 .course-card h3 {
   text-align: left;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 2.1rem;
   margin-bottom: 2.3rem;   /* more space below the title */
   line-height: 1.2;

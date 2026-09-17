@@ -13,3 +13,5 @@ _snap_md5.txt
 **/tmp
 
 /.idea/
+
+*.zip
