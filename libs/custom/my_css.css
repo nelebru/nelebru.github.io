@@ -36,7 +36,21 @@ h4 {
 .header .row {
   display: flex;
   align-items: center; }
+
+@media (max-width: 549px) {
+  .header .row {
+    flex-direction: column; }
+  .header .row .three.columns,
+  .header .row .nine.columns {
+    width: 100%; }
+  .header .row .u-max-full-width {
+    max-width: 100%;
+    position: static;
+    left: auto; }
+}
 .main-description h1 {
+  /* color: indigo;  */
+  font-family: "Ruigslay";
   margin-bottom: 0px; }
 .main-description p {
   margin-bottom: 0px; }
