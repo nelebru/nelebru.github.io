@@ -19,11 +19,11 @@
 h3 {
   text-align: center;
   font-family: "Psychedelic";
-  color: #3e2e57;
+  color: #555555;
 }
 h2 {
-  font-family: "Psychedelic";
-  color: #3e2e57;
+  font-family: "Ruigslay";
+  color: wheat;
 }
 h4 {
   letter-spacing: .1rem; }
@@ -43,6 +43,8 @@ h4 {
   .header .row .three.columns,
   .header .row .nine.columns {
     width: 100%; }
+  .header .row .three.columns {
+    margin-bottom: 1.5rem; }
   .header .row .u-max-full-width {
     max-width: 100%;
     position: static;
@@ -311,6 +313,48 @@ html {
   .popover-link:hover,
   .popover-item:first-child .popover-link:hover:after {
     border-bottom-color: #33C3F0; }
+}
+
+/* RESEARCH */
+
+
+.research-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.research-tile {
+  flex: 1 1 220px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.research-tile:nth-child(1) { background: linear-gradient(135deg, #fdf0f5, #ffffff); }
+.research-tile:nth-child(2) { background: linear-gradient(135deg, #fdf5e8, #ffffff); }
+.research-tile:nth-child(3) { background: linear-gradient(135deg, #eaf7f6, #ffffff); }
+
+.research-tile-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.research-tile:nth-child(1) .research-tile-icon { color: #e6739f; }
+.research-tile:nth-child(2) .research-tile-icon { color: #e8a33d; }
+.research-tile:nth-child(3) .research-tile-icon { color: #4fa3a0; }
+
+.research-tile h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.research-tile p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
 
