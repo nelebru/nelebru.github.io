@@ -147,6 +147,9 @@ html {
 
 /* Show navbar on small screens */
 @media (max-width: 749px) {
+  .navbar + .docs-section {
+    border-top-width: 0; }
+
   .navbar {
     display: flex;
     justify-content: center;
