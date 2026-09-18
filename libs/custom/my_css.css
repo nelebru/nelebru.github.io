@@ -528,6 +528,8 @@ body.gpx-page .navbar-link[href*="gpx"] {
 .ingredients-list h4 {
   margin-top: 0.8em;
   color: #333333;
+  font-size: 1em;
+  font-weight: 700;
 }
 
 .ingredients-list ul {
