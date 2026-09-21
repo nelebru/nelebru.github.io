@@ -509,6 +509,7 @@ body.gpx-page .navbar-link[href*="gpx"] {
   margin: 40px 0 10px 0;
 }
 
+
 .ingredients-tile {
   display: flex;
   align-items: flex-start;
@@ -521,6 +522,7 @@ body.gpx-page .navbar-link[href*="gpx"] {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
   margin-bottom: 2em;
   flex-wrap: wrap; /* ensures mobile responsiveness */
+  position: relative;
 }
 
 .ingredients-list {
@@ -528,11 +530,41 @@ body.gpx-page .navbar-link[href*="gpx"] {
   min-width: 250px;
 }
 
+.ingredients-list h3 {
+  color: #6e5f5e;
+  font-size: 2em;
+  line-height: 1.2;
+}
+
+/* Center "Ingredients" heading relative to the whole tile (desktop/tablet only) */
+@media (min-width: 701px) {
+  .ingredients-tile {
+    align-items: stretch;
+  }
+
+  .ingredients-list h3 {
+    position: absolute;
+    left: 2.25rem;
+    right: 2.25rem;
+    top: 1.2rem;
+    margin: 0;
+    text-align: center;
+  }
+
+  .ingredients-list {
+    padding-top: 4.6rem;
+  }
+}
+
 .ingredients-list h4 {
-  margin-top: 0.8em;
-  color: #333333;
+  color: #6e5f5e;
+  margin: 1.8em 0 0.4em 0;
   font-size: 1em;
   font-weight: 700;
+}
+
+.ingredients-list h3 + h4 {
+  margin-top: 0;
 }
 
 .ingredients-list ul {
@@ -544,7 +576,7 @@ body.gpx-page .navbar-link[href*="gpx"] {
 
 .ingredients-image {
   flex: 1;
-  width: 220px;
+  width: 260px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -557,13 +589,12 @@ body.gpx-page .navbar-link[href*="gpx"] {
   height: auto;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 6em;
   margin-right: 2em;
 }
 
 .ingredients-image-transparent {
   flex: 1;
-  width: 220px;
+  width: 260px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -574,7 +605,6 @@ body.gpx-page .navbar-link[href*="gpx"] {
 .ingredients-image-transparent img {
   max-width: 100%;
   height: auto;
-  margin-top: 6em;
   margin-right: 2em;
 }
 
