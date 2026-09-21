@@ -532,8 +532,9 @@ body.gpx-page .navbar-link[href*="gpx"] {
 
 .ingredients-list h3 {
   color: #6e5f5e;
-  font-size: 2em;
+  font-size: 2.2em;
   line-height: 1.2;
+  padding-top: 0.1em;
 }
 
 /* Center "Ingredients" heading relative to the whole tile (desktop/tablet only) */
@@ -552,7 +553,7 @@ body.gpx-page .navbar-link[href*="gpx"] {
   }
 
   .ingredients-list {
-    padding-top: 4.6rem;
+    padding-top: 5.4rem;
   }
 }
 
