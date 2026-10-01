@@ -120,9 +120,7 @@
     opacity: 0.2;
   }
 
-  .header-canvas-wrapper .header,
-  .header-canvas-wrapper .navbar-spacer,
-  .header-canvas-wrapper .navbar {
+  .header-canvas-wrapper .header {
     position: relative;
     z-index: 1;
   }
@@ -170,6 +168,7 @@
         </div>
       </div>
     </section>
+    </div> <!-- closes header-canvas-wrapper -->
 
     <div class="navbar-spacer"></div>
     <nav class="navbar">
@@ -178,12 +177,12 @@
           <li class="navbar-item"><a class="navbar-link" href={{ "/index.html#bio" | prepend: site.baseurl }}>Bio</a></li>
           <li class="navbar-item"><a class="navbar-link" href={{ "/index.html#resume" | prepend: site.baseurl }}>Vita</a></li>
           <li class="navbar-item"><a class="navbar-link" href={{ "/index.html#publications" | prepend: site.baseurl }}>Publications</a></li>
+          <li class="navbar-item"><a class="navbar-link" href={{ "/index.html#student-projects" | prepend: site.baseurl }}>Projects</a></li>
           <li class="navbar-item"><a class="navbar-link" href="{{ site.baseurl }}/recipes/">Food</a></li>
           <li class="navbar-item"><a class="navbar-link" href="{{ site.baseurl }}/gpx/">Cycling</a></li>
         </ul>
       </div>
     </nav>
-    </div> <!-- closes header-canvas-wrapper -->
 
     {{ content}}
 
