@@ -107,6 +107,8 @@
   .header-canvas-wrapper {
     position: relative;
     background: white;
+    /* Contain child margins so the canvas covers the whole header area. */
+    display: flow-root;
   }
 
   #cyclist-canvas {
@@ -240,14 +242,29 @@
   const canvas = document.getElementById('cyclist-canvas');
   const ctx = canvas.getContext('2d');
 
+  // Drawing area in CSS pixels; the backing store is scaled by devicePixelRatio
+  // so the cyclists stay sharp on high-DPI screens.
+  let width = 1, height = 1;
+
   function resize() {
-    canvas.width = wrapper.offsetWidth;
-    canvas.height = wrapper.offsetHeight;
+    const dpr = window.devicePixelRatio || 1;
+    width = Math.max(1, wrapper.clientWidth);
+    height = Math.max(1, wrapper.clientHeight);
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   resize();
-  window.addEventListener('resize', resize);
+  // Keep canvas size in sync with the wrapper, e.g. when the profile image
+  // finishes loading after this script ran (otherwise the canvas is stretched).
+  if (window.ResizeObserver) {
+    new ResizeObserver(resize).observe(wrapper);
+  } else {
+    window.addEventListener('resize', resize);
+    window.addEventListener('load', resize);
+  }
 
-  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  let mouse = { x: width / 2, y: height / 2 };
   let mouseActive = false;
 
   // Only activate when mouse is inside the wrapper
@@ -264,8 +281,8 @@
   function createCyclist(isLeader = false) {
     const angle = Math.random() * Math.PI * 2;
     return {
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
+      x: Math.random() * width,
+      y: Math.random() * height,
       vx: Math.cos(angle) * 0.5,
       vy: Math.sin(angle) * 0.5,
       baseAngle: angle,
@@ -299,7 +316,7 @@
   function animate() {
     // White background fade instead of black
     ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, width, height);
 
     const leader = cyclists[0];
 
@@ -342,11 +359,18 @@
         c.x += c.vx;
         c.y += c.vy;
 
-      // Bounce off wrapper edges instead of wrapping
-      if (c.x < 0) { c.x = 0; c.vx *= -1; }
-      if (c.x > canvas.width) { c.x = canvas.width; c.vx *= -1; }
-      if (c.y < 0) { c.y = 0; c.vy *= -1; }
-      if (c.y > canvas.height) { c.y = canvas.height; c.vy *= -1; }
+      // Bounce off wrapper edges: mirror the velocity and the riding direction
+      // (baseAngle), otherwise idle cyclists keep steering into the edge.
+      if (c.x < 0 || c.x > width) {
+        c.x = Math.min(Math.max(c.x, 0), width);
+        c.vx *= -1;
+        c.baseAngle = Math.PI - c.baseAngle;
+      }
+      if (c.y < 0 || c.y > height) {
+        c.y = Math.min(Math.max(c.y, 0), height);
+        c.vy *= -1;
+        c.baseAngle = -c.baseAngle;
+      }
 
       drawCyclist(c);
     });
