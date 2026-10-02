@@ -85,19 +85,34 @@ document.addEventListener("DOMContentLoaded", function () {
     let mouseX = 0, mouseY = 0;
     let mouseActive = false;
 
-    wrapper.addEventListener('mousemove', (e) => {
+    function sparkleAt(clientX, clientY) {
       const rect = wrapper.getBoundingClientRect();
       // Use CSS pixel coordinates here. The context is scaled by DPR (ctx.setTransform)
       // so drawing code can work in CSS pixels and remain crisp on high-DPI displays.
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
+      mouseX = clientX - rect.left;
+      mouseY = clientY - rect.top;
+      // Ignore touches that have moved outside the header area.
+      if (mouseX < 0 || mouseY < 0 || mouseX > rect.width || mouseY > rect.height) return;
       mouseActive = true;
       // Only 2 particles per move — slow trickle, not explosion
       if (Math.random() < 3) {
         particles.push(createParticle(mouseX, mouseY));
       }
-    });
+    }
+
+    wrapper.addEventListener('mousemove', (e) => sparkleAt(e.clientX, e.clientY));
     wrapper.addEventListener('mouseleave', () => {
+      mouseActive = false;
+    });
+
+    // Touch screens: sparkle while swiping, not only on tap. Passive listeners
+    // so the page still scrolls normally.
+    function onTouch(e) {
+      for (const t of e.touches) sparkleAt(t.clientX, t.clientY);
+    }
+    wrapper.addEventListener('touchstart', onTouch, { passive: true });
+    wrapper.addEventListener('touchmove', onTouch, { passive: true });
+    wrapper.addEventListener('touchend', () => {
       mouseActive = false;
     });
 
