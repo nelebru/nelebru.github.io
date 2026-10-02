@@ -267,16 +267,41 @@
   let mouse = { x: width / 2, y: height / 2 };
   let mouseActive = false;
 
-  // Only activate when mouse is inside the wrapper
-  wrapper.addEventListener('mousemove', (e) => {
+  // Only activate when mouse/finger is inside the wrapper
+  function followPoint(clientX, clientY) {
     const rect = wrapper.getBoundingClientRect();
-    mouse.x = e.clientX - rect.left;
-    mouse.y = e.clientY - rect.top;
-    mouseActive = true;
+    mouse.x = clientX - rect.left;
+    mouse.y = clientY - rect.top;
+    // A finger can keep moving after leaving the header; stop following then.
+    mouseActive = mouse.x >= 0 && mouse.y >= 0 && mouse.x <= rect.width && mouse.y <= rect.height;
+  }
+
+  // Browsers fire a simulated mousemove after a tap; ignore it so the cyclists
+  // stop following once the finger is lifted.
+  let lastTouch = 0;
+  wrapper.addEventListener('mousemove', (e) => {
+    if (Date.now() - lastTouch < 1000) return;
+    followPoint(e.clientX, e.clientY);
   });
   wrapper.addEventListener('mouseleave', () => {
     mouseActive = false;
   });
+
+  // Touch screens: follow the finger while swiping, not only on tap. Passive
+  // listeners so the page still scrolls normally.
+  function onTouch(e) {
+    lastTouch = Date.now();
+    const t = e.touches[0];
+    if (t) followPoint(t.clientX, t.clientY);
+  }
+  function onTouchEnd() {
+    lastTouch = Date.now();
+    mouseActive = false;
+  }
+  wrapper.addEventListener('touchstart', onTouch, { passive: true });
+  wrapper.addEventListener('touchmove', onTouch, { passive: true });
+  wrapper.addEventListener('touchend', onTouchEnd);
+  wrapper.addEventListener('touchcancel', onTouchEnd);
 
   function createCyclist(isLeader = false) {
     const angle = Math.random() * Math.PI * 2;
