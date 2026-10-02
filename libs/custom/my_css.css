@@ -23,7 +23,8 @@ h3 {
 }
 h2 {
   font-family: "Ruigslay";
-  color: wheat;
+  color: rosybrown;
+  /*burlywood;*/
 }
 h4 {
   letter-spacing: .1rem; }
@@ -31,7 +32,7 @@ h4 {
   max-width: 800px; }
 .header {
   margin-top: 60px;
-  margin-bottom: 60px; 
+  margin-bottom: 60px;
   text-align: left; }
 .header .row {
   display: flex;
@@ -44,9 +45,12 @@ h4 {
   .header .row .nine.columns {
     width: 100%; }
   .header .row .three.columns {
-    margin-bottom: 1.5rem; }
+    margin-bottom: 2.8rem
+  }
   .header .row .u-max-full-width {
-    max-width: 100%;
+    display: block;
+    max-width: 65%;       /* profile image size on phones */
+    margin: 0 auto;
     position: static;
     left: auto; }
 }
@@ -147,6 +151,11 @@ html {
 
 /* Show navbar on small screens */
 @media (max-width: 749px) {
+  /* navbar is static here, so anchors don't need to clear it */
+  html {
+    scroll-padding-top: 0;
+  }
+
   .navbar + .docs-section {
     border-top-width: 0; }
 
@@ -910,6 +919,25 @@ a:focus {
   font-weight: 500;
 }
 
+.course-details {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.course-surface {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 9rem;
+  height: 9rem;
+  border-radius: 50%;
+  font-size: 5rem;
+  line-height: 1;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
 .filters {
   gap: 1rem 1rem;
   align-items: center;
@@ -965,6 +993,10 @@ a:focus {
     .course-card .course-info p {
       margin: 1rem 0;         /* less vertical spacing between lines */
       line-height: 1.1;         /* tighter line spacing */
+    }
+
+    .course-card h3 {
+      margin-bottom: 0.8rem;    /* keep title close to the details */
     }
 
     .gpx-descr {
@@ -1116,18 +1148,18 @@ a:focus {
 .student-project:nth-child(12n+11) { background: linear-gradient(135deg, hsl(300, 90%, 95%), #ffffff); }
 .student-project:nth-child(12n+12) { background: linear-gradient(135deg, hsl(330, 90%, 95%), #ffffff); }
 
-.student-project:nth-child(12n+1)  .student-project-icon { color: hsl(0, 65%, 55%); }
-.student-project:nth-child(12n+2)  .student-project-icon { color: hsl(30, 65%, 50%); }
-.student-project:nth-child(12n+3)  .student-project-icon { color: hsl(60, 60%, 42%); }
-.student-project:nth-child(12n+4)  .student-project-icon { color: hsl(90, 45%, 42%); }
-.student-project:nth-child(12n+5)  .student-project-icon { color: hsl(120, 40%, 42%); }
-.student-project:nth-child(12n+6)  .student-project-icon { color: hsl(150, 45%, 40%); }
-.student-project:nth-child(12n+7)  .student-project-icon { color: hsl(180, 45%, 38%); }
-.student-project:nth-child(12n+8)  .student-project-icon { color: hsl(210, 55%, 50%); }
-.student-project:nth-child(12n+9)  .student-project-icon { color: hsl(240, 45%, 58%); }
-.student-project:nth-child(12n+10) .student-project-icon { color: hsl(270, 45%, 55%); }
-.student-project:nth-child(12n+11) .student-project-icon { color: hsl(300, 45%, 50%); }
-.student-project:nth-child(12n+12) .student-project-icon { color: hsl(330, 55%, 50%); }
+.student-project:nth-child(12n+1)  { --project-accent: hsl(0, 65%, 55%); }
+.student-project:nth-child(12n+2)  { --project-accent: hsl(30, 65%, 50%); }
+.student-project:nth-child(12n+3)  { --project-accent: hsl(60, 60%, 42%); }
+.student-project:nth-child(12n+4)  { --project-accent: hsl(90, 45%, 42%); }
+.student-project:nth-child(12n+5)  { --project-accent: hsl(120, 40%, 42%); }
+.student-project:nth-child(12n+6)  { --project-accent: hsl(150, 45%, 40%); }
+.student-project:nth-child(12n+7)  { --project-accent: hsl(180, 45%, 38%); }
+.student-project:nth-child(12n+8)  { --project-accent: hsl(210, 55%, 50%); }
+.student-project:nth-child(12n+9)  { --project-accent: hsl(240, 45%, 58%); }
+.student-project:nth-child(12n+10) { --project-accent: hsl(270, 45%, 55%); }
+.student-project:nth-child(12n+11) { --project-accent: hsl(300, 45%, 50%); }
+.student-project:nth-child(12n+12) { --project-accent: hsl(330, 55%, 50%); }
 
 .student-project-header {
   width: 100%;
@@ -1158,6 +1190,18 @@ a:focus {
   line-height: 1.3;
 }
 
+.student-project-topic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 2rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--project-accent, #4fa3a0);
+  flex-shrink: 0;
+}
+
 .student-project-icon {
   display: flex;
   align-items: center;
@@ -1165,7 +1209,7 @@ a:focus {
   position: relative;
   top: 2px;
   line-height: 1;
-  color: #4fa3a0;
+  color: var(--project-accent, #4fa3a0);
   transition: transform 0.25s ease;
   flex-shrink: 0;
 }

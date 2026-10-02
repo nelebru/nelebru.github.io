@@ -294,12 +294,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const card = document.createElement("div");
     card.className = "course-card";
 
+    const isGravel = normalize(c.surface || "") === "gravel";
+    const surfaceIcon = isGravel ? "fa-mountain-sun" : "fa-road";
+    const surfaceLabel = isGravel ? "Gravel" : "Road";
+
     card.innerHTML = `
       <div class="course-info">
         <h3>${c.name}</h3>
-        <p>${c.distance} km · ${c.elevation_gain} hm</p>
-        <p>${c.location}</p>
-        <a href="${baseUrl}/${c.file}">Download GPX</a>
+        <div class="course-details">
+          <div class="course-meta">
+            <p>${c.distance} km · ${c.elevation_gain} hm</p>
+            <p>${c.location}</p>
+            <a href="${baseUrl}/${c.file}">Download GPX</a>
+          </div>
+          <span class="course-surface ${isGravel ? "gravel" : "road"}" title="${surfaceLabel}">
+            <i class="fa-solid ${surfaceIcon}" aria-hidden="true"></i>
+            <span class="sr-only">${surfaceLabel}</span>
+          </span>
+        </div>
       </div>
       <div class="course-map" id="map-${i}"></div>
     `;
@@ -322,6 +334,12 @@ function initCourseMap(containerId, gpxFile) {
 
   new L.GPX(`${baseUrl}/${gpxFile}`, {
     async: true,
+
+    // skip <wpt> waypoints; otherwise the plugin requests its default
+    // pin-icon-wpt.png, which this site doesn't have
+    gpx_options: {
+      parseElements: ['track', 'route']
+    },
 
     // force blueviolet from the beginning
     polyline_options: {
