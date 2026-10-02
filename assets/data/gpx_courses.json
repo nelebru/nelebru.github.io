@@ -63,6 +63,38 @@
     "distance": 73.2
   },
   {
+    "name": "70k South East",
+    "file": "./assets/gpx\\70k_South_East.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 380.3,
+    "distance": 72.3
+  },
+  {
+    "name": "Classic East",
+    "file": "./assets/gpx\\Classic_East.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 320.0,
+    "distance": 69.8
+  },
+  {
+    "name": "Mölln-Salem-RZ",
+    "file": "./assets/gpx\\Moelln-Salem-RZ.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 370.0,
+    "distance": 77.4
+  },
+  {
+    "name": "Mini-Matschfuß",
+    "file": "./assets/gpx\\Mini-Matschfuss.gpx",
+    "location": "Luebeck",
+    "surface": "gravel",
+    "elevation_gain": 500.0,
+    "distance": 92.7
+  },
+  {
     "name": "Shortest Course On Salem Tarmac",
     "file": "./assets/gpx\\The-shortest-course-on-Salem-asphalt.gpx",
     "location": "Luebeck",
