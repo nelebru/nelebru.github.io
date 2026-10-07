@@ -21,7 +21,7 @@
 
   <!-- FONT
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link href='https://fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href={{ "/libs/external/raleway/raleway.css" | prepend: site.baseurl }}>
 
   <!-- CSS
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -84,25 +84,6 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="icon" type="image/png" href={{ "/libs/icon.png" | prepend: site.baseurl }}>
   <link rel="shortcut icon" type="image/png" href={{ "/libs/icon.png" | prepend: site.baseurl }}>
-
-
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-sA+4H1LGfvdZ9bfzj+8PZpZe3JqUf+2N0z6R6LS1dQk="
-    crossorigin=""
-  />
-
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-o9N1j7M2K6p+e+YtG8MzD2D3I/jQJwBDR8M8N9mD+Jk="
-    crossorigin=""
-  ></script>
-
-  <!-- Load leaflet-gpx plugin -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
 
 </head>
 <body class="{{ page.title | downcase | replace: ' ', '-' }}-page">
@@ -194,11 +175,12 @@
             </span>
         </div>
       </div>
+      <div class="row legal-links">
+        <a href="{{ site.baseurl }}/impressum/">Impressum</a> &middot;
+        <a href="{{ site.baseurl }}/privacy/">Privacy Policy</a>
+      </div>
     </div>
   </div>
-
-  <!-- Google Analytics -->
-  {% include google_analytics.html %}
 
   <!-- do not remove -->
   <span id="62cd7b7da1aff3196fdc26b60e396df9"></span>

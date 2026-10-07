@@ -26,7 +26,16 @@ permalink: /gpx/
           <br>
         Here, I share with you some of my favourite courses in my region(s).
         If you are among the lucky ones living in one of these beautiful regions, have fun exploring them!</p>
-      <button id="showMapBtn" class="show-map-button">Show map</button>
+      <div class="map-buttons">
+        <button id="osmToggleBtn" class="show-map-button" aria-pressed="false">Show OpenStreetMap</button>
+        <button id="showMapBtn" class="show-map-button">Show world map</button>
+      </div>
+      <p class="osm-note">
+        The routes are always shown. Background map tiles are only loaded from the OpenStreetMap
+        Foundation (UK) after you click "Show OpenStreetMap content"; your IP address is then sent to their servers.
+        See my <a href="{{ site.baseurl }}/privacy/">privacy policy</a> and the
+        <a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OpenStreetMap privacy policy</a>.
+      </p>
     </div>
 
     <!-- ================= FILTER TILE ================= -->
@@ -110,42 +119,69 @@ permalink: /gpx/
   const baseUrl = "{{ site.baseurl }}";
 </script>
 
-<!-- Leaflet CSS -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!-- Leaflet GPX plugin -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
-
 <!-- javascript for map -->
 <script>
+/* ---------- OpenStreetMap tiles (opt-in) ---------- */
+
+// No tiles are requested from OpenStreetMap until the visitor clicks the toggle.
+const OSM_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const OSM_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
+
+let osmEnabled = false;
+let worldMap = null;
+let courseMaps = [];
+const osmLayers = new WeakMap();
+
+function forEachMap(fn) {
+    if (worldMap) fn(worldMap);
+    courseMaps.forEach(fn);
+}
+
+function addOsmTiles(map) {
+    if (osmLayers.has(map)) return;
+    osmLayers.set(map, L.tileLayer(OSM_URL, { attribution: OSM_ATTRIBUTION }).addTo(map));
+}
+
+function removeOsmTiles(map) {
+    const layer = osmLayers.get(map);
+    if (!layer) return;
+    map.removeLayer(layer);
+    osmLayers.delete(map);
+}
+
+function registerMap(map) {
+    map.attributionControl.setPrefix(false);
+    if (osmEnabled) addOsmTiles(map);
+    return map;
+}
+
+document.getElementById("osmToggleBtn").addEventListener("click", function () {
+    osmEnabled = !osmEnabled;
+    forEachMap(osmEnabled ? addOsmTiles : removeOsmTiles);
+    this.textContent = osmEnabled ? "Hide OpenStreetMap" : "Show OpenStreetMap";
+    this.setAttribute("aria-pressed", osmEnabled);
+});
+
+/* ---------- World map ---------- */
+
 document.getElementById("showMapBtn").addEventListener("click", function () {
     const container = document.getElementById("visitedMapContainer");
 
     if (container.style.display === "none") {
         container.style.display = "block";
-        this.textContent = "Hide map";
+        this.textContent = "Hide world map";
         initializeVisitedMap();
     } else {
         container.style.display = "none";
-        this.textContent = "Show map";
+        this.textContent = "Show world map";
     }
 });
 
-let visitedMapInitialised = false;
-
 function initializeVisitedMap() {
-    if (visitedMapInitialised) return;
-    visitedMapInitialised = true;
+    if (worldMap) return;
 
     const map = L.map('visitedMap').setView([53.86, 10.68], 12);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    worldMap = registerMap(map);
 
     const geoUrl = "{{ site.baseurl }}/assets/data/all_routes.geojson";
 
@@ -288,6 +324,8 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- Render ---------- */
 
   function renderCourses(courses) {
+  courseMaps.forEach(m => m.remove());
+  courseMaps = [];
   list.innerHTML = "";
 
   courses.forEach((c, i) => {
@@ -325,12 +363,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function initCourseMap(containerId, gpxFile) {
   const map = L.map(containerId, {
-    zoomControl: false,
-    attributionControl: false
+    zoomControl: false
   });
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-    .addTo(map);
+  courseMaps.push(registerMap(map));
 
   new L.GPX(`${baseUrl}/${gpxFile}`, {
     async: true,
@@ -356,6 +391,8 @@ function initCourseMap(containerId, gpxFile) {
     }
 
   }).on("loaded", e => {
+    // the map may have been removed by a re-render while the GPX was loading
+    if (!courseMaps.includes(map)) return;
     map.fitBounds(e.target.getBounds());
   }).addTo(map);
 }
