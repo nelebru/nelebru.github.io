@@ -26,16 +26,19 @@ permalink: /gpx/
           <br>
         Here, I share with you some of my favourite courses in my region(s).
         If you are among the lucky ones living in one of these beautiful regions, have fun exploring them!</p>
-      <div class="map-buttons">
-        <button id="osmToggleBtn" class="show-map-button" aria-pressed="false">Show OpenStreetMap</button>
-        <button id="showMapBtn" class="show-map-button">Show world map</button>
-      </div>
-      <p class="osm-note">
+      {% capture osm_note %}
         The routes are always shown. Background map tiles are only loaded from the OpenStreetMap
-        Foundation (UK) after you click "Show OpenStreetMap content"; your IP address is then sent to their servers.
+        Foundation (UK) after you click "Show OpenStreetMap"; your IP address is then sent to their servers.
         See my <a href="{{ site.baseurl }}/privacy/">privacy policy</a> and the
         <a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OpenStreetMap privacy policy</a>.
-      </p>
+      {% endcapture %}
+
+      <!-- OSM toggle next to the world map button (desktop only; on mobile it sits in the filter tile) -->
+      <div class="map-buttons">
+        <button class="osm-toggle-btn show-map-button osm-desktop" aria-pressed="false">Show OpenStreetMap</button>
+        <button id="showMapBtn" class="show-map-button">Show world map</button>
+      </div>
+      <p class="osm-note osm-desktop">{{ osm_note }}</p>
     </div>
 
     <!-- ================= FILTER TILE ================= -->
@@ -101,6 +104,12 @@ permalink: /gpx/
           <button id="resetFilter">Reset</button>
         </div>
 
+        <!-- Background map (OpenStreetMap tiles, opt-in; mobile only) -->
+        <div class="osm-toggle">
+          <button class="osm-toggle-btn" aria-pressed="false">Show OpenStreetMap</button>
+          <p class="osm-note">{{ osm_note }}</p>
+        </div>
+
       </div>
     </div>
 </div>
@@ -155,12 +164,17 @@ function registerMap(map) {
     return map;
 }
 
-document.getElementById("osmToggleBtn").addEventListener("click", function () {
+// there are two toggle buttons (desktop and mobile placement); keep both in sync
+const osmToggleBtns = document.querySelectorAll(".osm-toggle-btn");
+
+osmToggleBtns.forEach(btn => btn.addEventListener("click", function () {
     osmEnabled = !osmEnabled;
     forEachMap(osmEnabled ? addOsmTiles : removeOsmTiles);
-    this.textContent = osmEnabled ? "Hide OpenStreetMap" : "Show OpenStreetMap";
-    this.setAttribute("aria-pressed", osmEnabled);
-});
+    osmToggleBtns.forEach(b => {
+        b.textContent = osmEnabled ? "Hide OpenStreetMap" : "Show OpenStreetMap";
+        b.setAttribute("aria-pressed", osmEnabled);
+    });
+}));
 
 /* ---------- World map ---------- */
 

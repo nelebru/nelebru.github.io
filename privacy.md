@@ -35,10 +35,10 @@ Data may be transferred to the USA. GitHub is certified under the EU-U.S. Data P
 The route maps run on Leaflet, which is hosted right here on this site. By default, 
 you only see the routes on a plain background, and nothing leaves this website.
 
-Want the real map underneath? Click "Show OpenStreetMap content". Only 
+Want the real map underneath? Click "Show OpenStreetMap" in the filter box. Only 
 then does your browser load map images from the OpenStreetMap Foundation 
 (St John's Innovation Centre, Cowley Road, Cambridge, CB4 0WS, United Kingdom), 
-sending them your IP address and the map area you're looking at. More in the [OpenStreetMap Privacy Policy](https://osmfoundation.org/wiki/Privacy_Policy). Changed your mind? Click "Hide OpenStreetMap content" or simply reload the page. Your choice isn't saved anywhere. 
+sending them your IP address and the map area you're looking at. More in the [OpenStreetMap Privacy Policy](https://osmfoundation.org/wiki/Privacy_Policy). Changed your mind? Click "Hide OpenStreetMap" or simply reload the page. Your choice isn't saved anywhere. 
 
 
 ### 4. Links to other websites

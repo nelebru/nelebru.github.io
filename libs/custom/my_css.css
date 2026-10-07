@@ -900,13 +900,12 @@ a:focus {
   background-color: #e0e0e0;
 }
 
-
 .course-card {
   align-items: center;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  background-color: #f8f9fa;
+  background-color: #f8f9fa;  /* #f8f9fa; */
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   padding: 1.5rem;
@@ -963,22 +962,69 @@ a:focus {
   z-index: 0 !important;
 }
 
+/* pale rainbow arc behind the routes; covered by the tiles once OpenStreetMap is on
+   (.leaflet-container is needed to beat leaflet.css, which sets a grey background).
+   Layer 1 fades the arc's ends into white at the bottom edge, layer 2 fades it out towards
+   the left and right edges; layer 3 is the arc itself, an ellipse centred on the bottom edge,
+   so only its upper half is visible. */
+.course-map.leaflet-container,
+#visitedMap.leaflet-container {
+  background:
+    linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0) 35%,
+      rgba(255, 255, 255, 0) 65%, #ffffff 100%),
+    radial-gradient(ellipse 60% 65% at 50% 100%,
+      #ffffff 10%, #f9f5fe 48%, #f4f9fe 60%, #f5fcf4 71%,
+      #fffdf3 82%, #fff8f2 92%, #fef4f5 101%, #ffffff 145%);
+  /* pale rainbow glow alternative:
+  background: radial-gradient(ellipse at center,
+    #fde6ef 0%, #fdeef4 10%, #fff9f3 20%, #fffdf2 30%, #f7fcf5 40%, #f5f9ff 50%, #f9f6ff 60%, #ffffff 85%); */
+  /* pale purple glow alternative:
+  background: radial-gradient(ellipse at center, #ebe2fc, #ffffff 75%); */
+  /* white alternative:
+  background: #fff; */
+  /* pastel rainbow alternative:
+  background: linear-gradient(135deg,
+    #ffe6ec, #fff0e2, #fff9db, #e8f8e4, #e4f1ff, #efe8ff); */
+}
+
 /* hide the empty attribution box while no OpenStreetMap tiles are loaded */
 .leaflet-control-attribution:empty {
   display: none;
 }
 
+/* OSM toggle: next to the world map button on desktop, in the filter tile on mobile */
 .map-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
+.osm-toggle {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(62, 46, 87, 0.2);
+}
+
 .osm-note {
   max-width: 400px;
+  margin: 0;
   font-size: 0.5em;
   color: #777;
   text-align: left;
+}
+
+@media (max-width: 700px) {
+  .osm-desktop {
+    display: none;
+  }
+
+  .osm-toggle {
+    display: flex;
+  }
 }
 
 .navbar {
