@@ -1,0 +1,17 @@
+name = "course-likes"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+# no request logs in the Cloudflare dashboard (keeps the "nothing stored" promise)
+[observability]
+enabled = false
+
+[vars]
+COURSES_URL = "https://nelebru.github.io/assets/data/gpx_courses.json"
+ALLOWED_ORIGINS = "https://nelebru.github.io, https://www.nelebruegge.com, https://nelebruegge.com, http://localhost:4000, http://127.0.0.1:4000"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "course-likes"
+database_id = "25b65e21-cfe0-461e-a675-1429284feb0c"

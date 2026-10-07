@@ -126,6 +126,8 @@ permalink: /gpx/
 <script>
   const gpxJsonUrl = "{{ site.baseurl }}/assets/data/gpx_courses.json";
   const baseUrl = "{{ site.baseurl }}";
+  // Cloudflare Worker from _likes-worker/; leave empty to hide the hearts
+  const LIKES_API = "https://course-likes.nele-bruegge.workers.dev/likes";
 </script>
 
 <!-- javascript for map -->
@@ -175,6 +177,103 @@ osmToggleBtns.forEach(btn => btn.addEventListener("click", function () {
         b.setAttribute("aria-pressed", osmEnabled);
     });
 }));
+
+/* ---------- Likes (hearts on the course maps) ---------- */
+
+// Counts come from the Cloudflare Worker. Which courses this browser has liked is
+// kept in localStorage, written only when the visitor clicks a heart.
+const LIKED_KEY = "likedCourses";
+let likeCounts = {};
+const likedCourses = new Set(readLiked());
+
+function readLiked() {
+    try {
+        return JSON.parse(localStorage.getItem(LIKED_KEY)) || [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveLiked() {
+    try {
+        localStorage.setItem(LIKED_KEY, JSON.stringify([...likedCourses]));
+    } catch (e) { /* storage blocked: the like still counts, it just isn't remembered */ }
+}
+
+// same derivation as in the Worker: file name without folder and extension
+function courseId(file) {
+    return file.split(/[\\/]/).pop().replace(/\.gpx$/i, "");
+}
+
+function updateLikeButton(btn) {
+    const id = btn.dataset.course;
+    const liked = likedCourses.has(id);
+    const count = likeCounts[id] || 0;
+
+    btn.classList.toggle("liked", liked);
+    btn.setAttribute("aria-pressed", liked);
+    btn.title = liked ? "You like this course" : "Like this course";
+    btn.innerHTML = `<i class="${liked ? "fa-solid" : "fa-regular"} fa-heart" aria-hidden="true"></i>`
+        + (count > 0 ? `<span class="like-count">${count}</span>` : "");
+}
+
+function refreshLikeButtons() {
+    document.querySelectorAll(".like-btn").forEach(updateLikeButton);
+}
+
+function likeCourse(id) {
+    if (likedCourses.has(id)) return;
+
+    // show it right away, roll back if the Worker can't be reached
+    likedCourses.add(id);
+    likeCounts[id] = (likeCounts[id] || 0) + 1;
+    saveLiked();
+    refreshLikeButtons();
+
+    fetch(LIKES_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ course: id })
+    })
+        .then(res => {
+            if (!res.ok) throw new Error(`Like failed (${res.status})`);
+            return res.json();
+        })
+        .then(data => { likeCounts[id] = data.count; })
+        .catch(err => {
+            console.error(err);
+            likedCourses.delete(id);
+            likeCounts[id] = Math.max(0, (likeCounts[id] || 1) - 1);
+            saveLiked();
+        })
+        .finally(refreshLikeButtons);
+}
+
+function addLikeControl(map, id) {
+    if (!LIKES_API) return;
+
+    const control = L.control({ position: "bottomright" });
+    control.onAdd = () => {
+        const btn = L.DomUtil.create("button", "like-btn");
+        btn.type = "button";
+        btn.dataset.course = id;
+        L.DomEvent.disableClickPropagation(btn);
+        btn.addEventListener("click", () => likeCourse(id));
+        updateLikeButton(btn);
+        return btn;
+    };
+    control.addTo(map);
+}
+
+if (LIKES_API) {
+    fetch(LIKES_API)
+        .then(res => res.ok ? res.json() : {})
+        .then(counts => {
+            likeCounts = counts;
+            refreshLikeButtons();
+        })
+        .catch(err => console.error("Error loading likes:", err));
+}
 
 /* ---------- World map ---------- */
 
@@ -380,6 +479,7 @@ function initCourseMap(containerId, gpxFile) {
     zoomControl: false
   });
   courseMaps.push(registerMap(map));
+  addLikeControl(map, courseId(gpxFile));
 
   new L.GPX(`${baseUrl}/${gpxFile}`, {
     async: true,

@@ -993,6 +993,36 @@ a:focus {
   display: none;
 }
 
+/* like heart in the lower right corner of each course map (above the OSM attribution) */
+.leaflet-container .like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: auto;
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  color: blueviolet;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.leaflet-container .like-btn:hover:not(.liked) {
+  transform: scale(1.1);
+}
+
+.leaflet-container .like-btn.liked {
+  cursor: default;
+}
+
 /* OSM toggle: next to the world map button on desktop, in the filter tile on mobile */
 .map-buttons {
   display: flex;

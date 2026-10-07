@@ -15,3 +15,5 @@ _snap_md5.txt
 /.idea/
 
 *.zip
+# Wrangler local state (local D1 copy, temp files)
+.wrangler/
