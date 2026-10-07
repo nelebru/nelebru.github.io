@@ -249,9 +249,18 @@ function likeCourse(id) {
         .finally(refreshLikeButtons);
 }
 
+// Hearts only appear once the counts have loaded. If the Worker can't be reached
+// (e.g. a blocker or DNS filter stops workers.dev), the maps simply stay without hearts.
+let likesReady = false;
+const likeIds = new WeakMap();
+
 function addLikeControl(map, id) {
     if (!LIKES_API) return;
+    likeIds.set(map, id);
+    if (likesReady) showLikeControl(map, id);
+}
 
+function showLikeControl(map, id) {
     const control = L.control({ position: "bottomright" });
     control.onAdd = () => {
         const btn = L.DomUtil.create("button", "like-btn");
@@ -267,10 +276,14 @@ function addLikeControl(map, id) {
 
 if (LIKES_API) {
     fetch(LIKES_API)
-        .then(res => res.ok ? res.json() : {})
+        .then(res => {
+            if (!res.ok) throw new Error(`Status ${res.status}`);
+            return res.json();
+        })
         .then(counts => {
             likeCounts = counts;
-            refreshLikeButtons();
+            likesReady = true;
+            courseMaps.forEach(map => showLikeControl(map, likeIds.get(map)));
         })
         .catch(err => console.error("Error loading likes:", err));
 }
