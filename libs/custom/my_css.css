@@ -405,6 +405,49 @@ body.recipes-page .navbar-link[href*="recipes"] {
   font-size: 1em;
 }
 
+/* filter chips below the search field */
+.recipe-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+.filter-chip {
+  height: auto;
+  margin: 0;
+  padding: 0.35em 0.9em;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  background: white;
+  color: #555;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.95em;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.filter-chip:hover,
+.filter-chip:focus {
+  border-color: hotpink;
+  color: #333;
+}
+
+.filter-chip[aria-pressed="true"] {
+  background: hotpink;
+  border-color: hotpink;
+  color: white;
+}
+
+.recipe-no-results {
+  margin: 1.5em 0 0;
+  color: #888;
+}
+
 .recipe-category {
   font-size: 0.8em;
   color: #303030;
