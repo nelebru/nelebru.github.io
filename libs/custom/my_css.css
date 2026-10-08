@@ -475,6 +475,27 @@ body.recipes-page .navbar-link[href*="recipes"] {
   text-decoration: none;
   color: ghostwhite;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Recipe image preview on hover (set via style="--img: url(...)") */
+.recipe-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--img, none);
+  background-size: cover;
+  background-position: center;
+  filter: saturate(0.65) brightness(0.8);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.recipe-tile:hover::before {
+  opacity: 1;
 }
 
 .recipe-tile:hover {
@@ -483,6 +504,7 @@ body.recipes-page .navbar-link[href*="recipes"] {
   background-color: #333333;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   color: white;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 
