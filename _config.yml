@@ -4,6 +4,9 @@ includes:    ./_includes
 url: "https://nelebru.github.io"
 baseurl: ""
 
+# Cloudflare Worker from _likes-worker/ (hearts on courses and recipes); leave empty to hide the hearts
+likes_api: "https://course-likes.nele-bruegge.workers.dev/likes"
+
 
 collections:
   projects:

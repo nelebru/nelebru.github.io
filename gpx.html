@@ -126,8 +126,8 @@ permalink: /gpx/
 <script>
   const gpxJsonUrl = "{{ site.baseurl }}/assets/data/gpx_courses.json";
   const baseUrl = "{{ site.baseurl }}";
-  // Cloudflare Worker from _likes-worker/; leave empty to hide the hearts
-  const LIKES_API = "https://course-likes.nele-bruegge.workers.dev/likes";
+  // Cloudflare Worker from _likes-worker/ (set in _config.yml); empty hides the hearts
+  const LIKES_API = "{{ site.likes_api }}";
 </script>
 
 <!-- javascript for map -->

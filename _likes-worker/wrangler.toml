@@ -9,6 +9,7 @@ enabled = false
 
 [vars]
 COURSES_URL = "https://nelebru.github.io/assets/data/gpx_courses.json"
+RECIPES_URL = "https://nelebru.github.io/assets/data/recipes.json"
 ALLOWED_ORIGINS = "https://nelebru.github.io, https://www.nelebruegge.com, https://nelebruegge.com, http://localhost:4000, http://127.0.0.1:4000"
 
 [[d1_databases]]

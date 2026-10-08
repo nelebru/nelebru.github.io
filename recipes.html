@@ -102,8 +102,9 @@ function filterRecipes() {
   const input = document.getElementById('recipeSearch').value.toLowerCase();
   const tiles = document.querySelectorAll('.recipe-tile');
 
+  // match only the recipe name (first text node), not the like count
   tiles.forEach(tile => {
-    tile.style.display = tile.textContent.toLowerCase().includes(input) ? '' : 'none';
+    tile.style.display = tile.firstChild.textContent.toLowerCase().includes(input) ? '' : 'none';
   });
 
   // Show all categories when searching

@@ -1,0 +1,15 @@
+---
+layout: null
+---
+{%- comment -%}
+  IDs of all recipe pages (file name without .html). The likes Worker
+  (_likes-worker/) only accepts likes for recipes listed here.
+{%- endcomment -%}
+{%- assign ids = "" | split: "" -%}
+{%- for p in site.pages -%}
+  {%- if p.url contains "/recipes/" and p.url != "/recipes/" -%}
+    {%- assign id = p.url | split: "/" | last | remove: ".html" -%}
+    {%- assign ids = ids | push: id -%}
+  {%- endif -%}
+{%- endfor -%}
+{{ ids | sort | jsonify }}

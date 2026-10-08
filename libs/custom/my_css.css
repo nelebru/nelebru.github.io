@@ -498,6 +498,72 @@ body.recipes-page .navbar-link[href*="recipes"] {
   opacity: 1;
 }
 
+/* like count in the upper right corner of a tile (set by recipe_likes.js);
+   the name is centered in the space left of it */
+.recipe-tile.has-likes {
+  padding-right: 2.4em;
+}
+
+.tile-like {
+  position: absolute;
+  top: 7px;
+  right: 9px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.7em;
+  font-weight: 600;
+  line-height: 1;
+  color: ghostwhite;
+  opacity: 0.85;
+}
+
+.tile-like .fa-solid {
+  color: hotpink;
+}
+
+.recipe-tile:hover .tile-like {
+  opacity: 1;
+}
+
+/* like button under the title of a recipe page (set by recipe_likes.js) */
+.recipe-like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: auto;
+  margin-top: 0.3em;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid #e4e0da;
+  border-radius: 999px;
+  background: #fffbf8;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  color: hotpink;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.recipe-like-btn:hover,
+.recipe-like-btn:focus {
+  color: hotpink;
+  border-color: #e4e0da;
+}
+
+.recipe-like-btn:hover:not(.liked) {
+  transform: scale(1.1);
+}
+
+.recipe-like-btn.liked {
+  cursor: default;
+}
+
 .recipe-tile:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);

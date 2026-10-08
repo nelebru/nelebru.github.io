@@ -8,7 +8,7 @@ permalink: /privacy/
 ### The short version
 
 No cookies. No analytics. No tracking. I don't collect or store anything about you.
-Fonts and scripts are directly hosted on this website. If you like a route, your browser
+Fonts and scripts are directly hosted on this website. If you like a route or a recipe, your browser
 remembers that locally so you can't vote twice, hehe. There are just a few unavoidable
 exceptions (hosting and the like counter), explained below. In case you have any questions, 
 feel free to contact me (see below) :)
@@ -42,18 +42,18 @@ then does your browser load map images from the OpenStreetMap Foundation
 sending them your IP address and the map area you're looking at. More in the [OpenStreetMap Privacy Policy](https://osmfoundation.org/wiki/Privacy_Policy). Changed your mind? Click "Hide OpenStreetMap" or simply reload the page. Your choice isn't saved anywhere. 
 
 
-### 4. Likes on the Cycling page (Cloudflare)
+### 4. Likes on the Cycling and Recipes pages (Cloudflare)
 
-The like counts on the route maps are stored with Cloudflare, Inc., 101 Townsend St, San Francisco,
-CA 94107, USA. When you open the Cycling page (to load the counts) or click a heart, your browser
+The like counts on the route maps and recipes are stored with Cloudflare, Inc., 101 Townsend St, San Francisco,
+CA 94107, USA. When you open the Cycling page or a recipe page (to load the counts) or click a heart, your browser
 contacts Cloudflare, which processes your IP address and technical request data to answer the request.
-I only store the total number of likes per route, nothing about you, and request logging is switched off.
+I only store the total number of likes per route and recipe, nothing about you, and request logging is switched off.
 The totals stay as long as the like feature exists.
 Legal basis is Art. 6(1)(f) GDPR (offering the like feature on this website).
 Cloudflare processes the data (Art. 28 GDPR), so data may be transferred to the USA; Cloudflare is certified under the EU-U.S. Data Privacy Framework (Art. 45 GDPR).
 For details, see the [Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/).
 
-When you click a heart, your browser stores a small note in its local storage that you liked this route,
+When you click a heart, your browser stores a small note in its local storage that you liked this route or recipe,
 so you can't like it twice. Nothing is stored before you click. This note never leaves your
 device, and you can delete it any time by clearing this website's data in your browser.
 
