@@ -764,6 +764,17 @@ body.gpx-page .navbar-link[href*="gpx"] {
   }
 }
 
+/* very tall images (e.g. a column of ingredient bowls): cap the height so they don't outgrow the list */
+.ingredients-image-transparent.tall {
+  align-items: center;
+}
+
+.ingredients-image-transparent.tall img {
+  max-height: 420px;
+  width: auto;
+  margin: 0;
+}
+
 .ingredients-images-stack {
   display: flex;
   flex-direction: column;      /* Stack images vertically */
@@ -816,6 +827,13 @@ body.gpx-page .navbar-link[href*="gpx"] {
   width: 100%;               /* fill container */
   height: auto;
   display: block;            /* remove inline spacing */
+}
+
+/* wide (landscape) images: more width, about as high as a normal one (mobile is full width anyway) */
+@media (min-width: 701px) {
+  .ingredients-image-instruction.wide {
+    width: 80%;
+  }
 }
 
 /* modbile: stack vertically */
