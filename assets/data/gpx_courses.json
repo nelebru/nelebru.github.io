@@ -159,8 +159,8 @@
     "distance": 57.8
   },
   {
-    "name": "Pronstorfrunde",
-    "file": "./assets/gpx/Pronstorfrunde.gpx",
+    "name": "Der Dino",
+    "file": "./assets/gpx/Der_Dino.gpx",
     "location": "Stockelsdorf",
     "surface": "road",
     "elevation_gain": 180.6,
@@ -277,5 +277,77 @@
     "surface": "gravel",
     "elevation_gain": 371.2,
     "distance": 58.0
+  },
+  {
+    "name": "40k ZickZack",
+    "file": "./assets/gpx/40k_ZickZack.gpx",
+    "location": "Luebeck",
+    "surface": "gravel",
+    "elevation_gain": 165.0,
+    "distance": 40.1
+  },
+  {
+    "name": "Almost Convex",
+    "file": "./assets/gpx/Almost_Convex.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 274.6,
+    "distance": 72.7
+  },
+  {
+    "name": "Babydrache",
+    "file": "./assets/gpx/Babydrache.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 69.3,
+    "distance": 33.0
+  },
+  {
+    "name": "Berkenthin Klinkrade",
+    "file": "./assets/gpx/Berkenthin-Klinkrade.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 165.5,
+    "distance": 50.4
+  },
+  {
+    "name": "Chilean",
+    "file": "./assets/gpx/Chilean.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 202.8,
+    "distance": 64.0
+  },
+  {
+    "name": "Convex Gravel",
+    "file": "./assets/gpx/Convex_Gravel.gpx",
+    "location": "Luebeck",
+    "surface": "gravel",
+    "elevation_gain": 303.0,
+    "distance": 70.9
+  },
+  {
+    "name": "Rund um Siebenbäumen",
+    "file": "./assets/gpx/Rund_um_Siebenbaeumen.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 197.1,
+    "distance": 58.3
+  },
+  {
+    "name": "The Chaotic",
+    "file": "./assets/gpx/The_Chaotic.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 269.2,
+    "distance": 86.0
+  },
+  {
+    "name": "Whale",
+    "file": "./assets/gpx/Whale.gpx",
+    "location": "Luebeck",
+    "surface": "road",
+    "elevation_gain": 238.7,
+    "distance": 70.0
   }
 ]

@@ -5,14 +5,14 @@
   xmlns="http://www.topografix.com/GPX/1/1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns2="http://www.garmin.com/xmlschemas/GpxExtensions/v3">
   <metadata>
-    <name>GutPronstorf</name>
+    <name>Der Dino</name>
     <link href="connect.garmin.com">
       <text>Garmin Connect</text>
     </link>
     <time>2023-09-18T14:26:10.000Z</time>
   </metadata>
   <trk>
-    <name>GutPronstorf</name>
+    <name>Der Dino</name>
     <trkseg>
       <trkpt lat="53.87160865589976" lon="10.671025235205889">
         <ele>16.37</ele>
