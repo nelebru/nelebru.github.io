@@ -1094,11 +1094,20 @@ a:focus {
   justify-content: center;
   width: 9rem;
   height: 9rem;
-  border-radius: 50%;
-  font-size: 5rem;
+  margin-left: 2rem;
+  font-size: 6rem;
   line-height: 1;
-  color: #ffffff;
   flex-shrink: 0;
+  opacity: 0.05;
+}
+
+/* coloured icon straight on the card, no disc behind it */
+.course-surface.road {
+  color: blueviolet;
+}
+
+.course-surface.gravel {
+  color: #a0703f;  /* earthy brown */
 }
 
 .filters {
@@ -1181,6 +1190,87 @@ a:focus {
   stroke: #ffffff;
   stroke-width: 1.5;
   stroke-linejoin: round;
+}
+
+/* altitude profile below the course description, next to the map */
+.course-profile {
+  margin: 2.5rem 1.5rem 0 0;  /* top room for the hover readout */
+  line-height: 1;  /* .course-info squeezes lines to 0.5 */
+}
+
+.profile-plot {
+  position: relative;
+  height: 36px;
+  margin-left: 5rem;  /* room for the elevation labels */
+  touch-action: pan-y;  /* horizontal finger drags scrub the profile, vertical ones scroll */
+  cursor: crosshair;
+}
+
+.profile-plot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.profile-area {
+  fill: rgba(138, 43, 226, 0.15);
+}
+
+.profile-line {
+  fill: none;
+  stroke: blueviolet;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.profile-label {
+  position: absolute;
+  right: calc(100% + 0.6rem);
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  line-height: 1;
+  color: #777;
+  white-space: nowrap;
+}
+
+.profile-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 5rem;
+  margin-top: 0.4rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: #777;
+}
+
+.profile-cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px solid blueviolet;
+  pointer-events: none;
+}
+
+.profile-cursor[hidden] {
+  display: none;
+}
+
+.profile-tip {
+  position: absolute;
+  bottom: calc(100% + 0.3rem);
+  left: 0;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  font-size: 1.1rem;
+  line-height: 1.3;
+  font-weight: 600;
+  color: blueviolet;
+  white-space: nowrap;
 }
 
 /* reverse-direction button in the upper right corner of each course map */

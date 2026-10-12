@@ -476,6 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="sr-only">${surfaceLabel}</span>
           </span>
         </div>
+        <div class="course-profile" hidden></div>
       </div>
       <div class="course-map" id="map-${i}"></div>
     `;
@@ -483,11 +484,11 @@ document.addEventListener("DOMContentLoaded", () => {
     list.appendChild(card);
 
     // re-create map EVERY time
-    initCourseMap(`map-${i}`, c.file, card.querySelector(".course-meta a"));
+    initCourseMap(`map-${i}`, c.file, card);
   });
 }
 
-function initCourseMap(containerId, gpxFile, downloadLink) {
+function initCourseMap(containerId, gpxFile, card) {
   const map = L.map(containerId, {
     zoomControl: false
   });
@@ -502,12 +503,13 @@ function initCourseMap(containerId, gpxFile, downloadLink) {
     })
     .then(text => {
       if (!courseMaps.includes(map)) return;
-      showCourse(map, text.replace(/^﻿/, "").trimStart(), gpxFile, downloadLink);
+      // trimStart also drops a byte order mark, which would stop the plugin parsing the text
+      showCourse(map, text.trimStart(), gpxFile, card);
     })
     .catch(err => console.error(`Error loading ${gpxFile}:`, err));
 }
 
-function showCourse(map, gpxText, gpxFile, downloadLink) {
+function showCourse(map, gpxText, gpxFile, card) {
   new L.GPX(gpxText, {
     async: true,
 
@@ -535,7 +537,7 @@ function showCourse(map, gpxText, gpxFile, downloadLink) {
     // the map may have been removed by a re-render while the GPX was loading
     if (!courseMaps.includes(map)) return;
     map.fitBounds(e.target.getBounds());
-    addDirection(map, collectLatLngs(e.target, []), gpxText, gpxFile, downloadLink);
+    addDirection(map, collectLatLngs(e.target, []), gpxText, gpxFile, card);
   }).addTo(map);
 }
 
@@ -555,6 +557,15 @@ function collectLatLngs(layer, out) {
   return out;
 }
 
+// distance (metres) from the start to each point
+function cumulativeDistances(latlngs) {
+  const cumDist = [0];
+  for (let i = 1; i < latlngs.length; i++) {
+    cumDist.push(cumDist[i - 1] + latlngs[i - 1].distanceTo(latlngs[i]));
+  }
+  return cumDist;
+}
+
 // point at distance d (metres) along the course
 function pointAt(latlngs, cumDist, d) {
   const i = cumDist.findIndex(x => x >= d);
@@ -572,10 +583,7 @@ function drawDirection(latlngs) {
   const group = L.layerGroup();
   if (latlngs.length < 2) return group;
 
-  const cumDist = [0];
-  for (let i = 1; i < latlngs.length; i++) {
-    cumDist.push(cumDist[i - 1] + latlngs[i - 1].distanceTo(latlngs[i]));
-  }
+  const cumDist = cumulativeDistances(latlngs);
   const total = cumDist[cumDist.length - 1];
 
   for (let k = 1; k <= ARROW_COUNT; k++) {
@@ -644,10 +652,102 @@ function reverseGpx(gpxText) {
   return new XMLSerializer().serializeToString(doc);
 }
 
-function addDirection(map, latlngs, gpxText, gpxFile, downloadLink) {
+/* ---------- Altitude profile ---------- */
+
+const PROFILE_W = 1000, PROFILE_H = 100, PROFILE_POINTS = 400;
+
+// elevation over distance as an SVG area chart. Hovering (or dragging a finger
+// across it) shows distance and elevation and marks that spot on the map.
+function drawProfile(el, latlngs, map) {
+  const eles = latlngs.map(ll => ll.meta ? ll.meta.ele : null);
+  if (latlngs.length < 2 || eles.some(e => e === null || isNaN(e))) {
+    el.hidden = true;
+    return;
+  }
+
+  const cumDist = cumulativeDistances(latlngs);
+  const total = cumDist[cumDist.length - 1];
+  const lo = Math.min(...eles), hi = Math.max(...eles);
+  // flat courses get at least 30 m of range so small bumps don't look like mountains;
+  // some room is left below the lowest point so the area never shrinks to a line
+  const range = Math.max(hi - lo, 30);
+  const top = lo + range, bottom = lo - range * 0.15;
+  const y = e => PROFILE_H * (top - e) / (top - bottom);
+  const yPct = e => (y(e) / PROFILE_H * 100).toFixed(1) + "%";
+
+  const step = Math.max(1, Math.floor(latlngs.length / PROFILE_POINTS));
+  const pts = [];
+  for (let i = 0; i < latlngs.length; i += step) pts.push(i);
+  if (pts[pts.length - 1] !== latlngs.length - 1) pts.push(latlngs.length - 1);
+  const line = pts.map(i =>
+    `${(PROFILE_W * cumDist[i] / total).toFixed(1)},${y(eles[i]).toFixed(1)}`).join(" L");
+
+  el.hidden = false;
+  el.innerHTML = `
+    <div class="profile-plot">
+      <span class="profile-label" style="top: ${yPct(hi)}">${Math.round(hi)} m</span>
+      <span class="profile-label" style="top: ${yPct(lo)}">${Math.round(lo)} m</span>
+      <svg viewBox="0 0 ${PROFILE_W} ${PROFILE_H}" preserveAspectRatio="none" aria-hidden="true">
+        <path class="profile-area" d="M0,${PROFILE_H} L${line} L${PROFILE_W},${PROFILE_H} Z"/>
+        <path class="profile-line" d="M${line}"/>
+      </svg>
+      <div class="profile-cursor" hidden><span class="profile-tip"></span></div>
+    </div>
+    <div class="profile-axis"><span>0 km</span><span>${(total / 1000).toFixed(1)} km</span></div>
+  `;
+
+  const plot = el.querySelector(".profile-plot");
+  const cursor = el.querySelector(".profile-cursor");
+  const tip = el.querySelector(".profile-tip");
+  let hoverMarker = null;
+
+  function show(e) {
+    const rect = plot.getBoundingClientRect();
+    const frac = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    const d = frac * total;
+    const i = Math.max(0, cumDist.findIndex(x => x >= d));
+
+    cursor.hidden = false;
+    cursor.style.left = (frac * 100) + "%";
+    // slide the label from left- to right-aligned so it stays inside the plot
+    tip.style.transform = `translateX(${-frac * 100}%)`;
+    tip.textContent = `${(d / 1000).toFixed(1)} km · ${Math.round(eles[i])} m`;
+
+    const pos = pointAt(latlngs, cumDist, d);
+    if (hoverMarker) {
+      hoverMarker.setLatLng(pos);
+    } else {
+      hoverMarker = L.circleMarker(pos, {
+        radius: 6,
+        color: "#ffffff",
+        weight: 2,
+        fillColor: "blueviolet",
+        fillOpacity: 1,
+        interactive: false
+      }).addTo(map);
+    }
+  }
+
+  function hide() {
+    cursor.hidden = true;
+    if (hoverMarker) map.removeLayer(hoverMarker);
+    hoverMarker = null;
+  }
+
+  plot.addEventListener("pointermove", show);
+  plot.addEventListener("pointerdown", show);
+  plot.addEventListener("pointerleave", hide);
+  plot.addEventListener("pointerup", e => { if (e.pointerType !== "mouse") hide(); });
+  plot.addEventListener("pointercancel", hide);
+}
+
+function addDirection(map, latlngs, gpxText, gpxFile, card) {
+  const downloadLink = card.querySelector(".course-meta a");
+  const profile = card.querySelector(".course-profile");
   let reversed = false;
   let reversedUrl = null;
   let layer = drawDirection(latlngs).addTo(map);
+  drawProfile(profile, latlngs, map);
   const originalHref = downloadLink.getAttribute("href");
   // the card's map is removed on every re-render; free the reversed file with it
   map.on("unload", () => { if (reversedUrl) URL.revokeObjectURL(reversedUrl); });
@@ -666,6 +766,7 @@ function addDirection(map, latlngs, gpxText, gpxFile, downloadLink) {
       latlngs = latlngs.slice().reverse();
       map.removeLayer(layer);
       layer = drawDirection(latlngs).addTo(map);
+      drawProfile(profile, latlngs, map);
       btn.classList.toggle("active", reversed);
       btn.setAttribute("aria-pressed", reversed);
 
