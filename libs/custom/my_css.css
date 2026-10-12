@@ -1186,7 +1186,7 @@ a:focus {
   display: block;
   width: 16px;
   height: 16px;
-  fill: blueviolet;
+  fill: inherit;  /* surface colour, set inline on the wrapper */
   stroke: #ffffff;
   stroke-width: 1.5;
   stroke-linejoin: round;
@@ -1213,8 +1213,10 @@ a:focus {
   overflow: visible;
 }
 
+/* the fill (blueviolet, or the surface gradient set inline) is shown pale */
 .profile-area {
-  fill: rgba(138, 43, 226, 0.15);
+  fill: blueviolet;
+  fill-opacity: 0.15;
 }
 
 .profile-line {
@@ -1243,6 +1245,26 @@ a:focus {
   font-size: 1.1rem;
   line-height: 1;
   color: #777;
+}
+
+/* surface shares below the profile: "● Road 72%  ● Gravel 18%" */
+.profile-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.2rem;
+  margin-left: 5rem;
+  margin-top: 0.8rem;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  color: #777;
+}
+
+.surface-swatch {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
 }
 
 .profile-cursor {

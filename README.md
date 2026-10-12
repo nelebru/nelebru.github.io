@@ -18,6 +18,18 @@ python parse.py --gpx_dir /path/to/files --output output_file.json
 Put the output JSON file in the `./assets/data` folder to make them 
 appear on the website.
 
+### Road surfaces
+`surfaces.py` (same folder) matches each course to OpenStreetMap with the public
+[Valhalla](https://valhalla1.openstreetmap.de) server and stores which stretches are
+road, cycle path, cobbles, gravel or unpaved. It writes a separate file,
+`./assets/data/gpx_surfaces.json`, and only processes courses that are not in it yet:
+
+```
+python read_gpx_py/surfaces.py                  # new courses only
+python read_gpx_py/surfaces.py --only Mausrunde # recompute single courses
+python read_gpx_py/surfaces.py --overwrite      # recompute everything
+```
+
 ---
 
 ## Visited street map 
