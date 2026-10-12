@@ -1172,6 +1172,45 @@ a:focus {
   cursor: default;
 }
 
+/* direction arrows along each course */
+.course-arrow svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: blueviolet;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+/* reverse-direction button in the upper right corner of each course map */
+.leaflet-container .reverse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  color: blueviolet;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.leaflet-container .reverse-btn:hover {
+  transform: scale(1.1);
+}
+
+.leaflet-container .reverse-btn.active {
+  background: blueviolet;
+  color: #ffffff;
+}
+
 /* OSM toggle: next to the world map button on desktop, in the filter tile on mobile */
 .map-buttons {
   display: flex;

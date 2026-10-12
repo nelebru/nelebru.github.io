@@ -483,18 +483,32 @@ document.addEventListener("DOMContentLoaded", () => {
     list.appendChild(card);
 
     // re-create map EVERY time
-    initCourseMap(`map-${i}`, c.file);
+    initCourseMap(`map-${i}`, c.file, card.querySelector(".course-meta a"));
   });
 }
 
-function initCourseMap(containerId, gpxFile) {
+function initCourseMap(containerId, gpxFile, downloadLink) {
   const map = L.map(containerId, {
     zoomControl: false
   });
   courseMaps.push(registerMap(map));
   addLikeControl(map, courseId(gpxFile));
 
-  new L.GPX(`${baseUrl}/${gpxFile}`, {
+  // the GPX text is fetched here (not by the plugin) so it can be reversed for the download
+  fetch(`${baseUrl}/${gpxFile}`)
+    .then(res => {
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      return res.text();
+    })
+    .then(text => {
+      if (!courseMaps.includes(map)) return;
+      showCourse(map, text.replace(/^﻿/, "").trimStart(), gpxFile, downloadLink);
+    })
+    .catch(err => console.error(`Error loading ${gpxFile}:`, err));
+}
+
+function showCourse(map, gpxText, gpxFile, downloadLink) {
+  new L.GPX(gpxText, {
     async: true,
 
     // skip <wpt> waypoints; otherwise the plugin requests its default
@@ -521,7 +535,155 @@ function initCourseMap(containerId, gpxFile) {
     // the map may have been removed by a re-render while the GPX was loading
     if (!courseMaps.includes(map)) return;
     map.fitBounds(e.target.getBounds());
+    addDirection(map, collectLatLngs(e.target, []), gpxText, gpxFile, downloadLink);
   }).addTo(map);
+}
+
+/* ---------- Course direction (arrows, start marker, reverse button) ---------- */
+
+const ARROW_COUNT = 6;
+const ARROW_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13 L8 2 L13 13 L8 10 Z"/></svg>';
+
+// all track/route points of the GPX layer in drawing order
+function collectLatLngs(layer, out) {
+  if (layer instanceof L.Polyline) {
+    const lls = layer.getLatLngs();
+    out.push(...(L.LineUtil.isFlat(lls) ? lls : lls.flat()));
+  } else if (layer.eachLayer) {
+    layer.eachLayer(l => collectLatLngs(l, out));
+  }
+  return out;
+}
+
+// point at distance d (metres) along the course
+function pointAt(latlngs, cumDist, d) {
+  const i = cumDist.findIndex(x => x >= d);
+  if (i === -1) return latlngs[latlngs.length - 1];
+  if (i === 0) return latlngs[0];
+  const t = (d - cumDist[i - 1]) / ((cumDist[i] - cumDist[i - 1]) || 1);
+  return L.latLng(
+    latlngs[i - 1].lat + t * (latlngs[i].lat - latlngs[i - 1].lat),
+    latlngs[i - 1].lng + t * (latlngs[i].lng - latlngs[i - 1].lng)
+  );
+}
+
+// arrows spread evenly along the course plus a marker at the start
+function drawDirection(latlngs) {
+  const group = L.layerGroup();
+  if (latlngs.length < 2) return group;
+
+  const cumDist = [0];
+  for (let i = 1; i < latlngs.length; i++) {
+    cumDist.push(cumDist[i - 1] + latlngs[i - 1].distanceTo(latlngs[i]));
+  }
+  const total = cumDist[cumDist.length - 1];
+
+  for (let k = 1; k <= ARROW_COUNT; k++) {
+    const d = total * k / (ARROW_COUNT + 1);
+    // heading from points slightly before and after, so GPS jitter doesn't twist the arrow
+    const delta = Math.min(150, total / (4 * ARROW_COUNT));
+    // Web Mercator keeps angles, so the heading can be measured in projected pixels
+    const a = L.CRS.EPSG3857.latLngToPoint(pointAt(latlngs, cumDist, d - delta), 0);
+    const b = L.CRS.EPSG3857.latLngToPoint(pointAt(latlngs, cumDist, d + delta), 0);
+    const angle = Math.atan2(b.x - a.x, a.y - b.y) * 180 / Math.PI;
+
+    L.marker(pointAt(latlngs, cumDist, d), {
+      interactive: false,
+      keyboard: false,
+      icon: L.divIcon({
+        className: "course-arrow",
+        html: `<div style="transform: rotate(${angle}deg)">${ARROW_SVG}</div>`,
+        iconSize: [16, 16]
+      })
+    }).addTo(group);
+  }
+
+  L.circleMarker(latlngs[0], {
+    radius: 6,
+    color: "blueviolet",
+    weight: 3,
+    fillColor: "#ffffff",
+    fillOpacity: 1,
+    interactive: false
+  }).addTo(group);
+
+  return group;
+}
+
+// GPX with the track/route points in reverse order. Times are mirrored so they
+// still increase, keeping the original gaps between points.
+function reverseGpx(gpxText) {
+  const doc = new DOMParser().parseFromString(gpxText, "text/xml");
+
+  const reverseChildren = (parent, tag) => {
+    const items = [...parent.children].filter(el => el.localName === tag);
+    if (items.length < 2) return;
+    const anchor = items[items.length - 1].nextSibling;
+    items.reverse().forEach(el => parent.insertBefore(el, anchor));
+  };
+
+  const root = doc.documentElement;
+  reverseChildren(root, "trk");
+  reverseChildren(root, "rte");
+  [...doc.getElementsByTagNameNS("*", "trk")].forEach(trk => {
+    reverseChildren(trk, "trkseg");
+    [...trk.children].filter(el => el.localName === "trkseg")
+      .forEach(seg => reverseChildren(seg, "trkpt"));
+  });
+  [...doc.getElementsByTagNameNS("*", "rte")].forEach(rte => reverseChildren(rte, "rtept"));
+
+  const pts = [...doc.querySelectorAll("trkpt, rtept")];
+  const times = pts.map(p => [...p.children].find(el => el.localName === "time"));
+  const ms = times.map(t => t ? Date.parse(t.textContent) : NaN);
+  if (ms.length && ms.every(x => !isNaN(x))) {
+    // ms is now in reversed order: first = original end time, last = original start time
+    const first = ms[ms.length - 1], last = ms[0];
+    times.forEach((t, i) => { t.textContent = new Date(first + last - ms[i]).toISOString(); });
+  }
+
+  return new XMLSerializer().serializeToString(doc);
+}
+
+function addDirection(map, latlngs, gpxText, gpxFile, downloadLink) {
+  let reversed = false;
+  let reversedUrl = null;
+  let layer = drawDirection(latlngs).addTo(map);
+  const originalHref = downloadLink.getAttribute("href");
+  // the card's map is removed on every re-render; free the reversed file with it
+  map.on("unload", () => { if (reversedUrl) URL.revokeObjectURL(reversedUrl); });
+
+  const control = L.control({ position: "topright" });
+  control.onAdd = () => {
+    const btn = L.DomUtil.create("button", "reverse-btn");
+    btn.type = "button";
+    btn.title = "Reverse direction";
+    btn.setAttribute("aria-pressed", false);
+    btn.innerHTML = '<i class="fa-solid fa-arrow-right-arrow-left" aria-hidden="true"></i><span class="sr-only">Reverse direction</span>';
+    L.DomEvent.disableClickPropagation(btn);
+
+    btn.addEventListener("click", () => {
+      reversed = !reversed;
+      latlngs = latlngs.slice().reverse();
+      map.removeLayer(layer);
+      layer = drawDirection(latlngs).addTo(map);
+      btn.classList.toggle("active", reversed);
+      btn.setAttribute("aria-pressed", reversed);
+
+      if (reversed) {
+        reversedUrl = reversedUrl || URL.createObjectURL(
+          new Blob([reverseGpx(gpxText)], { type: "application/gpx+xml" }));
+        downloadLink.href = reversedUrl;
+        downloadLink.download = `${courseId(gpxFile)}_reversed.gpx`;
+        downloadLink.textContent = "Download GPX (reversed)";
+      } else {
+        downloadLink.href = originalHref;
+        downloadLink.removeAttribute("download");
+        downloadLink.textContent = "Download GPX";
+      }
+    });
+    return btn;
+  };
+  control.addTo(map);
 }
 
   updateSliderUI();
