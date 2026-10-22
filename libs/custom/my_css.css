@@ -456,6 +456,35 @@ body.recipes-page .navbar-link[href*="recipes"] {
   color: white;
 }
 
+/* each filter has its own colour (--chip-rgb, lighter in dark mode): the icon in full,
+   the chip lightly tinted. The active chip stays pink, its icon takes the text colour. */
+.filter-chip[data-tag="vegan"]      { --chip-rgb: 63, 157, 74; }
+.filter-chip[data-tag="quick"]      { --chip-rgb: 58, 134, 200; }
+.filter-chip[data-tag="plan-ahead"] { --chip-rgb: 138, 99, 210; }
+.filter-chip[data-tag="christmas"]  { --chip-rgb: 212, 63, 79; }
+.filter-chip[data-tag="autumn"]     { --chip-rgb: 210, 112, 42; }
+.filter-chip[data-tag="summer"]     { --chip-rgb: 224, 161, 0; }
+
+.filter-chip[data-tag] {
+  background: rgba(var(--chip-rgb), 0.07);
+  border-color: rgba(var(--chip-rgb), 0.35);
+}
+.filter-chip[data-tag]:hover,
+.filter-chip[data-tag]:focus {
+  border-color: rgb(var(--chip-rgb));
+}
+.filter-chip[data-tag][aria-pressed="true"] {
+  background: hotpink;
+  border-color: hotpink;
+}
+
+.chip-icon {
+  margin-right: 0.25em;
+  color: rgb(var(--chip-rgb));
+  transition: color 0.15s ease;
+}
+.filter-chip[aria-pressed="true"] .chip-icon { color: inherit; }
+
 .recipe-no-results {
   margin: 1.5em 0 0;
   color: #888;
@@ -1775,11 +1804,11 @@ html[data-theme="dark"] .navbar {
   background: linear-gradient(
     to right,
     rgba(22, 21, 27, 1) 0%,
-    rgba(255, 179, 186, 0.3) 10%,
-    rgba(255, 223, 186, 0.32) 30%,
-    rgba(255, 255, 186, 0.3) 50%,
-    rgba(186, 255, 201, 0.3) 70%,
-    rgba(186, 225, 255, 0.3) 90%,
+    rgba(255, 105, 180, 0.15) 10%,
+    rgba(255, 150, 70, 0.14) 30%,
+    rgba(235, 205, 60, 0.12) 50%,
+    rgba(80, 200, 120, 0.13) 70%,
+    rgba(80, 150, 240, 0.15) 90%,
     rgba(22, 21, 27, 1) 100%
   );
 }
@@ -1789,11 +1818,11 @@ html[data-theme="dark"] .navbar {
     background: linear-gradient(
       to bottom,
       rgba(22, 21, 27, 1) 0%,
-      rgba(255, 179, 186, 0.3) 10%,
-      rgba(255, 223, 186, 0.32) 30%,
-      rgba(255, 255, 186, 0.3) 50%,
-      rgba(186, 255, 201, 0.3) 70%,
-      rgba(186, 225, 255, 0.3) 90%,
+      rgba(255, 105, 180, 0.15) 10%,
+      rgba(255, 150, 70, 0.14) 30%,
+      rgba(235, 205, 60, 0.12) 50%,
+      rgba(80, 200, 120, 0.13) 70%,
+      rgba(80, 150, 240, 0.15) 90%,
       rgba(22, 21, 27, 1) 100%
     );
   }
@@ -1868,6 +1897,20 @@ html[data-theme="dark"] .filter-chip[aria-pressed="true"] {
   background: hotpink;
   border-color: hotpink;
   color: #16151b; }
+html[data-theme="dark"] .filter-chip[data-tag="vegan"]      { --chip-rgb: 108, 198, 117; }
+html[data-theme="dark"] .filter-chip[data-tag="quick"]      { --chip-rgb: 106, 172, 234; }
+html[data-theme="dark"] .filter-chip[data-tag="plan-ahead"] { --chip-rgb: 176, 138, 245; }
+html[data-theme="dark"] .filter-chip[data-tag="christmas"]  { --chip-rgb: 240, 107, 120; }
+html[data-theme="dark"] .filter-chip[data-tag="autumn"]     { --chip-rgb: 240, 149, 79; }
+html[data-theme="dark"] .filter-chip[data-tag="summer"]     { --chip-rgb: 245, 197, 66; }
+html[data-theme="dark"] .filter-chip[data-tag] {
+  background: rgba(var(--chip-rgb), 0.1);
+  border-color: rgba(var(--chip-rgb), 0.35); }
+html[data-theme="dark"] .filter-chip[data-tag]:hover,
+html[data-theme="dark"] .filter-chip[data-tag]:focus { border-color: rgb(var(--chip-rgb)); }
+html[data-theme="dark"] .filter-chip[data-tag][aria-pressed="true"] {
+  background: hotpink;
+  border-color: hotpink; }
 html[data-theme="dark"] .recipe-no-results { color: var(--text-muted); }
 html[data-theme="dark"] .recipe-category { color: var(--text); }
 html[data-theme="dark"] .recipe-category h3::after { background-color: var(--border); }
