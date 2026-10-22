@@ -1921,10 +1921,11 @@ html[data-theme="dark"] .lights-toggle {
 
 .hello-bubble {
   position: absolute;
-  top: 16%;
-  left: 50%;
+  /* position and colour are set randomly per click in easter_eggs.js */
+  top: var(--hello-y, 16%);
+  left: var(--hello-x, 50%);
   z-index: 2;
-  color: #ffffff;
+  color: var(--hello-color, #ffffff);
   font-size: 1.8rem;
   font-weight: 600;
   line-height: 1.2;

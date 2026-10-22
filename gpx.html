@@ -451,9 +451,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- Render ---------- */
 
+  // Maps are only created (GPX fetched and parsed) once their card comes near the
+  // viewport. Creating all of them at once keeps the main thread busy for seconds,
+  // especially on phones, and the header cyclists freeze meanwhile.
+  let mapObserver = null;
+  const pendingMaps = new WeakMap();
+
   function renderCourses(courses) {
   courseMaps.forEach(m => m.remove());
   courseMaps = [];
+  if (mapObserver) mapObserver.disconnect();
+  mapObserver = window.IntersectionObserver
+    ? new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          mapObserver.unobserve(entry.target);
+          pendingMaps.get(entry.target)();
+        });
+      }, { rootMargin: "400px 0px" })
+    : null;
   list.innerHTML = "";
 
   courses.forEach((c, i) => {
@@ -487,8 +503,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     list.appendChild(card);
 
-    // re-create map EVERY time
-    initCourseMap(`map-${i}`, c.file, card);
+    // re-create map EVERY time, but only when it scrolls into reach
+    const mapEl = card.querySelector(".course-map");
+    const init = () => initCourseMap(`map-${i}`, c.file, card);
+    if (mapObserver) {
+      pendingMaps.set(mapEl, init);
+      mapObserver.observe(mapEl);
+    } else {
+      init();
+    }
   });
 }
 

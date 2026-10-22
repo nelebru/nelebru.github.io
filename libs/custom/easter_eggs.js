@@ -185,7 +185,13 @@
         var show = ++helloShow;
         requestAnimationFrame(function () {
             requestAnimationFrame(function () {
-                if (show === helloShow) bubble.classList.add('visible');
+                if (show !== helloShow) return;
+                // somewhere else on the picture each time, in a random pastel colour;
+                // the horizontal range keeps the text (centred on that point) on the picture
+                bubble.style.setProperty('--hello-x', (35 + Math.random() * 30) + '%');
+                bubble.style.setProperty('--hello-y', (8 + Math.random() * 70) + '%');
+                bubble.style.setProperty('--hello-color', 'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 86%)');
+                bubble.classList.add('visible');
             });
         });
         clearTimeout(helloTimer);

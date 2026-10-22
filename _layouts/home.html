@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let hue = 0;
     let particles = [];
+    let wasDark = isDark();
 
     function createParticle(x, y) {
       const angle = Math.random() * Math.PI * 2;
@@ -175,6 +176,12 @@ document.addEventListener("DOMContentLoaded", function () {
       // transparent instead: painting the dark background at this low alpha never
       // quite reaches it (8-bit rounding) and leaves the header darker than the page.
       const dark = isDark();
+      // After switching to dark mode the white the light mode has built up would never
+      // fade out completely either (same rounding), so start from an empty canvas.
+      if (dark && !wasDark) {
+        ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+      }
+      wasDark = dark;
       ctx.globalCompositeOperation = dark ? 'destination-out' : 'source-over';
       ctx.fillStyle = dark ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)';
       // canvas.width/height are device pixels; because the context is scaled by DPR
