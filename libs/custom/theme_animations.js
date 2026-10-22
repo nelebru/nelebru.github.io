@@ -15,6 +15,10 @@
     var SUN_R = 40;             // sun disc radius in CSS pixels
     var running = null;         // the current animation, so a second click restarts it
 
+    function showering() {
+        return running !== null && running.kind === 'stars';
+    }
+
     function reducedMotion() {
         return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
@@ -38,14 +42,14 @@
     }
 
     // runs draw(ctx, elapsedMs) every frame until it returns false
-    function run(overlay, draw) {
+    function run(overlay, draw, kind) {
         var start = null, frame = null;
         function stop() {
             if (frame) cancelAnimationFrame(frame);
             overlay.canvas.remove();
             running = null;
         }
-        running = { stop: stop };
+        running = { stop: stop, kind: kind };
         function tick(now) {
             if (start === null) start = now;
             overlay.ctx.clearRect(0, 0, overlay.w, overlay.h);
@@ -168,7 +172,7 @@
     }
 
     window.moonFlight = function () {
-        if (reducedMotion()) return;
+        if (reducedMotion() || showering()) return;
         var o = createOverlay();
         var moon = makeMoonSprite(o.dpr);
         // from below the left edge, over the upper part of the screen, out on the right
@@ -258,7 +262,7 @@
     }
 
     window.sunrise = function () {
-        if (reducedMotion()) return;
+        if (reducedMotion() || showering()) return;
         var o = createOverlay();
         var x = o.w * 0.5;
         var below = o.h + SUN_R * 2.5;          // fully hidden below the bottom edge, rays included
@@ -309,7 +313,7 @@
     };
 
     window.starShower = function () {
-        if (reducedMotion()) return;
+        if (reducedMotion() || showering()) return;
         var o = createOverlay();
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
         var light = dark ? [98, 78] : [74, 62];
@@ -379,6 +383,6 @@
             });
 
             return elapsed < last || particles.length > 0;
-        });
+        }, 'stars');
     };
 })();
