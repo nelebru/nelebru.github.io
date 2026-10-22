@@ -118,6 +118,11 @@
     opacity: 0.35;
   }
 
+  /* lights on: the cyclists and their lights shine through more */
+  html[data-theme="dark"] #cyclist-canvas.lights-on {
+    opacity: 0.55;
+  }
+
   .header-canvas-wrapper .header {
     position: relative;
     z-index: 1;
@@ -130,6 +135,11 @@
 <body class="{{ page.title | downcase | replace: ' ', '-' }}-page">
 
   {% include theme_toggle.html %}
+  <button class="lights-toggle" type="button" aria-pressed="false"
+          title="Turn on the cyclists' lights" aria-label="Turn on the cyclists' lights">
+    <i class="fa-solid fa-lightbulb" aria-hidden="true"></i>
+  </button>
+  <script src="{{ "/libs/custom/easter_eggs.js" | prepend: site.baseurl }}" defer></script>
 
 
   <!-- Primary Page Layout
@@ -247,6 +257,19 @@
 
   const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
 
+  // Lights button (dark mode only, see .lights-toggle in my_css.css): headlight and
+  // rear light on every cyclist, in the direction they ride.
+  const lightsBtn = document.querySelector('.lights-toggle');
+  let lightsOn = false;
+  lightsBtn.addEventListener('click', () => {
+    lightsOn = !lightsOn;
+    lightsBtn.setAttribute('aria-pressed', lightsOn);
+    const text = lightsOn ? "Turn off the cyclists' lights" : "Turn on the cyclists' lights";
+    lightsBtn.title = text;
+    lightsBtn.setAttribute('aria-label', text);
+    canvas.classList.toggle('lights-on', lightsOn);
+  });
+
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     width = Math.max(1, wrapper.clientWidth);
@@ -319,9 +342,45 @@
 
   let cyclists = Array.from({ length: 25 }, (_, i) => createCyclist(i === 0));
 
+  // Headlight cone along the riding direction from the front wheel, red light at the back.
+  // The bike itself is drawn sideways, so "front" is the wheel on the side it rides towards.
+  function drawLights(c) {
+    const speed = Math.hypot(c.vx, c.vy);
+    const angle = speed > 0.01 ? Math.atan2(c.vy, c.vx) : c.baseAngle;
+    const side = Math.cos(angle) >= 0 ? 1 : -1;
+    const fx = c.x + 6 * side, fy = c.y - 3;
+    const reach = 38, spread = 0.34;
+
+    const beam = ctx.createRadialGradient(fx, fy, 0, fx, fy, reach);
+    beam.addColorStop(0, 'rgba(255, 226, 150, 0.4)');
+    beam.addColorStop(0.5, 'rgba(255, 214, 130, 0.12)');
+    beam.addColorStop(1, 'rgba(255, 214, 130, 0)');
+    ctx.fillStyle = beam;
+    ctx.beginPath();
+    ctx.moveTo(fx, fy);
+    ctx.arc(fx, fy, reach, angle - spread, angle + spread);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.save();
+    ctx.shadowBlur = 3;
+    ctx.shadowColor = 'rgba(255, 226, 150, 0.6)';
+    ctx.fillStyle = '#f5e6b8';
+    ctx.beginPath();
+    ctx.arc(fx, fy, 1.6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowColor = 'rgba(220, 50, 50, 0.6)';
+    ctx.fillStyle = '#d93d3d';
+    ctx.beginPath();
+    ctx.arc(c.x - 6 * side, fy, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
   function drawCyclist(c) {
     // the leader uses the text colour; the others their hue, lighter in dark mode
     const dark = isDark();
+    if (dark && lightsOn) drawLights(c);
     const color = c.leader ? (dark ? '#e6e3ea' : '#222') : `hsl(${c.hue}, 60%, ${dark ? 62 : 45}%)`;
     ctx.strokeStyle = color;
     ctx.fillStyle = color;

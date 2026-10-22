@@ -307,4 +307,78 @@
             return elapsed < total || particles.length > 0;
         });
     };
+
+    window.starShower = function () {
+        if (reducedMotion()) return;
+        var o = createOverlay();
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var light = dark ? [98, 78] : [74, 62];
+        var particles = [];
+        var stars = [];
+        for (var n = 0; n < 28; n++) {
+            var angle = Math.PI * (0.72 + Math.random() * 0.08);
+            var speed = (o.w + o.h) * (0.0007 + Math.random() * 0.0004);
+            stars.push({
+                start: Math.random() * 1800,
+                life: 900 + Math.random() * 500,
+                x: o.w * (0.15 + Math.random() * 1.0),
+                y: -20 - Math.random() * o.h * 0.25,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                hue: dark ? 40 + Math.random() * 30 : [330, 30, 45, 270, 200][n % 5]
+            });
+        }
+        var last = Math.max.apply(null, stars.map(function (s) { return s.start + s.life; }));
+
+        run(o, function (ctx, elapsed) {
+            particles = updateSparkles(ctx, particles, 0.01, light);
+
+            stars.forEach(function (s) {
+                var t = elapsed - s.start;
+                if (t < 0 || t > s.life) return;
+                var x = s.x + s.vx * t, y = s.y + s.vy * t;
+                var fade = Math.min(1, t / 120, (s.life - t) / 200);
+                var len = 170;
+                var tx = x - s.vx / Math.hypot(s.vx, s.vy) * len;
+                var ty = y - s.vy / Math.hypot(s.vx, s.vy) * len;
+
+                var streak = ctx.createLinearGradient(x, y, tx, ty);
+                streak.addColorStop(0, dark ? 'rgba(255, 250, 235, ' + 0.9 * fade + ')'
+                                            : 'hsla(' + s.hue + ', 95%, 60%, ' + 0.85 * fade + ')');
+                streak.addColorStop(1, dark ? 'rgba(255, 250, 235, 0)' : 'hsla(' + s.hue + ', 95%, 60%, 0)');
+                ctx.strokeStyle = streak;
+                ctx.lineWidth = 2.2;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(tx, ty);
+                ctx.stroke();
+
+                ctx.save();
+                ctx.globalAlpha = fade;
+                ctx.shadowColor = dark ? 'rgba(255, 236, 170, 0.9)' : 'hsla(' + s.hue + ', 100%, 60%, 0.8)';
+                ctx.shadowBlur = 12;
+                ctx.fillStyle = dark ? '#fffaf0' : 'hsl(' + s.hue + ', 100%, 62%)';
+                ctx.beginPath();
+                ctx.arc(x, y, 2.6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                if (Math.random() < 0.8) {
+                    particles.push(sparkle(
+                        x - s.vx * 8 + (Math.random() - 0.5) * 10,
+                        y - s.vy * 8 + (Math.random() - 0.5) * 10,
+                        (Math.random() - 0.5) * 0.6,
+                        (Math.random() - 0.5) * 0.6,
+                        Math.random() * 1.8 + 1.4,
+                        (s.hue + Math.random() * 40 - 20 + 360) % 360,
+                        Math.random() * 0.03 + 0.02,
+                        dark ? 1 : 0.75
+                    ));
+                }
+            });
+
+            return elapsed < last || particles.length > 0;
+        });
+    };
 })();

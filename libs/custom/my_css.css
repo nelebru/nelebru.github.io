@@ -1716,6 +1716,61 @@ a:focus {
   transform: scale(1.08);
 }
 
+/* cyclists' lights on the cycling page (_layouts/gpx.html): left of the theme button,
+   same look, only shown in dark mode */
+.lights-toggle {
+  display: none;
+  position: fixed;
+  top: 1.2rem;
+  right: 5.4rem;
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+html[data-theme="dark"] .lights-toggle {
+  display: inline-flex;
+}
+
+.lights-toggle:hover,
+.lights-toggle:focus {
+  color: #ffd76a;
+  border-color: #ffd76a;
+  transform: scale(1.08);
+}
+
+.lights-toggle[aria-pressed="true"] {
+  color: #ffd76a;
+  border-color: #ffd76a;
+  box-shadow: 0 0 12px rgba(255, 215, 106, 0.55);
+}
+
+/* larger buttons on desktop */
+@media (min-width: 750px) {
+  .theme-toggle,
+  .lights-toggle {
+    width: 4.6rem;
+    height: 4.6rem;
+    font-size: 2rem;
+  }
+
+  .lights-toggle {
+    right: 6.6rem;
+  }
+}
+
 /* full-screen canvas for the moon / sunrise when switching the theme (theme_animations.js) */
 .theme-animation {
   position: fixed;
@@ -1723,6 +1778,178 @@ a:focus {
   left: 0;
   z-index: 4000;
   pointer-events: none;
+}
+
+.night-owl {
+  position: fixed;
+  left: 1.2rem;
+  bottom: 0.8rem;
+  z-index: 2500;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  line-height: 0;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(120%);
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.night-owl.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.night-owl svg {
+  overflow: visible;
+}
+
+.night-owl .owl-body {
+  transform-box: view-box;
+  transform-origin: 32px 64px;
+  transition: transform 0.3s ease;
+}
+
+.night-owl:hover .owl-body,
+.night-owl:focus .owl-body {
+  transform: rotate(-8deg);
+}
+
+.night-owl .owl-eyes {
+  transform-box: view-box;
+  transform-origin: 32px 27px;
+  animation: owl-blink 4.5s infinite;
+}
+
+@keyframes owl-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+.owl-bubble {
+  position: absolute;
+  left: 0.4rem;
+  bottom: calc(100% + 0.6rem);
+  width: max-content;
+  max-width: 22rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: var(--text);
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  line-height: 1.4;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+  opacity: 0;
+  transform: translateY(0.4rem);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.night-owl.talking .owl-bubble {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .night-owl,
+  .night-owl .owl-body,
+  .owl-bubble { transition: opacity 0.3s ease; }
+  .night-owl .owl-eyes { animation: none; }
+}
+
+.toggle-bubble {
+  position: fixed;
+  top: 5.8rem;
+  right: 1.2rem;
+  z-index: 4100;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: var(--text);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(-0.4rem);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.toggle-bubble::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: 1.2rem;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  transform: rotate(45deg);
+}
+
+.toggle-bubble.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (min-width: 750px) {
+  .toggle-bubble {
+    top: 6.8rem;
+  }
+
+  .toggle-bubble::before {
+    right: 1.7rem;
+  }
+}
+
+.header .three.columns {
+  position: relative;
+}
+
+.hello-bubble {
+  position: absolute;
+  top: 4%;
+  left: 78%;
+  z-index: 2;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 12px 3px;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: var(--text);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(0.5rem) scale(0.9);
+  transform-origin: bottom left;
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+  pointer-events: none;
+}
+
+.hello-bubble.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@media (max-width: 549px) {
+  .hello-bubble {
+    left: 72%;
+  }
 }
 
 /* moon in light mode, sun in dark mode */
