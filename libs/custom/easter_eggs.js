@@ -13,11 +13,12 @@
 
     var NIGHT_FROM = 0, NIGHT_TO = 4;
     var LINES = [
-        "Hoo's still awake? 🌙",
-        'Night owls unite! 🦉',
-        "Shouldn't you be asleep? Training starts at 6 a.m. 🚴",
+        "Still awake?",
+        'Night owls unite! :)',
+        "Shouldn't you be asleep? Training starts at 6 a.m.",
         'Hoo hoo! Midnight snack? Try the brownies 🍫',
-        'Sweet dreams of fast descents 💤'
+        'Sweet dreams of fast descents and long climbs!',
+        'Late night coding? Remember to hydrate and stretch!',
     ];
 
     var OWL_SVG =
@@ -47,10 +48,10 @@
 
     var owl = null, hideTimer = null, lastLine = -1;
 
+    // between midnight and 4 a.m., in both themes
     function owlTime() {
         var hour = new Date().getHours();
-        return document.documentElement.getAttribute('data-theme') === 'dark'
-            && hour >= NIGHT_FROM && hour < NIGHT_TO;
+        return hour >= NIGHT_FROM && hour < NIGHT_TO;
     }
 
     function say() {

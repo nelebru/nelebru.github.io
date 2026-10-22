@@ -8,11 +8,11 @@
 // last sparkle has faded. Skipped for visitors who asked their system for reduced motion.
 (function () {
     var MOON_FLIGHT_MS = 1800;  // time the moon needs to cross the screen
-    var MOON_R = 36;            // moon radius in CSS pixels
+    var MOON_R = 20;            // moon radius in CSS pixels
     var SUN_RISE_MS = 900;      // sun comes up ...
-    var SUN_HOLD_MS = 450;      // ... stays ...
-    var SUN_SET_MS = 750;       // ... and sinks again
-    var SUN_R = 40;             // sun disc radius in CSS pixels
+    var SUN_HOLD_MS = 300;      // ... stays ...
+    var SUN_SET_MS = 550;       // ... and sinks again
+    var SUN_R = 28;             // sun disc radius in CSS pixels
     var running = null;         // the current animation, so a second click restarts it
 
     function showering() {
@@ -61,7 +61,21 @@
 
     // ---------- glitter ----------
 
-    // light: lightness of the star's core and middle, e.g. [98, 78] on dark backgrounds
+    // the colours of the Milky Way navbar (warm core, violet, blue, a little pink and
+    // turquoise, near white) for dark mode glitter; shared with the home header glitter
+    // (_layouts/home.html), which reads it from window.MILKY_WAY
+    var MILKY_WAY = [
+        [255, 205, 175], [176, 138, 245], [110, 145, 240],
+        [255, 105, 180], [90, 200, 220], [235, 228, 255]
+    ];
+    window.MILKY_WAY = MILKY_WAY;
+
+    function milkyWayTint() {
+        return MILKY_WAY[Math.floor(Math.random() * MILKY_WAY.length)];
+    }
+
+    // light: lightness of the star's core and middle, e.g. [98, 78] on dark backgrounds.
+    // A sparkle with a tint (an [r, g, b] colour) is drawn white in the middle instead.
     function drawSparkle(ctx, p, light) {
         var twinkle = 0.6 + 0.4 * Math.sin(p.phase);
         var s = p.size;
@@ -70,9 +84,16 @@
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rotation);
         var grad = ctx.createRadialGradient(0, 0, 0, 0, 0, s * 2);
-        grad.addColorStop(0, 'hsl(' + p.hue + ', 100%, ' + light[0] + '%)');
-        grad.addColorStop(0.3, 'hsl(' + p.hue + ', 100%, ' + light[1] + '%)');
-        grad.addColorStop(1, 'hsla(' + p.hue + ', 100%, ' + (light[1] - 10) + '%, 0)');
+        if (p.tint) {
+            var rgb = p.tint.join(', ');
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(0.3, 'rgb(' + rgb + ')');
+            grad.addColorStop(1, 'rgba(' + rgb + ', 0)');
+        } else {
+            grad.addColorStop(0, 'hsl(' + p.hue + ', 100%, ' + light[0] + '%)');
+            grad.addColorStop(0.3, 'hsl(' + p.hue + ', 100%, ' + light[1] + '%)');
+            grad.addColorStop(1, 'hsla(' + p.hue + ', 100%, ' + (light[1] - 10) + '%, 0)');
+        }
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.moveTo(0, -s * 2.2);
@@ -163,8 +184,8 @@
         c.width = c.height = crescent.width;
         var g = c.getContext('2d');
         g.scale(dpr, dpr);
-        g.shadowColor = 'rgba(255, 228, 150, 0.9)';
-        g.shadowBlur = 24;
+        g.shadowColor = 'rgba(255, 228, 150, 0.55)';
+        g.shadowBlur = 12;
         g.drawImage(crescent, 0, 0, size, size);
         g.shadowBlur = 0;
         g.drawImage(crescent, 0, 0, size, size);
@@ -175,12 +196,12 @@
         if (reducedMotion() || showering()) return;
         var o = createOverlay();
         var moon = makeMoonSprite(o.dpr);
-        // from below the left edge, over the upper part of the screen, out on the right
-        var p0 = { x: -MOON_R * 3, y: o.h * 0.75 };
-        var p1 = { x: o.w * 0.5, y: -o.h * 0.2 };
-        var p2 = { x: o.w + MOON_R * 3, y: o.h * 0.4 };
+        // in from the left edge, along the top of the screen (highest point a little right
+        // of the middle, so it doesn't cross the centre), out on the right
+        var p0 = { x: -MOON_R * 3, y: o.h * 0.5 };
+        var p1 = { x: o.w * 0.6, y: -o.h * 0.25 };
+        var p2 = { x: o.w + MOON_R * 3, y: o.h * 0.3 };
         var particles = [];
-        var hue = 40;  // starts golden, then drifts through the rainbow
 
         run(o, function (ctx, elapsed) {
             var t = Math.min(1, elapsed / MOON_FLIGHT_MS);
@@ -191,26 +212,30 @@
                 var pos = bezier(p0, p1, p2, easeInOut(t));
                 var len = Math.sqrt(pos.dx * pos.dx + pos.dy * pos.dy) || 1;
                 var back = { x: -pos.dx / len, y: -pos.dy / len };  // direction of the tail
-                hue = (hue + 2.5) % 360;
 
-                for (var i = 0; i < 14; i++) {
+                // the tail glitters in the colours of the Milky Way
+                for (var i = 0; i < 7; i++) {
                     var angle = Math.random() * Math.PI * 2;
                     var speed = Math.random() * 1.2 + 0.3;
-                    particles.push(sparkle(
+                    var spark = sparkle(
                         pos.x + back.x * MOON_R * 0.6 + (Math.random() - 0.5) * MOON_R,
                         pos.y + back.y * MOON_R * 0.6 + (Math.random() - 0.5) * MOON_R,
                         Math.cos(angle) * speed + back.x * 0.6,
                         Math.sin(angle) * speed + back.y * 0.6,
-                        Math.random() * 2.5 + 2.2,
-                        (hue + Math.random() * 60 - 30 + 360) % 360,
-                        Math.random() * 0.025 + 0.015  // a short tail
-                    ));
+                        Math.random() * 1.6 + 1.4,
+                        0,
+                        Math.random() * 0.025 + 0.025,  // a short tail
+                        0.6
+                    );
+                    spark.tint = milkyWayTint();
+                    particles.push(spark);
                 }
 
                 // the moon tilts a little along its way
                 ctx.save();
                 ctx.translate(pos.x, pos.y);
                 ctx.rotate(-0.5 + t * 0.9);
+                ctx.globalAlpha = 0.85;  // a little see-through, like the sun
                 ctx.drawImage(moon.canvas, -moon.size / 2, -moon.size / 2, moon.size, moon.size);
                 ctx.restore();
             }
@@ -222,12 +247,12 @@
 
     function drawSun(ctx, x, y, rotation, glow) {
         // warm halo, also lights up the page around the sun a little
-        var halo = ctx.createRadialGradient(x, y, SUN_R * 0.5, x, y, SUN_R * 4.5);
-        halo.addColorStop(0, 'rgba(255, 200, 90, ' + 0.45 * glow + ')');
-        halo.addColorStop(0.4, 'rgba(255, 170, 120, ' + 0.18 * glow + ')');
+        var halo = ctx.createRadialGradient(x, y, SUN_R * 0.5, x, y, SUN_R * 3.5);
+        halo.addColorStop(0, 'rgba(255, 200, 90, ' + 0.25 * glow + ')');
+        halo.addColorStop(0.4, 'rgba(255, 170, 120, ' + 0.08 * glow + ')');
         halo.addColorStop(1, 'rgba(255, 170, 120, 0)');
         ctx.fillStyle = halo;
-        ctx.fillRect(x - SUN_R * 4.5, y - SUN_R * 4.5, SUN_R * 9, SUN_R * 9);
+        ctx.fillRect(x - SUN_R * 3.5, y - SUN_R * 3.5, SUN_R * 7, SUN_R * 7);
 
         // 12 rays, alternately long and short, turning slowly
         ctx.save();
@@ -252,8 +277,8 @@
         disc.addColorStop(0.6, '#ffcf45');
         disc.addColorStop(1, '#ffb03a');
         ctx.save();
-        ctx.shadowColor = 'rgba(255, 180, 60, 0.8)';
-        ctx.shadowBlur = 25;
+        ctx.shadowColor = 'rgba(255, 180, 60, 0.6)';
+        ctx.shadowBlur = 14;
         ctx.fillStyle = disc;
         ctx.beginPath();
         ctx.arc(x, y, SUN_R, 0, Math.PI * 2);
@@ -266,7 +291,7 @@
         var o = createOverlay();
         var x = o.w * 0.5;
         var below = o.h + SUN_R * 2.5;          // fully hidden below the bottom edge, rays included
-        var top = Math.max(o.h * 0.45, SUN_R * 3);
+        var top = Math.max(o.h * 0.72, SUN_R * 3);  // rises only a little way up
         var total = SUN_RISE_MS + SUN_HOLD_MS + SUN_SET_MS;
         var particles = [];
 
@@ -290,7 +315,7 @@
                 }
 
                 // warm glitter from all around the sun's rim, golden to pink
-                for (var i = 0; i < 8; i++) {
+                for (var i = 0; i < 5; i++) {
                     var angle = Math.random() * Math.PI * 2;
                     var dist = SUN_R * (1.1 + Math.random() * 0.6);
                     var speed = Math.random() * 1.3 + 0.4;
@@ -299,14 +324,18 @@
                         y + Math.sin(angle) * dist,
                         Math.cos(angle) * speed,
                         Math.sin(angle) * speed - 0.8,
-                        Math.random() * 2 + 1.8,
+                        Math.random() * 1.6 + 1.4,
                         Math.random() < 0.7 ? 25 + Math.random() * 25 : 330 + Math.random() * 25,
                         Math.random() * 0.025 + 0.015,
-                        0.65
+                        0.5
                     ));
                 }
 
+                // a little see-through, so it doesn't outshine the page
+                ctx.save();
+                ctx.globalAlpha = 0.8;
                 drawSun(ctx, x, y, elapsed / 2500, glow);
+                ctx.restore();
             }
             return elapsed < total || particles.length > 0;
         });

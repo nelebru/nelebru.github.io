@@ -163,7 +163,9 @@ html {
   position: sticky;
   top: 0;
   z-index: 1000;
-  transition: background 0.3s ease;
+  /* only the colour: "background" would also animate the size and position of the
+     dark mode star tiles, so the stars would zoom and slide in on switching */
+  transition: background-color 0.3s ease;
   border: none;          /* removes both top & bottom borders */
   margin-left: -2vw;
   margin-right: -2vw;
@@ -2052,31 +2054,121 @@ html[data-theme="dark"] .title-subtitle h5 { color: var(--text-muted); }
 html[data-theme="dark"] .project-image-container { border-color: var(--border); }
 html[data-theme="dark"] .navbar-link { color: var(--text); }
 
+/* Milky Way instead of the rainbow: a star field over a glowing band with a warm core and
+   violet and blue clouds. The stars are SVG tiles with randomly scattered stars
+   (assets/stars/, made by stars_py/make_stars.py); dots from CSS gradients would line up
+   in rows. The stars are opaque; only the background is see-through. It fades into the
+   page at the ends like the rainbow did. */
 html[data-theme="dark"] .navbar {
-  background: linear-gradient(
-    to right,
-    rgba(22, 21, 27, 1) 0%,
-    rgba(255, 105, 180, 0.15) 10%,
-    rgba(255, 150, 70, 0.14) 30%,
-    rgba(235, 205, 60, 0.12) 50%,
-    rgba(80, 200, 120, 0.13) 70%,
-    rgba(80, 150, 240, 0.15) 90%,
-    rgba(22, 21, 27, 1) 100%
-  );
+  --night-fade: linear-gradient(to right, var(--bg) 0%, rgba(22, 21, 27, 0) 12%, rgba(22, 21, 27, 0) 88%, var(--bg) 100%);
+  /* see-through like the rainbow, so content scrolling underneath shows blurred */
+  background-color: rgba(22, 21, 27, 0.72);
+  background-image:
+    var(--night-fade),
+    url("../../assets/stars/field-a.svg"),
+    url("../../assets/stars/field-b.svg"),
+    url("../../assets/stars/field-c.svg"),
+    radial-gradient(ellipse 13% 38% at 48% 56%, rgba(255, 240, 222, 0.13), transparent 70%),
+    radial-gradient(ellipse 24% 75% at 53% 52%, rgba(255, 205, 175, 0.16), transparent 70%),
+    radial-gradient(ellipse 30% 95% at 33% 46%, rgba(176, 138, 245, 0.16), transparent 70%),
+    radial-gradient(ellipse 30% 95% at 71% 50%, rgba(110, 145, 240, 0.14), transparent 70%),
+    radial-gradient(ellipse 22% 80% at 17% 52%, rgba(255, 105, 180, 0.07), transparent 70%),
+    radial-gradient(ellipse 22% 80% at 86% 46%, rgba(90, 200, 220, 0.07), transparent 70%),
+    linear-gradient(to bottom, rgba(200, 180, 255, 0) 10%, rgba(200, 180, 255, 0.05) 50%, rgba(200, 180, 255, 0) 90%);
+  background-size:
+    100% 100%, 701px 229px, 523px 181px, 613px 199px,
+    100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  background-position:
+    0 0, 0 0, 137px 61px, 311px 23px,
+    0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  background-repeat:
+    no-repeat, repeat, repeat, repeat,
+    no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
 }
 
+/* a few brighter stars that twinkle, in two groups out of step */
+html[data-theme="dark"] .navbar::before,
+html[data-theme="dark"] .navbar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  animation: navbar-twinkle 0.6s ease-in-out infinite alternate;
+}
+html[data-theme="dark"] .navbar::before {
+  background: url("../../assets/stars/twinkle-a.svg") 0 0 / 887px 233px repeat;
+}
+html[data-theme="dark"] .navbar::after {
+  background: url("../../assets/stars/twinkle-b.svg") 211px 37px / 761px 211px repeat;
+  animation-delay: -0.3s;
+}
+/* the links stay above the stars */
+html[data-theme="dark"] .navbar > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* a dense cluster of tiny stars in the core of the band, thinning out towards its edges;
+   z-index -1 keeps it behind the links but still inside the container */
+html[data-theme="dark"] .navbar > .container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url("../../assets/stars/cluster.svg") 0 0 / 307px 101px repeat;
+  -webkit-mask-image: radial-gradient(ellipse 34% 62% at 51% 55%, #000 0%, #000 45%, transparent 80%);
+  mask-image: radial-gradient(ellipse 34% 62% at 51% 55%, #000 0%, #000 45%, transparent 80%);
+}
+
+@keyframes navbar-twinkle {
+  from { opacity: 0.25; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="dark"] .navbar::before,
+  html[data-theme="dark"] .navbar::after {
+    animation: none;
+    opacity: 0.7;
+  }
+}
+
+/* on phones the navbar is a tall column: the clouds are stacked down it and it fades out
+   on all sides; the star tiles stay the same */
 @media (max-width: 749px) {
   html[data-theme="dark"] .navbar {
-    background: linear-gradient(
-      to bottom,
-      rgba(22, 21, 27, 1) 0%,
-      rgba(255, 105, 180, 0.15) 10%,
-      rgba(255, 150, 70, 0.14) 30%,
-      rgba(235, 205, 60, 0.12) 50%,
-      rgba(80, 200, 120, 0.13) 70%,
-      rgba(80, 150, 240, 0.15) 90%,
-      rgba(22, 21, 27, 1) 100%
-    );
+    /* the vertical radius stays inside the box so the fade is complete at the top and
+       bottom edge; the extra stops ease it in instead of a straight ramp */
+    --night-fade: radial-gradient(ellipse 64% 50% at 50% 50%,
+      rgba(22, 21, 27, 0) 25%, rgba(22, 21, 27, 0.15) 45%, rgba(22, 21, 27, 0.45) 65%,
+      rgba(22, 21, 27, 0.8) 82%, var(--bg) 96%);
+    position: relative;   /* static otherwise; anchors the twinkling stars */
+    background-image:
+      var(--night-fade),
+      url("../../assets/stars/field-a.svg"),
+      url("../../assets/stars/field-b.svg"),
+      url("../../assets/stars/field-c.svg"),
+      radial-gradient(ellipse 30% 14% at 51% 48%, rgba(255, 240, 222, 0.13), transparent 70%),
+      radial-gradient(ellipse 55% 26% at 50% 52%, rgba(255, 205, 175, 0.16), transparent 70%),
+      radial-gradient(ellipse 75% 30% at 44% 30%, rgba(176, 138, 245, 0.16), transparent 70%),
+      radial-gradient(ellipse 75% 30% at 56% 72%, rgba(110, 145, 240, 0.14), transparent 70%),
+      radial-gradient(ellipse 60% 22% at 48% 14%, rgba(255, 105, 180, 0.07), transparent 70%),
+      radial-gradient(ellipse 60% 22% at 52% 88%, rgba(90, 200, 220, 0.07), transparent 70%),
+      linear-gradient(to right, rgba(200, 180, 255, 0) 15%, rgba(200, 180, 255, 0.05) 50%, rgba(200, 180, 255, 0) 85%);
+  }
+
+  html[data-theme="dark"] .navbar::before,
+  html[data-theme="dark"] .navbar::after {
+    -webkit-mask-image: radial-gradient(ellipse 64% 50% at 50% 50%, #000 25%, rgba(0, 0, 0, 0.55) 65%, transparent 92%);
+    mask-image: radial-gradient(ellipse 64% 50% at 50% 50%, #000 25%, rgba(0, 0, 0, 0.55) 65%, transparent 92%);
+  }
+
+  html[data-theme="dark"] .navbar > .container::before {
+    -webkit-mask-image: radial-gradient(ellipse 60% 34% at 50% 50%, #000 0%, #000 45%, transparent 80%);
+    mask-image: radial-gradient(ellipse 60% 34% at 50% 50%, #000 0%, #000 45%, transparent 80%);
   }
 }
 
@@ -2088,9 +2180,13 @@ html[data-theme="dark"] .navbar {
 }
 
 /* ---------- Research tiles ---------- */
-html[data-theme="dark"] .research-tile:nth-child(1) { background: linear-gradient(135deg, rgba(230, 115, 159, 0.34), var(--surface)); }
-html[data-theme="dark"] .research-tile:nth-child(2) { background: linear-gradient(135deg, rgba(232, 163, 61, 0.32), var(--surface)); }
-html[data-theme="dark"] .research-tile:nth-child(3) { background: linear-gradient(135deg, rgba(79, 163, 160, 0.34), var(--surface)); }
+/* the three main colours of the Milky Way band in navbar order (violet, warm core, blue),
+   as faint as the student projects; the icons take the same colour */
+html[data-theme="dark"] .research-tile:nth-child(1) { --tile-tint: 176, 138, 245; }
+html[data-theme="dark"] .research-tile:nth-child(2) { --tile-tint: 255, 205, 175; }
+html[data-theme="dark"] .research-tile:nth-child(3) { --tile-tint: 110, 145, 240; }
+html[data-theme="dark"] .research-tile { background: linear-gradient(135deg, rgba(var(--tile-tint), 0.14), var(--surface) 75%); }
+html[data-theme="dark"] .research-tile .research-tile-icon { color: rgb(var(--tile-tint)); }
 
 /* ---------- Timeline (timeline.css) ---------- */
 html[data-theme="dark"] .flag,
@@ -2115,24 +2211,29 @@ html[data-theme="dark"] .time-wrapper { color: #c4b0ee; }
 }
 
 /* ---------- Student projects ---------- */
-html[data-theme="dark"] .student-project:nth-child(12n+1)  { background: linear-gradient(135deg, hsla(0, 60%, 55%, 0.24), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+2)  { background: linear-gradient(135deg, hsla(30, 60%, 55%, 0.24), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+3)  { background: linear-gradient(135deg, hsla(60, 60%, 55%, 0.22), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+4)  { background: linear-gradient(135deg, hsla(90, 60%, 55%, 0.22), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+5)  { background: linear-gradient(135deg, hsla(120, 60%, 55%, 0.22), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+6)  { background: linear-gradient(135deg, hsla(150, 60%, 55%, 0.22), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+7)  { background: linear-gradient(135deg, hsla(180, 60%, 55%, 0.22), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+8)  { background: linear-gradient(135deg, hsla(210, 60%, 55%, 0.24), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+9)  { background: linear-gradient(135deg, hsla(240, 60%, 60%, 0.24), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+10) { background: linear-gradient(135deg, hsla(270, 60%, 60%, 0.24), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+11) { background: linear-gradient(135deg, hsla(300, 60%, 55%, 0.24), var(--surface)); }
-html[data-theme="dark"] .student-project:nth-child(12n+12) { background: linear-gradient(135deg, hsla(330, 60%, 55%, 0.24), var(--surface)); }
+/* In the colours of the Milky Way navbar, in its order from left to right (pink, violet,
+   warm core, blue, turquoise) with blends in between, so neighbouring cards shade into
+   each other. Kept faint; the icons use the same colour. */
+html[data-theme="dark"] .student-project:nth-child(12n+1)  { --project-tint: 255, 105, 180; }
+html[data-theme="dark"] .student-project:nth-child(12n+2)  { --project-tint: 226, 117, 203; }
+html[data-theme="dark"] .student-project:nth-child(12n+3)  { --project-tint: 197, 129, 228; }
+html[data-theme="dark"] .student-project:nth-child(12n+4)  { --project-tint: 183, 144, 239; }
+html[data-theme="dark"] .student-project:nth-child(12n+5)  { --project-tint: 213, 168, 213; }
+html[data-theme="dark"] .student-project:nth-child(12n+6)  { --project-tint: 242, 193, 186; }
+html[data-theme="dark"] .student-project:nth-child(12n+7)  { --project-tint: 229, 194, 187; }
+html[data-theme="dark"] .student-project:nth-child(12n+8)  { --project-tint: 175, 172, 211; }
+html[data-theme="dark"] .student-project:nth-child(12n+9)  { --project-tint: 123, 150, 234; }
+html[data-theme="dark"] .student-project:nth-child(12n+10) { --project-tint: 105, 159, 235; }
+html[data-theme="dark"] .student-project:nth-child(12n+11) { --project-tint: 97, 181, 227; }
+html[data-theme="dark"] .student-project:nth-child(12n+12) { --project-tint: 90, 200, 220; }
+html[data-theme="dark"] .student-project {
+  background: linear-gradient(135deg, rgba(var(--project-tint), 0.14), var(--surface) 75%);
+  --project-accent: rgb(var(--project-tint));
+}
 
 html[data-theme="dark"] .student-project-header,
 html[data-theme="dark"] .student-project-header:hover,
 html[data-theme="dark"] .student-project-header:focus { color: var(--text); }
-html[data-theme="dark"] .student-project-topic,
-html[data-theme="dark"] .student-project-icon { filter: brightness(1.35); }
 html[data-theme="dark"] .student-project-body-inner p { color: var(--text-muted); }
 
 /* ---------- Recipes ---------- */
