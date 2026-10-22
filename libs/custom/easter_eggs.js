@@ -131,7 +131,7 @@
         update();
     }
 
-    var helloTimer = null;
+    var helloTimer = null, helloShow = 0;
 
     function onMainPage(link) {
         var here = location.pathname.replace(/index\.html$/, '');
@@ -139,11 +139,40 @@
         return here === target;
     }
 
+    var PEACE_CLICKS = 5, PEACE_GAP_MS = 400;
+    var picClicks = [];
+
+    function peace(holder, bubble) {
+        helloShow++;
+        clearTimeout(helloTimer);
+        if (bubble) bubble.classList.remove('visible');
+        var old = holder.querySelector('.peace-sign');
+        if (old) old.remove();
+        var sign = document.createElement('span');
+        sign.className = 'peace-sign';
+        sign.setAttribute('role', 'img');
+        sign.setAttribute('aria-label', 'peace');
+        sign.textContent = '✌🏻';
+        holder.appendChild(sign);
+        sign.addEventListener('animationend', function () { sign.remove(); });
+    }
+
     function helloAgain(e) {
         var link = e.currentTarget;
         if (!onMainPage(link)) return;
         e.preventDefault();
         var holder = link.parentNode;
+
+        var now = Date.now();
+        var last = picClicks[picClicks.length - 1];
+        if (last === undefined || now - last >= PEACE_GAP_MS) picClicks = [];
+        picClicks.push(now);
+        if (picClicks.length >= PEACE_CLICKS) {
+            picClicks = [];
+            peace(holder, holder.querySelector('.hello-bubble'));
+            return;
+        }
+
         var bubble = holder.querySelector('.hello-bubble');
         if (!bubble) {
             bubble = document.createElement('div');
@@ -153,8 +182,11 @@
             holder.appendChild(bubble);
         }
         bubble.classList.remove('visible');
+        var show = ++helloShow;
         requestAnimationFrame(function () {
-            requestAnimationFrame(function () { bubble.classList.add('visible'); });
+            requestAnimationFrame(function () {
+                if (show === helloShow) bubble.classList.add('visible');
+            });
         });
         clearTimeout(helloTimer);
         helloTimer = setTimeout(function () { bubble.classList.remove('visible'); }, 2500);
