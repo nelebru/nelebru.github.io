@@ -1,0 +1,21 @@
+<!-- Theme (light / dark)
+  ––––––––––––––––––––––––––––––––––––––––––––––––––
+  Runs before the stylesheets paint, so a dark page never flashes white.
+  Light is the default; dark is only used when the visitor picked it with the theme
+  button, which keeps that choice in localStorage. -->
+<script>
+(function () {
+  var root = document.documentElement;
+  var theme = 'light';
+  try { if (localStorage.getItem('theme') === 'dark') theme = 'dark'; } catch (e) { /* storage blocked */ }
+  root.setAttribute('data-theme', theme);
+
+  window.setTheme = function (newTheme) {
+    root.setAttribute('data-theme', newTheme);
+    try {
+      if (newTheme === 'dark') localStorage.setItem('theme', 'dark');
+      else localStorage.removeItem('theme');
+    } catch (e) { /* storage blocked: the choice holds until the page is left */ }
+  };
+})();
+</script>

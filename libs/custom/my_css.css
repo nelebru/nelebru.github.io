@@ -15,6 +15,19 @@
        url("fonts/Psychedelic.ttf") format("truetype");
   font-display: swap;
 }
+
+/*  ================ Theme colours (dark values at the end of this file)  ================ */
+:root {
+  --bg: #ffffff;
+  --surface: #f8f8f8;
+  --text: #222222;
+  --text-muted: #777777;
+  --border: #eeeeee;
+}
+body {
+  background-color: var(--bg);
+  color: var(--text); }
+
 h3 {
   text-align: center;
   font-family: "Psychedelic";
@@ -1120,11 +1133,7 @@ a:focus {
   z-index: 0 !important;
 }
 
-/* pale rainbow arc behind the routes; covered by the tiles once OpenStreetMap is on
-   (.leaflet-container is needed to beat leaflet.css, which sets a grey background).
-   Layer 1 fades the arc's ends into white at the bottom edge, layer 2 fades it out towards
-   the left and right edges; layer 3 is the arc itself, an ellipse centred on the bottom edge,
-   so only its upper half is visible. */
+/* pale rainbow arc behind the routes */
 .course-map.leaflet-container,
 #visitedMap.leaflet-container {
   background:
@@ -1646,3 +1655,300 @@ a:focus {
 .student-project-body-inner p + p {
   margin-top: 0.4rem;
 }
+
+
+/*  ================ Theme toggle (_includes/theme_toggle.html)  ================ */
+.theme-toggle {
+  position: fixed;  /* stays in the corner while scrolling, above the sticky navbar */
+  top: 1.2rem;
+  right: 1.2rem;
+  z-index: 3000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus {
+  color: hotpink;
+  border-color: hotpink;
+  transform: scale(1.08);
+}
+
+/* full-screen canvas for the moon / sunrise when switching the theme (theme_animations.js) */
+.theme-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 4000;
+  pointer-events: none;
+}
+
+/* moon in light mode, sun in dark mode */
+.theme-toggle .theme-icon-dark,
+html[data-theme="dark"] .theme-toggle .theme-icon-light {
+  display: none;
+}
+
+html[data-theme="dark"] .theme-toggle .theme-icon-dark {
+  display: inline-block;
+}
+
+
+/*  ================ Dark mode  ================
+    html[data-theme="dark"] is set by _includes/theme_head.html when the visitor
+    picked dark with the theme button; light is the default. */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #16151b;
+  --surface: #211f28;
+  --surface-2: #2b2833;
+  --text: #e6e3ea;
+  --text-muted: #a39eac;
+  --border: #3a3644;
+  --violet: #b08af5;  /* readable blueviolet for text and icons */
+}
+
+/* ---------- Base (skeleton.css); :where() keeps the generic button rules weaker than specific ones ---------- */
+html[data-theme="dark"] h3 { color: #cfc9d8; }
+html[data-theme="dark"] hr { border-top-color: var(--border); }
+html[data-theme="dark"] th,
+html[data-theme="dark"] td { border-bottom-color: var(--border); }
+html[data-theme="dark"] code {
+  background: var(--surface-2);
+  border-color: var(--border); }
+
+:where(html[data-theme="dark"]) .button,
+:where(html[data-theme="dark"]) button,
+:where(html[data-theme="dark"]) input[type="submit"],
+:where(html[data-theme="dark"]) input[type="reset"],
+:where(html[data-theme="dark"]) input[type="button"] {
+  color: var(--text-muted);
+  border-color: var(--border); }
+:where(html[data-theme="dark"]) .button:hover,
+:where(html[data-theme="dark"]) button:hover,
+:where(html[data-theme="dark"]) .button:focus,
+:where(html[data-theme="dark"]) button:focus {
+  color: var(--text);
+  border-color: var(--text-muted); }
+
+html[data-theme="dark"] input[type="email"],
+html[data-theme="dark"] input[type="number"],
+html[data-theme="dark"] input[type="search"],
+html[data-theme="dark"] input[type="text"],
+html[data-theme="dark"] input[type="tel"],
+html[data-theme="dark"] input[type="url"],
+html[data-theme="dark"] input[type="password"],
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--text); }
+
+/* ---------- Tabs (skeleton-tabs.css) ---------- */
+html[data-theme="dark"] ul.tab-nav { border-bottom-color: var(--border); }
+html[data-theme="dark"] ul.tab-nav li .active.button {
+  border-bottom-color: var(--bg);
+  color: var(--text); }
+
+/* ---------- Header, navbar, sections, footer ---------- */
+html[data-theme="dark"] .docs-section,
+html[data-theme="dark"] .footer { border-top-color: var(--border); }
+html[data-theme="dark"] .footer { color: var(--text-muted); }
+html[data-theme="dark"] .title-subtitle h5 { color: var(--text-muted); }
+html[data-theme="dark"] .project-image-container { border-color: var(--border); }
+html[data-theme="dark"] .navbar-link { color: var(--text); }
+
+html[data-theme="dark"] .navbar {
+  background: linear-gradient(
+    to right,
+    rgba(22, 21, 27, 1) 0%,
+    rgba(255, 179, 186, 0.3) 10%,
+    rgba(255, 223, 186, 0.32) 30%,
+    rgba(255, 255, 186, 0.3) 50%,
+    rgba(186, 255, 201, 0.3) 70%,
+    rgba(186, 225, 255, 0.3) 90%,
+    rgba(22, 21, 27, 1) 100%
+  );
+}
+
+@media (max-width: 749px) {
+  html[data-theme="dark"] .navbar {
+    background: linear-gradient(
+      to bottom,
+      rgba(22, 21, 27, 1) 0%,
+      rgba(255, 179, 186, 0.3) 10%,
+      rgba(255, 223, 186, 0.32) 30%,
+      rgba(255, 255, 186, 0.3) 50%,
+      rgba(186, 255, 201, 0.3) 70%,
+      rgba(186, 225, 255, 0.3) 90%,
+      rgba(22, 21, 27, 1) 100%
+    );
+  }
+}
+
+@media (min-width: 750px) {
+  html[data-theme="dark"] .navbar,
+  html[data-theme="dark"] .navbar-spacer {
+    border-top-color: var(--border);
+    border-bottom-color: var(--border); }
+}
+
+/* ---------- Research tiles ---------- */
+html[data-theme="dark"] .research-tile:nth-child(1) { background: linear-gradient(135deg, rgba(230, 115, 159, 0.34), var(--surface)); }
+html[data-theme="dark"] .research-tile:nth-child(2) { background: linear-gradient(135deg, rgba(232, 163, 61, 0.32), var(--surface)); }
+html[data-theme="dark"] .research-tile:nth-child(3) { background: linear-gradient(135deg, rgba(79, 163, 160, 0.34), var(--surface)); }
+
+/* ---------- Timeline (timeline.css) ---------- */
+html[data-theme="dark"] .flag,
+html[data-theme="dark"] .time { background: var(--surface); }
+html[data-theme="dark"] .direction-l .flag:after { border-left-color: var(--surface); }
+html[data-theme="dark"] .direction-r .flag:after { border-right-color: var(--surface); }
+html[data-theme="dark"] .direction-l .flag:before,
+html[data-theme="dark"] .direction-r .flag:before {
+  background: var(--bg);
+  border-color: var(--violet); }
+html[data-theme="dark"] .time-wrapper { color: #c4b0ee; }
+
+@media screen and (max-width: 660px) {
+  html[data-theme="dark"] .direction-l .flag:before,
+  html[data-theme="dark"] .direction-r .flag:before { border-color: var(--bg); }
+  html[data-theme="dark"] .direction-l .flag:after,
+  html[data-theme="dark"] .direction-r .flag:after {
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: var(--surface); }
+  html[data-theme="dark"] .desc { background: var(--surface); }
+}
+
+/* ---------- Student projects ---------- */
+html[data-theme="dark"] .student-project:nth-child(12n+1)  { background: linear-gradient(135deg, hsla(0, 60%, 55%, 0.24), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+2)  { background: linear-gradient(135deg, hsla(30, 60%, 55%, 0.24), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+3)  { background: linear-gradient(135deg, hsla(60, 60%, 55%, 0.22), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+4)  { background: linear-gradient(135deg, hsla(90, 60%, 55%, 0.22), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+5)  { background: linear-gradient(135deg, hsla(120, 60%, 55%, 0.22), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+6)  { background: linear-gradient(135deg, hsla(150, 60%, 55%, 0.22), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+7)  { background: linear-gradient(135deg, hsla(180, 60%, 55%, 0.22), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+8)  { background: linear-gradient(135deg, hsla(210, 60%, 55%, 0.24), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+9)  { background: linear-gradient(135deg, hsla(240, 60%, 60%, 0.24), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+10) { background: linear-gradient(135deg, hsla(270, 60%, 60%, 0.24), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+11) { background: linear-gradient(135deg, hsla(300, 60%, 55%, 0.24), var(--surface)); }
+html[data-theme="dark"] .student-project:nth-child(12n+12) { background: linear-gradient(135deg, hsla(330, 60%, 55%, 0.24), var(--surface)); }
+
+html[data-theme="dark"] .student-project-header,
+html[data-theme="dark"] .student-project-header:hover,
+html[data-theme="dark"] .student-project-header:focus { color: var(--text); }
+html[data-theme="dark"] .student-project-topic,
+html[data-theme="dark"] .student-project-icon { filter: brightness(1.35); }
+html[data-theme="dark"] .student-project-body-inner p { color: var(--text-muted); }
+
+/* ---------- Recipes ---------- */
+html[data-theme="dark"] #recipeSearch { border-color: var(--border); }
+html[data-theme="dark"] .filter-chip {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-muted); }
+html[data-theme="dark"] .filter-chip:hover,
+html[data-theme="dark"] .filter-chip:focus {
+  border-color: hotpink;
+  color: var(--text); }
+html[data-theme="dark"] .filter-chip[aria-pressed="true"] {
+  background: hotpink;
+  border-color: hotpink;
+  color: #16151b; }
+html[data-theme="dark"] .recipe-no-results { color: var(--text-muted); }
+html[data-theme="dark"] .recipe-category { color: var(--text); }
+html[data-theme="dark"] .recipe-category h3::after { background-color: var(--border); }
+html[data-theme="dark"] .recipe-tile { background-color: #4a4654; }
+html[data-theme="dark"] .recipe-tile:hover { background-color: #2b2833; }
+
+html[data-theme="dark"] .ingredients-tile,
+html[data-theme="dark"] .recipe-like-btn,
+html[data-theme="dark"] .recipe-like-btn:hover,
+html[data-theme="dark"] .recipe-like-btn:focus {
+  background-color: #24212a;
+  border-color: var(--border); }
+html[data-theme="dark"] .ingredients-list h3,
+html[data-theme="dark"] .ingredients-list h4 { color: #d2c3c1; }
+html[data-theme="dark"] .ingredients-image-large::after {
+  background: linear-gradient(to right, #24212a 0%, transparent 100%); }
+
+/* ---------- Cycling page ---------- */
+html[data-theme="dark"] .filters-tile { background-color: #262036; }
+html[data-theme="dark"] .filters-tile h4,
+html[data-theme="dark"] .filters label { color: #cdbceb; }
+html[data-theme="dark"] .sort-direction {
+  background: var(--surface);
+  border-color: var(--border); }
+html[data-theme="dark"] .filters button {
+  background-color: #3d3750;
+  color: var(--text); }
+html[data-theme="dark"] .filters button:hover { background-color: blueviolet; }
+html[data-theme="dark"] .osm-toggle { border-top-color: rgba(205, 188, 235, 0.2); }
+html[data-theme="dark"] .osm-note { color: var(--text-muted); }
+html[data-theme="dark"] .gpx-item:hover { background: rgba(255, 105, 180, 0.12); }
+
+html[data-theme="dark"] .course-card { background-color: var(--surface); }
+html[data-theme="dark"] .course-map { background-color: var(--surface-2); }
+html[data-theme="dark"] .course-surface { opacity: 0.12; }
+html[data-theme="dark"] .course-surface.road { color: var(--violet); }
+html[data-theme="dark"] #visitedMap { border-color: var(--border); }
+
+/* the rainbow arc behind the routes, on the dark card */
+html[data-theme="dark"] .course-map.leaflet-container,
+html[data-theme="dark"] #visitedMap.leaflet-container {
+  background:
+    linear-gradient(to top, #211f28 0%, rgba(33, 31, 40, 0) 70%),
+    linear-gradient(to right, #211f28 0%, rgba(33, 31, 40, 0) 35%,
+      rgba(33, 31, 40, 0) 65%, #211f28 100%),
+    radial-gradient(ellipse 60% 65% at 50% 100%,
+      #211f28 10%, #2b2538 48%, #232a38 60%, #232f29 71%,
+      #302e23 82%, #33291f 92%, #342429 101%, #211f28 145%);
+}
+
+/* OpenStreetMap tiles: invert the lightness, keep the hues */
+html[data-theme="dark"] .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
+}
+html[data-theme="dark"] .leaflet-bar a,
+html[data-theme="dark"] .leaflet-bar a:hover {
+  background-color: var(--surface);
+  border-bottom-color: var(--border);
+  color: var(--text); }
+html[data-theme="dark"] .leaflet-container .leaflet-control-attribution {
+  background: rgba(33, 31, 40, 0.8);
+  color: var(--text-muted); }
+html[data-theme="dark"] .leaflet-popup-content-wrapper,
+html[data-theme="dark"] .leaflet-popup-tip {
+  background: var(--surface);
+  color: var(--text); }
+
+html[data-theme="dark"] .leaflet-container .like-btn,
+html[data-theme="dark"] .leaflet-container .reverse-btn {
+  background: rgba(33, 31, 40, 0.85);
+  color: var(--violet); }
+html[data-theme="dark"] .leaflet-container .reverse-btn.active {
+  background: blueviolet;
+  color: #ffffff; }
+
+html[data-theme="dark"] .profile-label,
+html[data-theme="dark"] .profile-axis,
+html[data-theme="dark"] .profile-legend { color: var(--text-muted); }
+html[data-theme="dark"] .profile-tip { background: rgba(33, 31, 40, 0.92); }
+html[data-theme="dark"] .profile-cursor { border-left-color: var(--violet); }
+
+html[data-theme="dark"] .range-track { background: var(--border); }
+html[data-theme="dark"] .dual-range input[type="range"]::-webkit-slider-thumb { background: var(--text); }
+html[data-theme="dark"] .dual-range input[type="range"]::-moz-range-thumb { background: var(--text); }

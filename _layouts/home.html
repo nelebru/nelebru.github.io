@@ -5,7 +5,7 @@ layout: default
 <style>
 .header-canvas-wrapper {
   position: relative;
-  background: white;
+  background: var(--bg);
   /* Contain child margins so the canvas reaches right up to the navbar. */
   display: flow-root;
 }
@@ -116,6 +116,8 @@ document.addEventListener("DOMContentLoaded", function () {
       mouseActive = false;
     });
 
+    const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+
     let hue = 0;
     let particles = [];
 
@@ -169,11 +171,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function animate() {
-      // Very slow fade so sparkles linger softly
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+      // Very slow fade so sparkles linger softly. In dark mode the canvas fades to
+      // transparent instead: painting the dark background at this low alpha never
+      // quite reaches it (8-bit rounding) and leaves the header darker than the page.
+      const dark = isDark();
+      ctx.globalCompositeOperation = dark ? 'destination-out' : 'source-over';
+      ctx.fillStyle = dark ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)';
       // canvas.width/height are device pixels; because the context is scaled by DPR
       // we draw using CSS-pixel dimensions (device / dpr)
       ctx.fillRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+      ctx.globalCompositeOperation = 'source-over';
 
       hue = (hue + 0.5) % 360;  // slow rainbow cycle
 

@@ -17,6 +17,9 @@
   <!-- Mobile Specific Metas
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+
+  {% include theme_head.html %}
 
   <!-- FONT
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -94,7 +97,7 @@
   <style>
   .header-canvas-wrapper {
     position: relative;
-    background: white;
+    background: var(--bg);
     /* Contain child margins so the canvas covers the whole header area. */
     display: flow-root;
   }
@@ -110,6 +113,11 @@
     opacity: 0.2;
   }
 
+  /* a bit more visible on the dark background (colours are lightened in drawCyclist) */
+  html[data-theme="dark"] #cyclist-canvas {
+    opacity: 0.35;
+  }
+
   .header-canvas-wrapper .header {
     position: relative;
     z-index: 1;
@@ -120,6 +128,8 @@
 
 
 <body class="{{ page.title | downcase | replace: ' ', '-' }}-page">
+
+  {% include theme_toggle.html %}
 
 
   <!-- Primary Page Layout
@@ -235,6 +245,8 @@
   // so the cyclists stay sharp on high-DPI screens.
   let width = 1, height = 1;
 
+  const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     width = Math.max(1, wrapper.clientWidth);
@@ -300,7 +312,7 @@
       vx: Math.cos(angle) * 0.5,
       vy: Math.sin(angle) * 0.5,
       baseAngle: angle,
-      color: isLeader ? '#222' : `hsl(${Math.random() * 360}, 60%, 45%)`,
+      hue: Math.random() * 360,
       leader: isLeader
     };
   }
@@ -308,8 +320,11 @@
   let cyclists = Array.from({ length: 25 }, (_, i) => createCyclist(i === 0));
 
   function drawCyclist(c) {
-    ctx.strokeStyle = c.color;
-    ctx.fillStyle = c.color;
+    // the leader uses the text colour; the others their hue, lighter in dark mode
+    const dark = isDark();
+    const color = c.leader ? (dark ? '#e6e3ea' : '#222') : `hsl(${c.hue}, 60%, ${dark ? 62 : 45}%)`;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(c.x - 6, c.y, 4, 0, Math.PI * 2);
@@ -328,9 +343,13 @@
   }
 
   function animate() {
-    // White background fade instead of black
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+    // Fade the trails: into white in light mode, to transparent in dark mode
+    // (painting the dark background never quite reaches it, 8-bit rounding)
+    const dark = isDark();
+    ctx.globalCompositeOperation = dark ? 'destination-out' : 'source-over';
+    ctx.fillStyle = dark ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)';
     ctx.fillRect(0, 0, width, height);
+    ctx.globalCompositeOperation = 'source-over';
 
     const leader = cyclists[0];
 

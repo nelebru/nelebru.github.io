@@ -1,0 +1,32 @@
+<!-- Theme button in the upper right corner: switches between light and dark.
+  The visible icon follows html[data-theme] (see my_css.css). -->
+<button class="theme-toggle" type="button">
+  <i class="fa-solid fa-moon theme-icon-light" aria-hidden="true"></i>
+  <i class="fa-solid fa-sun theme-icon-dark" aria-hidden="true"></i>
+</button>
+<script>
+(function () {
+  var btn = document.querySelector('.theme-toggle');
+
+  function isDark() {
+    return document.documentElement.getAttribute('data-theme') === 'dark';
+  }
+
+  function label() {
+    var text = isDark() ? 'Switch to light mode' : 'Switch to dark mode';
+    btn.title = text;
+    btn.setAttribute('aria-label', text);
+  }
+
+  btn.addEventListener('click', function () {
+    var toDark = !isDark();
+    window.setTheme(toDark ? 'dark' : 'light');
+    label();
+    // to dark: a moon flies over the screen; to light: the sun rises (libs/custom/theme_animations.js)
+    if (toDark && window.moonFlight) window.moonFlight();
+    if (!toDark && window.sunrise) window.sunrise();
+  });
+  label();
+})();
+</script>
+<script src="{{ "/libs/custom/theme_animations.js" | prepend: site.baseurl }}" defer></script>

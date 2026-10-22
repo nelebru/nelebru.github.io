@@ -57,6 +57,9 @@ When you click a heart, your browser stores a small note in its local storage th
 so you can't like it twice. Nothing is stored before you click. This note never leaves your
 device, and you can delete it any time by clearing this website's data in your browser.
 
+The same goes for the light/dark mode button: if you switch to dark mode, your browser stores that choice
+locally so the site stays dark on your next visit. Switching back to light removes the note again.
+
 ### 5. Links to other websites
 
 This website links to external services such as LinkedIn, GitHub, Google Scholar and ResearchGate. No data is transmitted to these services until you click a link. After that, the privacy policy of the respective service applies.

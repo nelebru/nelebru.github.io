@@ -18,6 +18,9 @@
   <!-- Mobile Specific Metas
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+
+  {% include theme_head.html %}
 
   <!-- FONT
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -87,6 +90,8 @@
 
 </head>
 <body class="{{ page.title | downcase | replace: ' ', '-' }}-page">
+
+  {% include theme_toggle.html %}
 
 
   <!-- Primary Page Layout
