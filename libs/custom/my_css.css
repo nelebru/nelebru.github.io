@@ -1765,10 +1765,19 @@ html[data-theme="dark"] .lights-toggle {
   display: inline-flex;
 }
 
-.lights-toggle:hover,
-.lights-toggle:focus {
-  color: #ffd76a;
-  border-color: #ffd76a;
+/* yellow only while the lights are on; hover and keyboard focus just brighten it
+   (plain :focus would stay after a click, and hover sticks after a tap on phones) */
+@media (hover: hover) {
+  .lights-toggle:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+    transform: scale(1.08);
+  }
+}
+
+.lights-toggle:focus-visible {
+  color: var(--text);
+  border-color: var(--text-muted);
   transform: scale(1.08);
 }
 
@@ -2301,16 +2310,35 @@ html[data-theme="dark"] .ingredients-image-large::after {
   background: linear-gradient(to right, #24212a 0%, transparent 100%); }
 
 /* ---------- Cycling page ---------- */
-html[data-theme="dark"] .filters-tile { background-color: #262036; }
-html[data-theme="dark"] .filters-tile h4,
-html[data-theme="dark"] .filters label { color: #cdbceb; }
+/* filter tile as a patch of night sky: violet glow, inset fields, Filter as the main button */
+html[data-theme="dark"] .filters-tile {
+  background: linear-gradient(160deg, #2a2240, #1b1825);
+  border: 1px solid rgba(176, 138, 245, 0.25);
+  box-shadow: 0 0 18px rgba(138, 43, 226, 0.18); }
+html[data-theme="dark"] .filters-tile h4 {
+  color: #cdbceb;
+  text-shadow: 0 0 8px rgba(176, 138, 245, 0.35); }
+html[data-theme="dark"] .filters label { color: #a99bc4; }
+html[data-theme="dark"] .filters select,
 html[data-theme="dark"] .sort-direction {
-  background: var(--surface);
-  border-color: var(--border); }
+  background-color: #17141f;
+  border-color: rgba(176, 138, 245, 0.3);
+  color: var(--text); }
+html[data-theme="dark"] .filters select:focus,
+html[data-theme="dark"] .sort-direction:focus {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 2px rgba(176, 138, 245, 0.25); }
 html[data-theme="dark"] .filters button {
   background-color: #3d3750;
   color: var(--text); }
 html[data-theme="dark"] .filters button:hover { background-color: blueviolet; }
+html[data-theme="dark"] #applyFilter { background-color: blueviolet; color: #fff; }
+html[data-theme="dark"] #applyFilter:hover { background-color: #9b4dff; }
+html[data-theme="dark"] #resetFilter {
+  background-color: transparent;
+  border: 1px solid rgba(176, 138, 245, 0.4);
+  color: #cdbceb; }
+html[data-theme="dark"] #resetFilter:hover { background-color: rgba(176, 138, 245, 0.15); }
 html[data-theme="dark"] .osm-toggle { border-top-color: rgba(205, 188, 235, 0.2); }
 html[data-theme="dark"] .osm-note { color: var(--text-muted); }
 html[data-theme="dark"] .gpx-item:hover { background: rgba(255, 105, 180, 0.12); }
@@ -2364,6 +2392,12 @@ html[data-theme="dark"] .profile-legend { color: var(--text-muted); }
 html[data-theme="dark"] .profile-tip { background: rgba(33, 31, 40, 0.92); }
 html[data-theme="dark"] .profile-cursor { border-left-color: var(--violet); }
 
-html[data-theme="dark"] .range-track { background: var(--border); }
-html[data-theme="dark"] .dual-range input[type="range"]::-webkit-slider-thumb { background: var(--text); }
-html[data-theme="dark"] .dual-range input[type="range"]::-moz-range-thumb { background: var(--text); }
+html[data-theme="dark"] .range-track { background: rgba(205, 188, 235, 0.15); }
+html[data-theme="dark"] .range-fill { background: linear-gradient(90deg, blueviolet, hotpink); }
+html[data-theme="dark"] .dual-range input[type="range"]::-webkit-slider-thumb {
+  background: #f3eefc;
+  box-shadow: 0 0 6px var(--violet); }
+html[data-theme="dark"] .dual-range input[type="range"]::-moz-range-thumb {
+  background: #f3eefc;
+  box-shadow: 0 0 6px var(--violet); }
+html[data-theme="dark"] .range-values { color: var(--violet); }
