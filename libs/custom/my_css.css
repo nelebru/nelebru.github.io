@@ -1363,7 +1363,8 @@ a:focus {
   color: #ffffff;
 }
 
-/* OSM toggle: next to the world map button on desktop, in the filter tile on mobile */
+/* OSM toggle: next to the world map button on desktop, in the filter tile on mobile
+   (and next to the world map button too while that map is open) */
 .map-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -1392,9 +1393,27 @@ a:focus {
     display: none;
   }
 
+  /* while the world map is open, show the toggle next to its button as well */
+  .world-map-open .osm-desktop {
+    display: revert;
+  }
+
+  /* right of the world map button */
+  .map-buttons .osm-toggle-btn {
+    order: 1;
+  }
+
   .osm-toggle {
     display: flex;
   }
+}
+
+/* a faint drawn map behind the label (inline SVG, so nothing is loaded from
+   OpenStreetMap before the click) */
+.map-buttons .osm-toggle-btn {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='40' viewBox='0 0 160 40' preserveAspectRatio='xMidYMid slice'%3E%3Crect x='90' y='15' width='30' height='13' rx='2' fill='%2390c08a' fill-opacity='.3'/%3E%3Cpath d='M0 33 C40 25 70 40 110 31 S150 23 160 27' stroke='%236fa8dc' stroke-width='5' fill='none' stroke-opacity='.35'/%3E%3Cg stroke='%239b8ab8' fill='none' stroke-opacity='.4'%3E%3Cpath d='M0 11 H160' stroke-width='2.5'/%3E%3Cpath d='M30 0 L42 40 M80 0 L72 40 M130 0 L138 40' stroke-width='2'/%3E%3Cpath d='M0 3 L60 22 M100 40 L160 5' stroke-width='1.2'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
 }
 
 .navbar {

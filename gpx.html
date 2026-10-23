@@ -33,7 +33,7 @@ permalink: /gpx/
         <a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OpenStreetMap privacy policy</a>.
       {% endcapture %}
 
-      <!-- OSM toggle next to the world map button (desktop only; on mobile it sits in the filter tile) -->
+      <!-- OSM toggle next to the world map button (on mobile only while the world map is open; it also sits in the filter tile) -->
       <div class="map-buttons">
         <button class="osm-toggle-btn show-map-button osm-desktop" aria-pressed="false">Show OpenStreetMap</button>
         <button id="showMapBtn" class="show-map-button">Show world map</button>
@@ -294,15 +294,13 @@ if (LIKES_API) {
 
 document.getElementById("showMapBtn").addEventListener("click", function () {
     const container = document.getElementById("visitedMapContainer");
+    const opening = container.style.display === "none";
 
-    if (container.style.display === "none") {
-        container.style.display = "block";
-        this.textContent = "Hide world map";
-        initializeVisitedMap();
-    } else {
-        container.style.display = "none";
-        this.textContent = "Show world map";
-    }
+    container.style.display = opening ? "block" : "none";
+    this.textContent = opening ? "Hide world map" : "Show world map";
+    // on mobile, the OSM toggle appears next to this button while the map is open
+    document.querySelector(".gpx-title-block").classList.toggle("world-map-open", opening);
+    if (opening) initializeVisitedMap();
 });
 
 function initializeVisitedMap() {
