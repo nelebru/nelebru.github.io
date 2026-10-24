@@ -579,15 +579,23 @@ function showCourse(map, gpxText, gpxFile, card) {
 
 /* ---------- Road surfaces ---------- */
 
-// keep the keys in sync with the categories in read_gpx_py/surfaces.py
-const SURFACES = {
-  road:       { label: "Road",       color: "blueviolet" },
-  cycle_path: { label: "Cycle path", color: "#2a9d8f" },
-  cobbles:    { label: "Cobbles",    color: "#8a8a99" },
-  gravel:     { label: "Gravel",     color: "#a0703f" },
-  unpaved:    { label: "Unpaved",    color: "#6b8e23" },
-  unknown:    { label: "Unknown",    color: "#c8c8d0" }
-};
+// keep the keys in sync with the categories in read_gpx_py/surfaces.py. The colours are
+// CSS variables (--route-<key> in my_css.css, one set per theme), so everything already
+// drawn follows a theme switch.
+const SURFACES = Object.fromEntries(Object.entries({
+  road:       "Road",
+  cycle_path: "Cycle path",
+  cobbles:    "Cobbles",
+  gravel:     "Gravel",
+  unpaved:    "Unpaved",
+  unknown:    "Unknown"
+}).map(([key, label]) => [key, { label, color: `var(--route-${key})` }]));
+
+// the current value of such a colour, for places that can't take var(), e.g. SVG attributes
+function resolveColor(color) {
+  const name = color.match(/^var\((--[\w-]+)\)$/);
+  return name ? getComputedStyle(document.documentElement).getPropertyValue(name[1]).trim() : color;
+}
 
 // courses missing from the file (or a failed fetch) simply get the plain purple profile
 const surfacesReady = fetch(surfacesJsonUrl)
@@ -651,8 +659,10 @@ function surfaceRoute(latlngs, runs) {
     while (i < latlngs.length && cumDist[i] < b) pts.push(latlngs[i++]);
     pts.push(pointAt(latlngs, cumDist, b));
 
+    // the class sets the stroke from the CSS variable (my_css.css); SVG attributes can't use var()
     L.polyline(pts, {
-      color: SURFACES[cat].color,
+      color: resolveColor(SURFACES[cat].color),
+      className: `route-${cat}`,
       weight: 4,
       opacity: 0.9,
       interactive: false
@@ -783,8 +793,8 @@ let profileGradientCount = 0;
 function surfaceGradient(id, runs) {
   const stops = runs.map(([from, to, cat]) => {
     const color = SURFACES[cat].color;
-    return `<stop offset="${(from * 100).toFixed(2)}%" stop-color="${color}"/>`
-      + `<stop offset="${(to * 100).toFixed(2)}%" stop-color="${color}"/>`;
+    return `<stop offset="${(from * 100).toFixed(2)}%" style="stop-color: ${color}"/>`
+      + `<stop offset="${(to * 100).toFixed(2)}%" style="stop-color: ${color}"/>`;
   }).join("");
   return `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${PROFILE_W}" y2="0">${stops}</linearGradient>`;
 }
@@ -870,7 +880,7 @@ function drawProfile(el, latlngs, runs, detailed, map) {
     const named = surface && (detailed || cat !== "road");
     tip.textContent = `${(d / 1000).toFixed(1)} km · ${Math.round(eles[i])} m`
       + (named ? ` · ${surface.label}` : "");
-    const color = surface ? surface.color : "blueviolet";
+    const color = surface ? resolveColor(surface.color) : "blueviolet";
     tip.style.color = color;
 
     const pos = pointAt(latlngs, cumDist, d);

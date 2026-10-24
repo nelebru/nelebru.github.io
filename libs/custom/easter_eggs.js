@@ -48,7 +48,6 @@
 
     var owl = null, hideTimer = null, lastLine = -1;
 
-    // between midnight and 4 a.m., in both themes
     function owlTime() {
         var hour = new Date().getHours();
         return hour >= NIGHT_FROM && hour < NIGHT_TO;
@@ -199,9 +198,131 @@
         helloTimer = setTimeout(function () { bubble.classList.remove('visible'); }, 2500);
     }
 
+    // dark mode only: scrubbing the mouse (or a finger) fast back and forth on one spot of
+    // the glitter field in the home header leaves a little random planet there
+    // within SCRUB_MS: at least SCRUB_PATH px travelled with SCRUB_TURNS changes of
+    // direction, all inside a SCRUB_BOX px square
+    var SCRUB_MS = 800, SCRUB_PATH = 500, SCRUB_TURNS = 4, SCRUB_BOX = 200, SCRUB_PAUSE_MS = 800;
+    var MAX_PLANETS = 12;
+    var scrub = [], scrubPause = 0, planetCount = 0;
+
+    function rnd(min, max) {
+        return min + Math.random() * (max - min);
+    }
+
+    // an SVG planet in a random colour, maybe with bands, craters, a ring and/or a moon;
+    // drawn in a 100x100 box centred on 0, 0 so the ring has room around the disc
+    function planetSvg() {
+        var id = 'planet-' + (++planetCount);
+        var hue = Math.floor(rnd(0, 360));
+        var r = 22;
+        var col = function (s, l, a) {
+            return 'hsla(' + ((hue + 360) % 360) + ', ' + s + '%, ' + l + '%, ' + (a === undefined ? 1 : a) + ')';
+        };
+        var disc = '<circle r="' + r + '" fill="url(#' + id + '-shade)"/>';
+        var surface = '';
+        if (Math.random() < 0.5) {
+            // gas giant: soft bands across the disc
+            for (var b = 0; b < 4; b++) {
+                surface += '<rect x="-' + r + '" y="' + (-r + rnd(4, 40)).toFixed(1) + '" width="' + 2 * r +
+                    '" height="' + rnd(2, 6).toFixed(1) + '" fill="' + col(50, rnd(35, 75), 0.45) + '"/>';
+            }
+        } else {
+            // rocky: a few craters
+            for (var c = 0; c < 3; c++) {
+                surface += '<circle cx="' + rnd(-13, 13).toFixed(1) + '" cy="' + rnd(-13, 13).toFixed(1) +
+                    '" r="' + rnd(2, 5).toFixed(1) + '" fill="' + col(30, 30, 0.35) + '"/>';
+            }
+        }
+        var ringed = Math.random() < 0.45;
+        var tilt = rnd(-30, 30).toFixed(0);
+        var ringColor = 'hsla(' + ((hue + 40) % 360) + ', 60%, 80%, 0.8)';
+        var ringBack = ringed ? '<ellipse rx="40" ry="9" fill="none" stroke="' + ringColor + '" stroke-width="3.5" transform="rotate(' + tilt + ')"/>' : '';
+        // the front half of the ring passes over the disc
+        var ringFront = ringed ? '<path d="M-40 0 A40 9 0 0 0 40 0" fill="none" stroke="' + ringColor + '" stroke-width="3.5" transform="rotate(' + tilt + ')"/>' : '';
+        var moon = !ringed && Math.random() < 0.5
+            ? '<circle cx="' + rnd(28, 36).toFixed(1) + '" cy="' + rnd(-30, -18).toFixed(1) + '" r="' + rnd(3, 5).toFixed(1) + '" fill="#d9d4e3"/>'
+            : '';
+        return '<svg viewBox="-50 -50 100 100" aria-hidden="true">' +
+            '<defs>' +
+              '<radialGradient id="' + id + '-shade" cx="35%" cy="30%" r="75%">' +
+                '<stop offset="0" stop-color="' + col(70, 80) + '"/>' +
+                '<stop offset="0.55" stop-color="' + col(55, 55) + '"/>' +
+                '<stop offset="1" stop-color="' + col(50, 22) + '"/>' +
+              '</radialGradient>' +
+              '<clipPath id="' + id + '-clip"><circle r="' + r + '"/></clipPath>' +
+            '</defs>' +
+            ringBack + disc +
+            '<g clip-path="url(#' + id + '-clip)">' + surface +
+              // night side towards the lower right
+              '<circle r="' + r + '" cx="9" cy="7" fill="rgba(10, 8, 20, 0.35)"/>' +
+            '</g>' +
+            ringFront + moon +
+            '</svg>';
+    }
+
+    // x, y relative to the field (the header wrapper built by _layouts/home.html)
+    function addPlanet(field, x, y) {
+        var size = Math.round(rnd(21, 50));
+        var clamp = function (v, max) { return Math.max(size / 2, Math.min(max - size / 2, v)) - size / 2; };
+        var planet = document.createElement('div');
+        planet.className = 'stuck-planet';
+        planet.style.width = planet.style.height = size + 'px';
+        // keep it inside the field
+        planet.style.left = clamp(x, field.clientWidth) + 'px';
+        planet.style.top = clamp(y, field.clientHeight) + 'px';
+        planet.style.setProperty('--planet-spin', rnd(-25, 25).toFixed(0) + 'deg');
+        planet.innerHTML = planetSvg();
+        // above the glitter canvases, below the header text (_layouts/home.html)
+        var header = field.querySelector('.header');
+        field.insertBefore(planet, header);
+        var all = field.querySelectorAll('.stuck-planet');
+        if (all.length > MAX_PLANETS) all[0].remove();
+    }
+
+    function onScrub(x, y) {
+        if (document.documentElement.getAttribute('data-theme') !== 'dark') return;
+        var field = document.querySelector('.header-canvas-wrapper');
+        if (!field) return;
+        var rect = field.getBoundingClientRect();
+        if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+            scrub = [];
+            return;
+        }
+        var now = Date.now();
+        if (now < scrubPause) return;
+        scrub.push({ x: x, y: y, t: now });
+        while (scrub.length && now - scrub[0].t > SCRUB_MS) scrub.shift();
+
+        var path = 0, minX = x, maxX = x, minY = y, maxY = y;
+        var turnsX = 0, turnsY = 0, dirX = 0, dirY = 0;
+        for (var i = 1; i < scrub.length; i++) {
+            var p = scrub[i], q = scrub[i - 1];
+            var dx = p.x - q.x, dy = p.y - q.y;
+            path += Math.hypot(dx, dy);
+            minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+            minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+            // tiny jitters don't count as turning around
+            if (Math.abs(dx) > 2) { if (dirX && Math.sign(dx) !== dirX) turnsX++; dirX = Math.sign(dx); }
+            if (Math.abs(dy) > 2) { if (dirY && Math.sign(dy) !== dirY) turnsY++; dirY = Math.sign(dy); }
+        }
+        // a long way covered, but all of it within a small box: back and forth on one spot
+        if (path < SCRUB_PATH || Math.max(turnsX, turnsY) < SCRUB_TURNS ||
+            maxX - minX > SCRUB_BOX || maxY - minY > SCRUB_BOX) return;
+        scrub = [];
+        scrubPause = now + SCRUB_PAUSE_MS;
+        // detection works in screen coordinates (a swipe may scroll the page under the
+        // finger), the planet lands where the pointer is now
+        addPlanet(field, x - rect.left, y - rect.top);
+    }
+
     function start() {
         var pic = document.querySelector('.header .three.columns a');
         if (pic) pic.addEventListener('click', helloAgain);
+        document.addEventListener('mousemove', function (e) { onScrub(e.clientX, e.clientY); }, { passive: true });
+        document.addEventListener('touchmove', function (e) {
+            if (e.touches.length === 1) onScrub(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
         update();
         new MutationObserver(onThemeChange).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
         setInterval(update, 60000);

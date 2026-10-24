@@ -23,6 +23,14 @@
   --text: #222222;
   --text-muted: #777777;
   --border: #eeeeee;
+  /* road surfaces on the cycling page (SURFACES in gpx.html): clear but not loud next to
+     blueviolet, leaning towards the pastel rainbow and lavender of the page */
+  --route-road: blueviolet;
+  --route-cycle_path: #1f9fa6;
+  --route-cobbles: #8c86a3;
+  --route-gravel: #c27c4e;
+  --route-unpaved: #5e9f55;
+  --route-unknown: #d4cee0;
 }
 body {
   background-color: var(--bg);
@@ -104,6 +112,8 @@ h4 {
   border-top: 1px solid #eee;
   padding: 4rem 0;
   margin-bottom: 0;}
+#bio {
+  border-top-width: 0; }
 .footer {
   text-align: center;
   color: rgba(0, 0, 0, 0.4);
@@ -237,9 +247,7 @@ html {
     display: block;
     width: 100%;
     height: 6.5rem;
-    z-index: 99;
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee; }
+    z-index: 99; }
   .navbar-spacer {
     display: none; }
   .navbar > .container {
@@ -964,7 +972,16 @@ a:focus {
   gap: 2rem;
   margin: 2em auto;
   max-width: 900px;
-  flex-wrap: wrap; /* ensures it works on smaller screens */
+  /* keep the filter tile beside the title block: if it wrapped, it would sit between
+     the world map button and the map (on phones the header is restacked below) */
+  flex-wrap: nowrap;
+}
+
+@media (min-width: 701px) {
+  .gpx-title-block {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .gpxpage-title {
@@ -1032,6 +1049,18 @@ a:focus {
 
 .filter-row > div {
   flex: 1;
+}
+
+/* the tile is narrow beside the title block here, so stack the selects as on phones */
+@media (min-width: 701px) and (max-width: 900px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-row label {
+    display: block;
+    text-align: center;
+  }
 }
 
 .sort-row {
@@ -1151,7 +1180,7 @@ a:focus {
 }
 
 .course-surface.gravel {
-  color: #a0703f;  /* earthy brown */
+  color: var(--route-gravel);  /* same as gravel on the map */
 }
 
 .filters {
@@ -1172,8 +1201,8 @@ a:focus {
     linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0) 35%,
       rgba(255, 255, 255, 0) 65%, #ffffff 100%),
     radial-gradient(ellipse 60% 65% at 50% 100%,
-      #ffffff 10%, #f9f5fe 48%, #f4f9fe 60%, #f5fcf4 71%,
-      #fffdf3 82%, #fff8f2 92%, #fef4f5 101%, #ffffff 145%);
+      #ffffff 10%, #f1e9fd 48%, #e8f2fd 60%, #eaf8e8 71%,
+      #fffae3 82%, #fff0e3 92%, #fde7ea 101%, #ffffff 145%);
   /* pale rainbow glow alternative:
   background: radial-gradient(ellipse at center,
     #fde6ef 0%, #fdeef4 10%, #fff9f3 20%, #fffdf2 30%, #f7fcf5 40%, #f5f9ff 50%, #f9f6ff 60%, #ffffff 85%); */
@@ -1220,6 +1249,15 @@ a:focus {
 .leaflet-container .like-btn.liked {
   cursor: default;
 }
+
+/* course lines coloured by road surface (surfaceRoute in gpx.html); the stroke comes from
+   the theme's colour, so it follows a theme switch */
+.route-road { stroke: var(--route-road); }
+.route-cycle_path { stroke: var(--route-cycle_path); }
+.route-cobbles { stroke: var(--route-cobbles); }
+.route-gravel { stroke: var(--route-gravel); }
+.route-unpaved { stroke: var(--route-unpaved); }
+.route-unknown { stroke: var(--route-unknown); }
 
 /* direction arrows along each course */
 .course-arrow svg {
@@ -1897,6 +1935,34 @@ html[data-theme="dark"] .lights-toggle {
   .night-owl .owl-eyes { animation: none; }
 }
 
+.stuck-planet {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  transform: rotate(var(--planet-spin));
+  animation: planet-pop 0.5s cubic-bezier(0.34, 1.6, 0.64, 1);
+}
+
+.stuck-planet svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+html:not([data-theme="dark"]) .stuck-planet {
+  display: none;
+}
+
+@keyframes planet-pop {
+  from { opacity: 0; transform: rotate(var(--planet-spin)) scale(0.2); }
+  to { opacity: 1; transform: rotate(var(--planet-spin)) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stuck-planet { animation: none; }
+}
+
 .toggle-bubble {
   position: fixed;
   top: 5.8rem;
@@ -2030,6 +2096,13 @@ html[data-theme="dark"] {
   --text-muted: #a39eac;
   --border: #3a3644;
   --violet: #b08af5;  /* readable blueviolet for text and icons */
+  /* road surfaces: softer and a little lighter, towards the Milky Way's colours; road
+     stays blueviolet like the routes without surface data, unknown recedes into the card */
+  --route-cycle_path: #4cb8b0;
+  --route-cobbles: #9893ab;
+  --route-gravel: #c48f62;
+  --route-unpaved: #8fae5a;
+  --route-unknown: #4f4b5c;
 }
 
 /* ---------- Base (skeleton.css); :where() keeps the generic button rules weaker than specific ones ---------- */
@@ -2200,13 +2273,6 @@ html[data-theme="dark"] .navbar > .container::before {
   }
 }
 
-@media (min-width: 750px) {
-  html[data-theme="dark"] .navbar,
-  html[data-theme="dark"] .navbar-spacer {
-    border-top-color: var(--border);
-    border-bottom-color: var(--border); }
-}
-
 /* ---------- Research tiles ---------- */
 /* the three main colours of the Milky Way band in navbar order (violet, warm core, blue),
    as faint as the student projects; the icons take the same colour */
@@ -2349,16 +2415,41 @@ html[data-theme="dark"] .course-surface { opacity: 0.12; }
 html[data-theme="dark"] .course-surface.road { color: var(--violet); }
 html[data-theme="dark"] #visitedMap { border-color: var(--border); }
 
-/* the rainbow arc behind the routes, on the dark card */
+/* a faint Milky Way behind the routes instead of the rainbow, in the colours of the
+   navbar's: a diagonal glowing band, violet and blue with only a hint of a warm core */
 html[data-theme="dark"] .course-map.leaflet-container,
 html[data-theme="dark"] #visitedMap.leaflet-container {
+  /* fades into the card towards all sides (solid in the corners, beyond the ellipse) */
   background:
-    linear-gradient(to top, #211f28 0%, rgba(33, 31, 40, 0) 70%),
-    linear-gradient(to right, #211f28 0%, rgba(33, 31, 40, 0) 35%,
-      rgba(33, 31, 40, 0) 65%, #211f28 100%),
-    radial-gradient(ellipse 60% 65% at 50% 100%,
-      #211f28 10%, #2b2538 48%, #232a38 60%, #232f29 71%,
-      #302e23 82%, #33291f 92%, #342429 101%, #211f28 145%);
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(33, 31, 40, 0) 30%, #211f28 100%),
+    radial-gradient(ellipse 28% 20% at 54% 48%, rgba(255, 228, 205, 0.025), transparent 70%),
+    linear-gradient(118deg, transparent 22%, rgba(176, 138, 245, 0.08) 40%,
+      rgba(225, 210, 235, 0.06) 50%, rgba(110, 145, 240, 0.08) 60%, transparent 78%),
+    #211f28;
+}
+
+/* its stars on their own layer, dimmed and thinning out away from the band; behind
+   Leaflet's panes, so the routes (and OpenStreetMap tiles, when shown) lie on top */
+html[data-theme="dark"] .course-map.leaflet-container::before,
+html[data-theme="dark"] #visitedMap.leaflet-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background:
+    url("../../assets/stars/field-a.svg") 0 0 / 701px 229px repeat,
+    url("../../assets/stars/field-b.svg") 137px 61px / 523px 181px repeat;
+  /* band shape, intersected with the same fade towards the edges */
+  -webkit-mask-image:
+    linear-gradient(118deg, transparent 15%, #000 40%, #000 60%, transparent 90%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, #000 30%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(118deg, transparent 15%, #000 40%, #000 60%, transparent 85%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, #000 30%, transparent 100%);
+  mask-composite: intersect;
 }
 
 /* OpenStreetMap tiles: invert the lightness, keep the hues */

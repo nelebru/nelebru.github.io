@@ -22,9 +22,10 @@
     var toDark = !isDark();
     window.setTheme(toDark ? 'dark' : 'light');
     label();
-    // to dark: a moon flies over the screen; to light: the sun rises (libs/custom/theme_animations.js)
+    // to dark: a moon flies over the screen (libs/custom/theme_animations.js)
     if (toDark && window.moonFlight) window.moonFlight();
-    if (!toDark && window.sunrise) window.sunrise();
+    // to light: the sun rises; switched off for now, uncomment to bring it back
+    // if (!toDark && window.sunrise) window.sunrise();
   });
   label();
 })();
