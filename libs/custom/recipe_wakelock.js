@@ -11,6 +11,7 @@
     if (!title) return;
 
     let lock = null;
+    let pending = false;
 
     const label = document.createElement("label");
     label.className = "recipe-wake";
@@ -22,13 +23,20 @@
     title.after(label);
 
     async function acquire() {
+        if (lock || pending) return;
+        pending = true;
         try {
-            lock = await navigator.wakeLock.request("screen");
+            const sentinel = await navigator.wakeLock.request("screen");
+            // switched off while the request was still pending
+            if (!input.checked) { sentinel.release(); return; }
+            lock = sentinel;
             // released by the browser (tab hidden, battery saver, ...)
-            lock.addEventListener("release", () => { lock = null; });
+            sentinel.addEventListener("release", () => { if (lock === sentinel) lock = null; });
         } catch (err) {
             console.error("Wake lock failed:", err);
             input.checked = false;
+        } finally {
+            pending = false;
         }
     }
 
