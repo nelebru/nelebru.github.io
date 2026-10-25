@@ -874,7 +874,8 @@ body.gpx-page .navbar-link[href*="gpx"] {
   font-weight: 700;
 }
 
-.ingredients-list h3 + h4 {
+.ingredients-list h3 + h4,
+.ingredients-list .tick-hint + h4 {
   margin-top: 0;
 }
 
@@ -883,6 +884,34 @@ body.gpx-page .navbar-link[href*="gpx"] {
   margin-bottom: 1em;
   padding-left: 2em;
   list-style-position: outside;
+}
+
+/* set by recipe_ingredients.js) */
+.ingredients-list li.tickable {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.2s ease;
+}
+
+.ingredients-list li.ticked {
+  opacity: 0.45;
+  text-decoration: line-through;
+  text-decoration-color: hotpink;
+  text-decoration-thickness: 2px;
+}
+
+.tick-hint {
+  margin: 0 0 0.6em 0;
+  color: #8a8380;
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+.ingredients-list li.tickable:focus-visible {
+  outline: 2px solid hotpink;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .ingredients-image {
@@ -2485,6 +2514,7 @@ html[data-theme="dark"] .recipe-like-btn .like-label {
   color: var(--text-muted); }
 html[data-theme="dark"] .ingredients-list h3,
 html[data-theme="dark"] .ingredients-list h4 { color: #d2c3c1; }
+html[data-theme="dark"] .tick-hint { color: var(--text-muted); }
 html[data-theme="dark"] .ingredients-image-large::after {
   background: linear-gradient(to right, #24212a 0%, transparent 100%); }
 
