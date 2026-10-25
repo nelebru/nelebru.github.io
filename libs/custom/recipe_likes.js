@@ -54,7 +54,7 @@
         });
     }
 
-    /* recipe page: heart button under the title */
+    /* recipe page: heart button in the row under the title */
     function updateButton(btn) {
         const id = btn.dataset.recipe;
         const liked = likedRecipes.has(id);
@@ -80,7 +80,14 @@
             window.burstHearts?.(btn);
             likeRecipe(btn.dataset.recipe);
         });
-        title.appendChild(btn);
+        // shared row under the title, left of the "keep screen on" switch (recipe_wakelock.js)
+        let row = document.querySelector(".recipe-actions");
+        if (!row) {
+            row = document.createElement("div");
+            row.className = "recipe-actions";
+            title.after(row);
+        }
+        row.prepend(btn);
         updateButton(btn);
     }
 

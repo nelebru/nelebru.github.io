@@ -10,7 +10,7 @@ permalink: /impressum/
 Nele Brügge<br>
 (Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV)<br>
 Germany<br>
-E-Mail: nele.bruegge [AT] dfki.de
+E-Mail: nelesophiebrue [AT] gmail.com
 {: style="text-align: center"}
 
 

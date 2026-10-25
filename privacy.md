@@ -16,7 +16,7 @@ feel free to contact me (see below) :)
 ### 1. Who's responsible
 
 Nele Brügge<br>
-E-Mail: nele.bruegge [AT] dfki.de
+E-Mail: nelesophiebrue [AT] gmail.com
 {: style="text-align: center"}
 
 

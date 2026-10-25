@@ -622,14 +622,25 @@ body.recipes-page .navbar-link[href*="recipes"] {
   opacity: 1;
 }
 
-/* like button under the title of a recipe page (set by recipe_likes.js) */
+/* row under the title of a recipe page with the like button and the "keep screen on"
+   switch side by side; on narrow phones the switch wraps below the button */
+.recipe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem 2rem;
+  margin: 0.6em 0 1.5em;
+}
+
+/* like button in the action row of a recipe page (set by recipe_likes.js) */
 .recipe-like-btn {
-  display: flex; /* own line below the description, centered via the auto margins */
+  display: flex;
   width: fit-content;
   align-items: center;
   gap: 0.5rem;
   height: auto;
-  margin: 0.6em auto 0;
+  margin: 0;
   padding: 0.4rem 0.9rem;
   border: 1px solid #e4e0da;
   border-radius: 999px;
@@ -700,13 +711,13 @@ body.recipes-page .navbar-link[href*="recipes"] {
   }
 }
 
-/* "keep screen on" switch under the title of a recipe page (set by recipe_wakelock.js) */
+/* "keep screen on" switch in the action row of a recipe page (set by recipe_wakelock.js) */
 .recipe-wake {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.6rem;
-  margin: 0 0 1.5em 0;
+  margin: 0;
   font-size: 1.4rem;
   font-weight: 400;
   cursor: pointer;

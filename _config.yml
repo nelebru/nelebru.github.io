@@ -4,6 +4,20 @@ includes:    ./_includes
 url: "https://nelebru.github.io"
 baseurl: ""
 
+# used by jekyll-seo-tag for <title>, description, Open Graph and canonical links;
+# pages can override description (and image) in their front matter
+title: "Nele Brügge"
+description: "Personal website of Nele Brügge, researcher and PhD student at DFKI and the University of Luebeck, working on machine learning, differential privacy and representation learning in medical AI."
+lang: en
+author: "Nele Brügge"
+social:
+  name: "Nele Brügge"
+  links:
+    - "https://www.linkedin.com/in/nele-brügge"
+    - "https://github.com/nelebru"
+    - "https://scholar.google.com/citations?user=jhTOT58AAAAJ"
+    - "https://www.researchgate.net/profile/Nele-Bruegge"
+
 # Cloudflare Worker from _likes-worker/ (hearts on courses and recipes); leave empty to hide the hearts
 likes_api: "https://course-likes.nele-bruegge.workers.dev/likes"
 
@@ -16,3 +30,4 @@ collections:
 
 plugins:
   - jekyll-sitemap
+  - jekyll-seo-tag

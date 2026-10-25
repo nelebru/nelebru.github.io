@@ -5,15 +5,9 @@
   <!-- Basic Page Needs
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta charset="utf-8">
-  <title>{{ site.data.main_info.name }} | {{ page.title }}</title>
-  <meta name="description" content="Nele Brügge">
   <meta name="google-site-verification" content="4y9y9do4zZipu_rwhEXrTre-t3Hom8yNtIJ7vyct3fA" />
-  <meta name="author" content="Nele Brügge">
-  <meta property="og:title" content="Nele Brügge" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://nelebru.github.io/" />
-  <meta property="og:site_name" content="Nele Brügge" />
-  <link rel="canonical" href="https://nelebru.github.io/">
+  <!-- title, description, canonical, Open Graph per page (jekyll-seo-tag, see _config.yml) -->
+  {% seo %}
 
   <!-- Mobile Specific Metas
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -107,7 +101,6 @@
         <div class="nine columns main-description">
             <h1>{{ site.data.main_info.name }}</h1>
             <p>{{ site.data.main_info.title }}</p>
-            <p>{{ site.data.main_info.email }}</p>
             <p>
               <span onclick="window.open('{{ site.data.main_info.linkedin }}')" style="cursor: pointer">
                 <i class="fa-brands fa-linkedin fa-lg"></i>
@@ -157,8 +150,6 @@
             <a href="https://github.com/nelebru/nelebru.github.io" target="_blank">nelebru</a>
             (inspired by
             <a href="https://github.com/msaveski/www_personal" target="_blank">msaveski</a>).
-          {% else %}
-          {{ site.data.main_info.email }}
           {% endif %}
         </div>
 

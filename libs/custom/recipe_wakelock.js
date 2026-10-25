@@ -20,7 +20,15 @@
         <span class="wake-track" aria-hidden="true"></span>
         <span class="wake-text">Keep screen on</span>`;
     const input = label.querySelector("input");
-    title.after(label);
+
+    // shared row under the title, the like button (recipe_likes.js) goes left of the switch
+    let row = document.querySelector(".recipe-actions");
+    if (!row) {
+        row = document.createElement("div");
+        row.className = "recipe-actions";
+        title.after(row);
+    }
+    row.append(label);
 
     async function acquire() {
         if (lock || pending) return;
