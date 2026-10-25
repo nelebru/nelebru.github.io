@@ -269,7 +269,10 @@ function showLikeControl(map, id) {
         btn.type = "button";
         btn.dataset.course = id;
         L.DomEvent.disableClickPropagation(btn);
-        btn.addEventListener("click", () => likeCourse(id));
+        btn.addEventListener("click", () => {
+            window.burstHearts?.(btn);
+            likeCourse(id);
+        });
         updateLikeButton(btn);
         return btn;
     };

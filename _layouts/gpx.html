@@ -93,6 +93,7 @@
   <link rel="stylesheet" href={{ "/libs/external/leaflet/leaflet.css" | prepend: site.baseurl }}>
   <script src={{ "/libs/external/leaflet/leaflet.js" | prepend: site.baseurl }}></script>
   <script src={{ "/libs/external/leaflet/gpx.min.js" | prepend: site.baseurl }}></script>
+  <script src={{ "/libs/custom/heart_burst.js" | prepend: site.baseurl }}></script>
 
   <style>
   .header-canvas-wrapper {
@@ -401,10 +402,18 @@
     ctx.fill();
   }
 
+  let wasDark = isDark();
+
   function animate() {
     // Fade the trails: into white in light mode, to transparent in dark mode
     // (painting the dark background never quite reaches it, 8-bit rounding)
     const dark = isDark();
+    // In light mode the canvas fills up with white; start empty after a theme switch,
+    // otherwise that white shows as a light veil until it has faded out in dark mode.
+    if (dark !== wasDark) {
+      ctx.clearRect(0, 0, width, height);
+      wasDark = dark;
+    }
     ctx.globalCompositeOperation = dark ? 'destination-out' : 'source-over';
     ctx.fillStyle = dark ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)';
     ctx.fillRect(0, 0, width, height);

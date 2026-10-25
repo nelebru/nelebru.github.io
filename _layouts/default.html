@@ -188,8 +188,13 @@
     </div>
   </div>
 
+  {% if page.url contains "/recipes/" %}
+  <script src="{{ "/libs/custom/recipe_wakelock.js" | prepend: site.baseurl }}"></script>
+  {% endif %}
+
   {% if page.url contains "/recipes/" and site.likes_api != "" %}
   <script>window.LIKES_API = "{{ site.likes_api }}";</script>
+  <script src="{{ "/libs/custom/heart_burst.js" | prepend: site.baseurl }}"></script>
   <script src="{{ "/libs/custom/recipe_likes.js" | prepend: site.baseurl }}"></script>
   {% endif %}
 

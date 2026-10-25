@@ -63,7 +63,9 @@
         btn.classList.toggle("liked", liked);
         btn.setAttribute("aria-pressed", liked);
         btn.title = liked ? "You like this recipe" : "Like this recipe";
-        btn.innerHTML = heartIcon(liked) + (count > 0 ? `<span class="like-count">${count}</span>` : "");
+        btn.innerHTML = `<span class="like-heart">${heartIcon(liked)}`
+            + (count > 0 ? `<span class="like-count">${count}</span>` : "") + `</span>`
+            + `<span class="like-label">I like it</span>`;
     }
 
     function addButton() {
@@ -74,7 +76,10 @@
         btn.type = "button";
         btn.className = "recipe-like-btn";
         btn.dataset.recipe = recipeId(location.href);
-        btn.addEventListener("click", () => likeRecipe(btn.dataset.recipe));
+        btn.addEventListener("click", () => {
+            window.burstHearts?.(btn);
+            likeRecipe(btn.dataset.recipe);
+        });
         title.appendChild(btn);
         updateButton(btn);
     }
