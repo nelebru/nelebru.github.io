@@ -875,8 +875,60 @@ body.gpx-page .navbar-link[href*="gpx"] {
 }
 
 .ingredients-list h3 + h4,
-.ingredients-list .tick-hint + h4 {
+.ingredients-list .tick-hint + h4,
+.ingredients-list .recipe-servings + h4 {
   margin-top: 0;
+}
+
+/* servings stepper under the "Ingredients" heading (set by recipe_servings.js) */
+.recipe-servings {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0 0 0.4em 0;
+}
+
+.servings-label {
+  min-width: 6.5em;
+  text-align: center;
+  font-weight: 600;
+  color: #6e5f5e;
+}
+
+.servings-btn {
+  width: 2.2em;
+  height: 2.2em;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #e4e0da;
+  border-radius: 50%;
+  background: white;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.servings-btn:hover:not(:disabled),
+.servings-btn:focus-visible {
+  border-color: hotpink;
+  color: hotpink;
+}
+
+/* shown above 15 servings, next to the stepper */
+.servings-party[hidden] {
+  display: none;
+}
+
+.servings-party {
+  margin-left: 0.8rem;
+  color: hotpink;
+  font-weight: 600;
+}
+
+.servings-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .ingredients-list ul {
@@ -2515,6 +2567,11 @@ html[data-theme="dark"] .recipe-like-btn .like-label {
 html[data-theme="dark"] .ingredients-list h3,
 html[data-theme="dark"] .ingredients-list h4 { color: #d2c3c1; }
 html[data-theme="dark"] .tick-hint { color: var(--text-muted); }
+html[data-theme="dark"] .servings-label { color: #d2c3c1; }
+html[data-theme="dark"] .servings-btn {
+  background: #24212a;
+  border-color: var(--border);
+  color: var(--text); }
 html[data-theme="dark"] .ingredients-image-large::after {
   background: linear-gradient(to right, #24212a 0%, transparent 100%); }
 

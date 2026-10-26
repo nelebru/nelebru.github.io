@@ -182,6 +182,7 @@
   {% if page.url contains "/recipes/" %}
   <script src="{{ "/libs/custom/recipe_wakelock.js" | prepend: site.baseurl }}"></script>
   <script src="{{ "/libs/custom/recipe_ingredients.js" | prepend: site.baseurl }}"></script>
+  <script src="{{ "/libs/custom/recipe_servings.js" | prepend: site.baseurl }}"></script>
   {% endif %}
 
   {% if page.url contains "/recipes/" and site.likes_api != "" %}
