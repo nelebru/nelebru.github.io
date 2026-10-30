@@ -61,9 +61,12 @@ description: "Welcome to my website. I am Nele, a researcher and PhD student at 
     <p>Full Resume in <a href="{{ '/assets/cv/cv_web.pdf' | prepend: site.baseurl }}" target="_blank">PDF</a>.</p>
     {% endcomment %}
 
+    <!-- shown as a bike ride through a landscape by libs/custom/vita_ride.js or
+         vita_ride_dots.js (switch with vita_ride in _config.yml); this list
+         stays as the fallback (no JS, reduced motion) and for screen readers -->
     <ul class="timeline">
       {% for exp in site.data.experience.experiences %}
-        <li>
+        <li data-category="{{ exp.category }}">
           {% if exp.category == "work" %}
             <div class="direction-l">
           {% else %}
@@ -79,6 +82,35 @@ description: "Welcome to my website. I am Nele, a researcher and PhD student at 
       {% endfor %}
     </ul>
 </div>
+{% if site.vita_ride == "dots" %}
+<script>window.VITA_RIDE_SURF = {{ site.vita_ride_surf | default: false | jsonify }};</script>
+{% if site.vita_ride_terrain == "pollenca-lluc" %}
+<script src="{{ '/libs/custom/vita_ride_pollenca_lluc.js' | prepend: site.baseurl }}" defer></script>
+{% endif %}
+<script src="{{ '/libs/custom/vita_ride_dots.js' | prepend: site.baseurl }}" defer></script>
+{% else %}
+<script src="{{ '/libs/custom/vita_ride.js' | prepend: site.baseurl }}" defer></script>
+{% endif %}
+<script>
+  // Links in the navbar: scrolling smoothly all the way would play the whole bike ride in
+  // the Vita section on the way. So jump to just before the section and glide only the
+  // last bit.
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest && e.target.closest('.navbar a[href*="#"]');
+    if (!link || link.pathname.replace(/index\.html$/, '') !== location.pathname.replace(/index\.html$/, '')) return;
+    var target = document.getElementById(link.hash.slice(1));
+    if (!target) return;
+    e.preventDefault();
+    var pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    var y = target.getBoundingClientRect().top + window.scrollY - pad;
+    var glide = window.innerHeight * 0.6;
+    if (Math.abs(y - window.scrollY) > glide) {
+      window.scrollTo({ top: y - Math.sign(y - window.scrollY) * glide, behavior: 'instant' });
+    }
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    history.pushState(null, '', link.hash);
+  });
+</script>
 
     <!-- ========== PUBLICATIONS ========== -->
     <div class="docs-section" id="publications">

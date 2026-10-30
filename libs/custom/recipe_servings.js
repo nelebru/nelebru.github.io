@@ -18,8 +18,8 @@
 
     const STORAGE_KEY = "servings:" + location.pathname;
     const MIN = 1, MAX = 25;
-    const PARTY = 10; // more than this many gets a little celebration
-
+    const PARTY = 10; // more than this manygets a little celebration
+Can
     // "1/2" -> 0.5, "600" -> 600
     function parseNumber(s) {
         const [num, den] = s.split("/");

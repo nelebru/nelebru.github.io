@@ -108,12 +108,15 @@ h4 {
   font-size: 1.5rem;
   letter-spacing: .2rem;
   font-weight: 600; }
+/* sections are set apart by space alone, no lines between them */
 .docs-section {
-  border-top: 1px solid #eee;
-  padding: 4rem 0;
+  padding: 5.5rem 0;
   margin-bottom: 0;}
 #bio {
   border-top-width: 0; }
+/* "Hej, I'm Nele" a little smaller than the other section headings */
+#bio h3 {
+  font-size: 2.8rem; }  /* was: 3.0rem (from h3 in skeleton.css) */
 .footer {
   text-align: center;
   color: rgba(0, 0, 0, 0.4);
@@ -409,7 +412,9 @@ body.recipes-page .navbar-link[href*="recipes"] {
   font-weight: 600;
 }
 
+/* in the text colour (black / white in dark mode) instead of the rosybrown of other h2 */
 .recipe-title {
+  color: var(--text);  /* was: rosybrown (from h2) */
   text-align: center;
   margin: 50px 0 10px 0;
 }
@@ -455,7 +460,7 @@ body.recipes-page .navbar-link[href*="recipes"] {
 }
 
 .filter-chip:hover,
-.filter-chip:focus {
+.filter-chip:focus-visible {
   border-color: hotpink;
   color: #333;
 }
@@ -466,8 +471,10 @@ body.recipes-page .navbar-link[href*="recipes"] {
   color: white;
 }
 
-/* each filter has its own colour (--chip-rgb, lighter in dark mode): the icon in full,
-   the chip lightly tinted. The active chip stays pink, its icon takes the text colour. */
+/* each filter has its own colour (--chip-rgb, lighter in dark mode). Off, the chips are
+   plain grey; hovering shows the colour (border, icon, a light tint) and the active chip
+   is filled with it. Only keyboard focus counts as hover, so a chip doesn't stay
+   coloured after clicking it off. */
 .filter-chip[data-tag="vegan"]      { --chip-rgb: 63, 157, 74; }
 .filter-chip[data-tag="quick"]      { --chip-rgb: 58, 134, 200; }
 .filter-chip[data-tag="plan-ahead"] { --chip-rgb: 138, 99, 210; }
@@ -475,24 +482,26 @@ body.recipes-page .navbar-link[href*="recipes"] {
 .filter-chip[data-tag="autumn"]     { --chip-rgb: 210, 112, 42; }
 .filter-chip[data-tag="summer"]     { --chip-rgb: 224, 161, 0; }
 
-.filter-chip[data-tag] {
-  background: rgba(var(--chip-rgb), 0.07);
-  border-color: rgba(var(--chip-rgb), 0.35);
-}
 .filter-chip[data-tag]:hover,
-.filter-chip[data-tag]:focus {
+.filter-chip[data-tag]:focus-visible {
+  background: rgba(var(--chip-rgb), 0.07);
   border-color: rgb(var(--chip-rgb));
 }
 .filter-chip[data-tag][aria-pressed="true"] {
-  background: hotpink;
-  border-color: hotpink;
+  background: rgb(var(--chip-rgb));
+  border-color: rgb(var(--chip-rgb));
+  color: white;
 }
+/* white would be hard to read on the yellow */
+.filter-chip[data-tag="summer"][aria-pressed="true"] { color: #333; }
 
 .chip-icon {
   margin-right: 0.25em;
-  color: rgb(var(--chip-rgb));
+  color: #999;
   transition: color 0.15s ease;
 }
+.filter-chip:hover .chip-icon,
+.filter-chip:focus-visible .chip-icon { color: rgb(var(--chip-rgb)); }
 .filter-chip[aria-pressed="true"] .chip-icon { color: inherit; }
 
 .recipe-no-results {
@@ -817,6 +826,10 @@ body.gpx-page .navbar-link[href*="gpx"] {
 .recipe-title2 {
   text-align: center;
   margin: 40px 0 10px 0;
+}
+/* a recipe's name in the text colour (black / white in dark mode) */
+.recipe-title2 h2 {
+  color: var(--text);  /* was: rosybrown (from h2) */
 }
 
 
@@ -1198,7 +1211,7 @@ a:focus {
 }
 
 .filters-tile {
-  flex: 1;
+  flex: 0.85;  /* a little narrower than the text beside it */
   background-color: lavender;
   border-radius: 12px;
   box-shadow: 0 0 8px rgba(0,0,0,0.2);
@@ -1597,6 +1610,10 @@ a:focus {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+/* narrower than skeleton's buttons, so both fit side by side next to the filter tile */
+.map-buttons .show-map-button {
+  padding: 0 16px;
 }
 
 .osm-toggle {
@@ -2274,6 +2291,237 @@ html[data-theme="dark"] .theme-toggle .theme-icon-dark {
 }
 
 
+/*  ================ Vita as a bike ride (libs/custom/vita_ride.js)  ================
+    The section is as tall as the ride; the stage with the landscape stays in view
+    (sticky) while scrolling through it. */
+.vita-ride {
+  position: relative;
+  margin-top: 2rem; }
+.vita-stage {
+  --stage-h: min(900px, calc(100vh - 7rem));
+  position: sticky;
+  /* vertically centred in the window, but never under the docked navbar (6.5rem) */
+  top: max(6.5rem, calc((100vh - var(--stage-h)) / 2));
+  height: var(--stage-h);
+  overflow: hidden; }
+@media (max-width: 749px) {
+  .vita-stage {
+    --stage-h: min(900px, calc(100vh - 1rem));
+    top: calc((100vh - var(--stage-h)) / 2); }
+}
+/* no frame: the landscape spans the whole window (width and offset set by vita_ride.js);
+   card and track stay in the text column */
+.vita-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%; }
+.vita-hud {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: min(800px, 100%);
+  transform: translateX(-50%);
+  pointer-events: none; }
+.vita-hud .vita-track { pointer-events: auto; }
+
+/* the old timeline only for screen readers while the ride is shown */
+.vita-ride-on .timeline {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap; }
+
+/* details of the station the bike is at */
+.vita-card {
+  --accent: hotpink;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: min(340px, calc(100% - 28px));
+  box-sizing: border-box;
+  padding: 1.1rem 1.4rem 1.2rem;
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-size: 1.35rem;
+  line-height: 1.45;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none; }
+.vita-card.work { --accent: blueviolet; }
+.vita-card.visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto; }
+.vita-card-meta {
+  color: var(--accent);
+  font-size: 1.2rem;
+  font-weight: 600; }
+.vita-card-meta i { margin-right: 0.6rem; }
+.vita-card-place {
+  font-weight: 600;
+  font-size: 1.6rem;
+  margin-top: 0.2rem; }
+.vita-card-title { margin-top: 0.3rem; }
+.vita-card-sub {
+  margin-top: 0.3rem;
+  color: var(--text-muted); }
+
+.vita-hint {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  transform: translateX(-50%);
+  padding: 0.5rem 1.2rem;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 1.3rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none; }
+.vita-hint.visible { opacity: 1; }
+.vita-hint i {
+  margin-right: 0.4rem;
+  color: hotpink; }
+
+/* progress along the route, with a stop per station to jump to */
+.vita-track {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  padding: 2.4rem 2.4rem 2.2rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px); }
+.vita-track-line {
+  position: relative;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, pink, mediumpurple); }
+.vita-track-bike {
+  position: absolute;
+  top: -2.2rem;
+  transform: translateX(-50%);
+  color: #444;
+  font-size: 1.3rem;
+  pointer-events: none; }
+.vita-stop {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  padding: 0;
+  border: 3px solid hotpink;
+  border-radius: 50%;
+  background: #fff;
+  line-height: 1;
+  cursor: pointer; }
+.vita-stop.work { border-color: blueviolet; }
+.vita-stop span {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #777; }
+.vita-stop.active,
+.vita-stop:hover,
+.vita-stop:focus-visible {
+  background: hotpink;
+  border-color: hotpink; }
+.vita-stop.work.active,
+.vita-stop.work:hover,
+.vita-stop.work:focus-visible {
+  background: blueviolet;
+  border-color: blueviolet; }
+/* minimal version (vita_ride_dots.js): the dots lie straight on the page, the card and
+   the track are plain text and lines with pink as the only colour */
+.vita-ride--dots .vita-card,
+.vita-ride--dots .vita-card.work {
+  --accent: hotpink;
+  left: 14px;
+  right: auto;
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-left-width: 2px;
+  border-radius: 0;
+  /* the veil behind the text fades out softly, so it doesn't cut a straight edge into
+     the dots around it */
+  box-shadow: 0 0 28px 22px rgba(255, 255, 255, 0.85); }
+@media (min-width: 550px) {
+  .vita-ride--dots .vita-card { top: 4px; }
+}
+.vita-ride--dots .vita-hint {
+  left: auto;
+  right: 14px;
+  top: auto;
+  bottom: 70px;
+  transform: none;
+  background: none;
+  font-weight: 400;
+  color: var(--text-muted); }
+.vita-ride--dots .vita-track {
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none; }
+/* sources of the real map (only shown with it), in small print below the track */
+.vita-credit {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  text-align: right;
+  bottom: 0;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  color: var(--text-muted);
+  opacity: 0.7;
+  pointer-events: none; }
+.vita-ride--dots .vita-track-line {
+  height: 1px;
+  background: var(--text-muted); }
+.vita-ride--dots .vita-track-bike { color: hotpink; }
+.vita-ride--dots .vita-stop,
+.vita-ride--dots .vita-stop.work {
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border: 1px solid var(--text);
+  background: var(--bg); }
+.vita-ride--dots .vita-stop span { top: 9px; }
+.vita-ride--dots .vita-stop.active,
+.vita-ride--dots .vita-stop:hover,
+.vita-ride--dots .vita-stop:focus-visible {
+  background: hotpink;
+  border-color: hotpink; }
+
+/* on phones the card goes to the empty foreground, clear of the theme button */
+@media (max-width: 549px) {
+  .vita-card {
+    top: auto;
+    bottom: 76px;
+    font-size: 1.25rem; }
+  .vita-stop span { font-size: 0.9rem; }
+}
+
+
 /*  ================ Dark mode  ================
     html[data-theme="dark"] is set by _includes/theme_head.html when the visitor
     picked dark with the theme button; light is the default. */
@@ -2352,10 +2600,13 @@ html[data-theme="dark"] .navbar-link { color: var(--text); }
    page at the ends like the rainbow did. */
 html[data-theme="dark"] .navbar {
   --night-fade: linear-gradient(to right, var(--bg) 0%, rgba(22, 21, 27, 0) 12%, rgba(22, 21, 27, 0) 88%, var(--bg) 100%);
+  /* a veil of the page colour over stars and clouds keeps the Milky Way subtle */
+  --night-dim: linear-gradient(rgba(22, 21, 27, 0.5), rgba(22, 21, 27, 0.5));
   /* see-through like the rainbow, so content scrolling underneath shows blurred */
   background-color: rgba(22, 21, 27, 0.72);
   background-image:
     var(--night-fade),
+    var(--night-dim),
     url("../../assets/stars/field-a.svg"),
     url("../../assets/stars/field-b.svg"),
     url("../../assets/stars/field-c.svg"),
@@ -2367,13 +2618,13 @@ html[data-theme="dark"] .navbar {
     radial-gradient(ellipse 22% 80% at 86% 46%, rgba(90, 200, 220, 0.07), transparent 70%),
     linear-gradient(to bottom, rgba(200, 180, 255, 0) 10%, rgba(200, 180, 255, 0.05) 50%, rgba(200, 180, 255, 0) 90%);
   background-size:
-    100% 100%, 701px 229px, 523px 181px, 613px 199px,
+    100% 100%, 100% 100%, 701px 229px, 523px 181px, 613px 199px,
     100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
   background-position:
-    0 0, 0 0, 137px 61px, 311px 23px,
+    0 0, 0 0, 0 0, 137px 61px, 311px 23px,
     0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
   background-repeat:
-    no-repeat, repeat, repeat, repeat,
+    no-repeat, no-repeat, repeat, repeat, repeat,
     no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
 }
 
@@ -2410,20 +2661,21 @@ html[data-theme="dark"] .navbar > .container::before {
   z-index: -1;
   pointer-events: none;
   background: url("../../assets/stars/cluster.svg") 0 0 / 307px 101px repeat;
+  opacity: 0.5;
   -webkit-mask-image: radial-gradient(ellipse 34% 62% at 51% 55%, #000 0%, #000 45%, transparent 80%);
   mask-image: radial-gradient(ellipse 34% 62% at 51% 55%, #000 0%, #000 45%, transparent 80%);
 }
 
 @keyframes navbar-twinkle {
-  from { opacity: 0.25; }
-  to   { opacity: 1; }
+  from { opacity: 0.1; }
+  to   { opacity: 0.5; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html[data-theme="dark"] .navbar::before,
   html[data-theme="dark"] .navbar::after {
     animation: none;
-    opacity: 0.7;
+    opacity: 0.35;
   }
 }
 
@@ -2439,6 +2691,7 @@ html[data-theme="dark"] .navbar > .container::before {
     position: relative;   /* static otherwise; anchors the twinkling stars */
     background-image:
       var(--night-fade),
+      var(--night-dim),
       url("../../assets/stars/field-a.svg"),
       url("../../assets/stars/field-b.svg"),
       url("../../assets/stars/field-c.svg"),
@@ -2494,6 +2747,37 @@ html[data-theme="dark"] .time-wrapper { color: #c4b0ee; }
   html[data-theme="dark"] .desc { background: var(--surface); }
 }
 
+/* ---------- Vita bike ride ---------- */
+html[data-theme="dark"] .vita-card,
+html[data-theme="dark"] .vita-hint,
+html[data-theme="dark"] .vita-track { background: rgba(33, 31, 40, 0.85); }
+html[data-theme="dark"] .vita-card.work,
+html[data-theme="dark"] .vita-stop.work { --accent: var(--violet); border-color: var(--violet); }
+html[data-theme="dark"] .vita-track-bike,
+html[data-theme="dark"] .vita-stop span { color: var(--text-muted); }
+html[data-theme="dark"] .vita-stop { background: var(--bg); }
+html[data-theme="dark"] .vita-stop.active,
+html[data-theme="dark"] .vita-stop:hover,
+html[data-theme="dark"] .vita-stop:focus-visible { background: hotpink; }
+html[data-theme="dark"] .vita-stop.work.active,
+html[data-theme="dark"] .vita-stop.work:hover,
+html[data-theme="dark"] .vita-stop.work:focus-visible {
+  background: var(--violet);
+  border-color: var(--violet); }
+html[data-theme="dark"] .vita-ride--dots .vita-card {
+  --accent: hotpink;
+  background: rgba(22, 21, 27, 0.85);
+  box-shadow: 0 0 28px 22px rgba(22, 21, 27, 0.85); }
+html[data-theme="dark"] .vita-ride--dots .vita-track { background: none; }
+html[data-theme="dark"] .vita-ride--dots .vita-stop {
+  border-color: var(--text);
+  background: var(--bg); }
+html[data-theme="dark"] .vita-ride--dots .vita-stop.active,
+html[data-theme="dark"] .vita-ride--dots .vita-stop:hover,
+html[data-theme="dark"] .vita-ride--dots .vita-stop:focus-visible {
+  background: hotpink;
+  border-color: hotpink; }
+
 /* ---------- Student projects ---------- */
 /* In the colours of the Milky Way navbar, in its order from left to right (pink, violet,
    warm core, blue, turquoise) with blends in between, so neighbouring cards shade into
@@ -2527,27 +2811,31 @@ html[data-theme="dark"] .filter-chip {
   border-color: var(--border);
   color: var(--text-muted); }
 html[data-theme="dark"] .filter-chip:hover,
-html[data-theme="dark"] .filter-chip:focus {
+html[data-theme="dark"] .filter-chip:focus-visible {
   border-color: hotpink;
   color: var(--text); }
 html[data-theme="dark"] .filter-chip[aria-pressed="true"] {
   background: hotpink;
   border-color: hotpink;
   color: #16151b; }
+html[data-theme="dark"] .chip-icon { color: var(--text-muted); }
 html[data-theme="dark"] .filter-chip[data-tag="vegan"]      { --chip-rgb: 108, 198, 117; }
 html[data-theme="dark"] .filter-chip[data-tag="quick"]      { --chip-rgb: 106, 172, 234; }
 html[data-theme="dark"] .filter-chip[data-tag="plan-ahead"] { --chip-rgb: 176, 138, 245; }
 html[data-theme="dark"] .filter-chip[data-tag="christmas"]  { --chip-rgb: 240, 107, 120; }
 html[data-theme="dark"] .filter-chip[data-tag="autumn"]     { --chip-rgb: 240, 149, 79; }
 html[data-theme="dark"] .filter-chip[data-tag="summer"]     { --chip-rgb: 245, 197, 66; }
-html[data-theme="dark"] .filter-chip[data-tag] {
-  background: rgba(var(--chip-rgb), 0.1);
-  border-color: rgba(var(--chip-rgb), 0.35); }
 html[data-theme="dark"] .filter-chip[data-tag]:hover,
-html[data-theme="dark"] .filter-chip[data-tag]:focus { border-color: rgb(var(--chip-rgb)); }
+html[data-theme="dark"] .filter-chip[data-tag]:focus-visible {
+  background: rgba(var(--chip-rgb), 0.1);
+  border-color: rgb(var(--chip-rgb)); }
+html[data-theme="dark"] .filter-chip:hover .chip-icon,
+html[data-theme="dark"] .filter-chip:focus-visible .chip-icon { color: rgb(var(--chip-rgb)); }
 html[data-theme="dark"] .filter-chip[data-tag][aria-pressed="true"] {
-  background: hotpink;
-  border-color: hotpink; }
+  background: rgb(var(--chip-rgb));
+  border-color: rgb(var(--chip-rgb));
+  color: #16151b; }
+html[data-theme="dark"] .filter-chip[aria-pressed="true"] .chip-icon { color: inherit; }
 html[data-theme="dark"] .recipe-no-results { color: var(--text-muted); }
 html[data-theme="dark"] .recipe-category { color: var(--text); }
 html[data-theme="dark"] .recipe-category h3::after { background-color: var(--border); }
@@ -2692,3 +2980,21 @@ html[data-theme="dark"] .dual-range input[type="range"]::-moz-range-thumb {
   background: #f3eefc;
   box-shadow: 0 0 6px var(--violet); }
 html[data-theme="dark"] .range-values { color: var(--violet); }
+
+/*  ================ Experiment: Abril Fatface section headings  ================
+    The section headings (h3) in Abril Fatface instead of Psychedelic. Delete this block
+    to go back. The font is self-hosted in libs/external/abril-fatface (SIL Open Font
+    License, see OFL.txt). */
+@font-face {
+  font-family: "Abril Fatface";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../external/abril-fatface/abril-fatface-latin-400-normal.woff2") format("woff2");
+}
+h3 {
+  font-family: "Abril Fatface", Georgia, serif;  /* was: "Psychedelic" */
+  font-weight: 400;
+  /* skeleton's tight spacing suits Psychedelic, but squeezes a serif's words together */
+  letter-spacing: 0.01em;
+}

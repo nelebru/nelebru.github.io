@@ -30,10 +30,14 @@ experiences:
   subtitle: "Explainable AI for estimating the respiratory drive of ventilated patients from sEMG"
   category: "work"
 
+- place: "University of Luebeck"
+  time: "2019"
+  title: "Bachelor's Thesis"
+  subtitle: "Recurrent Neural Networks for Hand Gesture Recognition Based on sEMG and IMU Data, <a href='https://ieeexplore.ieee.org/document/8682986' target='_blank'>Paper</a>"
+  category: "school"
 
 - place: "University of Luebeck"
   time: "2015 - 2019"
   title: "Bachelor of Science"
-  # add html link
-  subtitle: "Medical Engineering Science<br>Bachelor Thesis: Reccurent Neural Networks for Hand Gesture Recognition Based on sEMG and IMU Data, <a href='https://ieeexplore.ieee.org/document/8682986' target='_blank'>Paper</a>"
+  subtitle: "Medical Engineering Science"
   category: "school"

@@ -21,6 +21,15 @@ social:
 # Cloudflare Worker from _likes-worker/ (hearts on courses and recipes); leave empty to hide the hearts
 likes_api: "https://course-likes.nele-bruegge.workers.dev/likes"
 
+# Vita as a bike ride: "dots" (minimal dotted mountains and sea, libs/custom/vita_ride_dots.js)
+# or "landscape" (colourful fields and trees, libs/custom/vita_ride.js)
+vita_ride: "dots"
+# only for "dots": true lets the rider first surf in on the waves and jump onto the bike
+vita_ride_surf: true
+# only for "dots": "pollenca-lluc" for the real road and mountains from Port de Pollença to
+# Lluc on Mallorca (libs/custom/vita_ride_pollenca_lluc.js), "made-up" for the generated ones
+vita_ride_terrain: "pollenca-lluc"
+
 
 collections:
   projects:
