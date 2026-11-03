@@ -1576,8 +1576,9 @@ a:focus {
   color: #888;
 }
 
-/* OpenStreetMap switch on the world map, like the overview map's (gpx_overview.css) */
-.leaflet-container .world-osm-btn {
+/* round buttons on the world map (OpenStreetMap switch, fullscreen), like the overview
+   map's OpenStreetMap switch (gpx_overview.css) */
+.leaflet-container .world-round-btn {
   width: 3rem;
   height: 3rem;
   padding: 0;
@@ -1593,9 +1594,32 @@ a:focus {
   transition: color 0.2s;
 }
 
-.leaflet-container .world-osm-btn:hover,
+.leaflet-container .world-round-btn:hover,
 .leaflet-container .world-osm-btn.on {
   color: blueviolet;
+}
+
+/* the world map in fullscreen: the browser's (the inline 500 px height must give way), or,
+   where there is none (iPhone), filling the window */
+#visitedMap:fullscreen {
+  width: 100%;
+  height: 100% !important;
+  border: none;
+  border-radius: 0;
+}
+
+#visitedMap.map-fullscreen {
+  position: fixed !important;
+  inset: 0;
+  z-index: 10000 !important;
+  width: 100%;
+  height: 100% !important;
+  border: none;
+  border-radius: 0;
+}
+
+body.map-fullscreen-open {
+  overflow: hidden;
 }
 
 /* clicked lines and markers on the world map: no focus frame from the browser */

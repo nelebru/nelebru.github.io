@@ -14,7 +14,7 @@
     "name": "Wales",
     "subtitle": "Bikepacking",
     "text": "A crazy, rainy, amazing adventure through the mountains of Wales.",
-    "image": "",
+    "image": "assets/photos/wales.jpg",
     "from": "2025-08-24",
     "to": "2025-09-05",
     "sports": ["bike"]

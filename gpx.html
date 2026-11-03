@@ -367,7 +367,7 @@ function initializeVisitedMap() {
     // page's toggle, which switches all maps (and keeps every button in sync)
     const osmControl = L.control({ position: "bottomleft" });
     osmControl.onAdd = () => {
-        const btn = L.DomUtil.create("button", "world-osm-btn");
+        const btn = L.DomUtil.create("button", "world-round-btn world-osm-btn");
         btn.type = "button";
         btn.innerHTML = `<i class="fa-solid fa-map" aria-hidden="true"></i>`;
         L.DomEvent.disableClickPropagation(btn);
@@ -383,6 +383,8 @@ function initializeVisitedMap() {
         return btn;
     };
     osmControl.addTo(map);
+
+    addFullscreenControl(map);
 
     // bottom left: the stats menu with the trips menu below it; each fills its slot once loaded
     const menus = {};
@@ -543,6 +545,86 @@ function addWorldLegend(map, layers, surfaces, info) {
     }).addTo(map);
 }
 
+/* ---------- Fullscreen ---------- */
+
+// lower right: the map in fullscreen. Where the browser can't do that for a map (iPhone),
+// the map fills the window instead
+function addFullscreenControl(map) {
+    const box = map.getContainer();
+    const native = !!box.requestFullscreen;
+    const isFull = () => native ? document.fullscreenElement === box : box.classList.contains("map-fullscreen");
+    let btn;
+
+    function sync() {
+        const full = isFull();
+        btn.innerHTML = `<i class="fa-solid ${full ? "fa-compress" : "fa-expand"}" aria-hidden="true"></i>`;
+        btn.title = full ? "Exit fullscreen" : "Fullscreen";
+        btn.setAttribute("aria-pressed", String(full));
+        document.body.classList.toggle("map-fullscreen-open", !native && full);
+        map.invalidateSize();
+    }
+
+    function toggle() {
+        if (native) {
+            if (isFull()) document.exitFullscreen();
+            else box.requestFullscreen().catch(err => console.error("Fullscreen failed:", err));
+        } else {
+            box.classList.toggle("map-fullscreen");
+            sync();
+        }
+    }
+
+    const control = L.control({ position: "bottomright" });
+    control.onAdd = () => {
+        btn = L.DomUtil.create("button", "world-round-btn world-fullscreen-btn");
+        btn.type = "button";
+        L.DomEvent.disableClickPropagation(btn);
+        btn.addEventListener("click", toggle);
+        sync();
+        return btn;
+    };
+    control.addTo(map);
+
+    if (native) document.addEventListener("fullscreenchange", sync);
+    else document.addEventListener("keydown", e => { if (e.key === "Escape" && isFull()) toggle(); });
+}
+
+/* ---------- Tiles inside the map ---------- */
+
+// a tile (Leaflet tooltip) stays within the map: above the cursor or marker, or below it when
+// there is no room above, and pushed in from the sides. Runs again whenever the tile follows
+// the cursor or its photo has loaded (and made it taller)
+function keepTooltipInside(map, layer) {
+    const MARGIN = 8;
+    function fit() {
+        const tooltip = layer.getTooltip();
+        if (!tooltip || !tooltip.isOpen()) return;
+        const el = tooltip.getElement();
+        const anchor = map.latLngToContainerPoint(tooltip.getLatLng());
+        const direction = anchor.y - el.offsetHeight - 20 < MARGIN ? "bottom" : "top";
+        if (tooltip.options.direction !== direction) {
+            tooltip.options.direction = direction;
+            tooltip.options.offset = direction === "top" ? [0, -14] : [0, 14];
+            tooltip.update();
+        }
+        const box = map.getContainer().getBoundingClientRect();
+        const r = el.getBoundingClientRect();
+        let dx = 0, dy = 0;
+        if (r.left < box.left + MARGIN) dx = box.left + MARGIN - r.left;
+        else if (r.right > box.right - MARGIN) dx = box.right - MARGIN - r.right;
+        if (r.top < box.top + MARGIN) dy = box.top + MARGIN - r.top;
+        else if (r.bottom > box.bottom - MARGIN) dy = box.bottom - MARGIN - r.bottom;
+        if (dx || dy) L.DomUtil.setPosition(el, L.DomUtil.getPosition(el).add([dx, dy]));
+    }
+    layer.on("tooltipopen", () => {
+        fit();
+        const img = layer.getTooltip().getElement().querySelector("img");
+        if (img && !img.complete) img.addEventListener("load", fit, { once: true });
+    });
+    // after Leaflet's own handler has moved a sticky tile to the cursor
+    layer.on("mousemove", fit);
+}
+
 /* ---------- Photo spots (assets/data/photos.json) ---------- */
 
 // a small camera on the map; hovering (or tapping) it shows the photo with its caption.
@@ -569,6 +651,7 @@ function addPhotos(map, photos) {
                 ${photo.caption ? `<p>${escapeHtml(photo.caption)}</p>` : ""}`,
                 { direction: "top", offset: [0, -14], className: "trip-tile photo-tile" })
             .addTo(map);
+        keepTooltipInside(map, marker);
         markers.push([marker, photo.minZoom || PHOTO_MIN_ZOOM]);
     });
 
@@ -622,6 +705,7 @@ function addTrips(map, trips) {
         hit.bindTooltip(tripTile(trip), {
             sticky: true, direction: "top", offset: [0, -14], className: "trip-tile"
         });
+        keepTooltipInside(map, hit);
         hit.on("tooltipopen", () => glow.setStyle({ opacity: 1 }).bringToFront());
         hit.on("tooltipclose", () => glow.setStyle({ opacity: 0 }));
         hit.on("click", () => map.fitBounds(hit.getBounds(), { padding: [40, 40] }));

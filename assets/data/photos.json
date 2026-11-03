@@ -1,10 +1,26 @@
 [
   {
     "name": "Rallarvegen",
-    "caption": "Rallarveggen.",
-    "image": "assets/photos/rallarvegen.jpg",
+    "caption": "Incredibly scenic national cykkel rute in Norway from Haugastøl to Flåm (and back).",
+    "image": "assets/photos/rallarveggen.jpg",
     "date": "2026-07-10",
     "lat": 60.6016,
     "lon": 7.5038
+  },
+  {
+    "name": "Ogna beach",
+    "caption": "Stunning beach in Ogna, Norway.",
+    "image": "assets/photos/ogna_beach_NOR.jpg",
+    "date": "2026-06-29",
+    "lat": 58.5291,
+    "lon": 5.7755
+  },
+  {
+    "name": "Mittenwalder Höhenweg",
+    "caption": "A nice via ferrata between Germany and Austria.",
+    "image": "assets/photos/mittenwald.jpg",
+    "date": "2026-08-02",
+    "lat": 47.4265,
+    "lon": 11.2912
   }
 ]
