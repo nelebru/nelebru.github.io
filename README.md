@@ -34,18 +34,16 @@ python read_gpx_py/surfaces.py --overwrite      # recompute everything
 
 ## Visited street map 
 
-This script downloads activity routes from **Garmin Connect**, converts them to geospatial line data, and merges them into a **single GeoJSON file** for mapping or visualization.
-- Authenticates with Garmin Connect using environment variables
-- Supports incremental updates (only new activities since last run) or one-time historical GPX imports
-- Filtering of indoor/virtual activities
-- Downloads GPX files for supported outdoor activities
-- Converts GPX tracks into `LineString` geometries
-- Tracks last update time to avoid duplicate processing
+`create_map/update_routes.py` builds the world map and the swim/bike/run stats from **Garmin Connect**:
+- syncs the activity list (incl. triathlon legs) and downloads GPX files that are not cached yet; the GPX cache in `DATA_DIR/tmp_gpx` is kept, so the map is always rebuilt from scratch
+- snaps the tracks to OpenStreetMap streets (`create_map/osm_surfaces.py`, Overpass API, cached in `DATA_DIR/osm_ways.json`) and draws the parts of the streets that were followed, coloured by surface; off-street and water activities are drawn from the raw GPS
+- writes `assets/data/all_routes.geojson`, `map_info.json` (km per surface) and `activity_stats.json` (per year and total)
 
 ```
-python update_routes.py
+python create_map/update_routes.py             # Garmin + rebuild
+python create_map/update_routes.py --offline   # rebuild from the local cache only
 ```
-Specify parameters in .env. 
+Specify `GARMIN_EMAIL`, `GARMIN_PASS` and `DATA_DIR` in `create_map/.env`.
 
 ---
 

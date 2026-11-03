@@ -1,0 +1,62 @@
+[
+  {
+    "id": "aarhus-2025",
+    "name": "Aarhus",
+    "subtitle": "Bikepacking",
+    "text": "Parked the van in Kolding and biked to Aarhus through the surprisingly hilly Danish countryside. We saw bioluminescence in the ocean at night :)",
+    "image": "",
+    "from": "2025-09-19",
+    "to": "2025-09-20",
+    "sports": ["bike"]
+  },
+  {
+    "id": "wales-2025",
+    "name": "Wales",
+    "subtitle": "Bikepacking",
+    "text": "A crazy, rainy, amazing adventure through the mountains of Wales.",
+    "image": "",
+    "from": "2025-08-24",
+    "to": "2025-09-05",
+    "sports": ["bike"]
+  },
+  {
+    "id": "mv-2024",
+    "name": "MV Bikepacking",
+    "subtitle": "Bikepacking",
+    "text": "Mecklenburg-Vorpommern, Germany. A bikepacking trip through the beautiful landscapes of Müritzer Seenplatte in 32°C.",
+    "image": "",
+    "from": "2024-07-19",
+    "to": "2024-07-21",
+    "sports": ["bike"]
+  },
+  {
+    "id": "soenderborg-2023",
+    "name": "Mommark",
+    "subtitle": "Sailing",
+    "text": "Sailing trip from Damp to Mommark and back, we broke the boats speed record on the way back to Damp.",
+    "image": "",
+    "from": "2023-08-04",
+    "to": "2023-08-06",
+    "types": ["other", "cycling", "running"]
+  },
+  {
+    "id": "bagenkop-2021",
+    "name": "Bagenkop",
+    "subtitle": "Sailing",
+    "text": "Weekend sailing trip to Bagenkop on Langeland with Pernot II.",
+    "image": "",
+    "from": "2021-09-25",
+    "to": "2021-09-26",
+    "types": ["other", "running"]
+  },
+  {
+    "id": "schlei-sup-2020",
+    "name": "Schlei",
+    "subtitle": "SUP tour",
+    "text": "Spontaneous solo SUP tour on the Schlei with a tent.",
+    "image": "",
+    "from": "2020-09-15",
+    "to": "2020-09-16",
+    "types": ["stand_up_paddleboarding"]
+  }
+]

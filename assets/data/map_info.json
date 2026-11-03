@@ -1,4 +1,15 @@
 {
-  "last_update": "2026-09-09T16:30:15.194053+00:00",
-  "routes_added": 138
+  "last_update": "2026-11-03T15:07:43+00:00",
+  "activities": 1594,
+  "km": {
+    "unknown": 9816.4,
+    "water": 762.1
+  },
+  "km_by_sport": {
+    "bike": 8601.5,
+    "run": 1328.1,
+    "water": 697.5,
+    "other": 349.5,
+    "swim": 70.9
+  }
 }

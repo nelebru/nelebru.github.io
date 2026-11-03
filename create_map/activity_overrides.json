@@ -1,0 +1,6 @@
+{
+  "_comment": "Activity id -> sport on the map (bike, run, swim, water, other), for activities Garmin types wrongly that no rule catches",
+  "7558161284": "water",
+  "11712047097": "water",
+  "11727480342": "water"
+}

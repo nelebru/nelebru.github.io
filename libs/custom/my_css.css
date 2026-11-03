@@ -31,6 +31,14 @@
   --route-gravel: #c27c4e;
   --route-unpaved: #5e9f55;
   --route-unknown: #d4cee0;
+  --route-water: #3d8fd6;  /* world map only: swims, SUP, kiting */
+  /* world map coloured by activity */
+  --sport-bike: blueviolet;
+  --sport-run: #e0559b;
+  --sport-swim: #3d8fd6;
+  --sport-water: #17a9a0;  /* SUP, kiting, sailing (swims have their own) */
+  --sport-other: #e09a2d;
+  --trip-highlight: #ff3d8b;  /* a trip under the cursor on the world map */
 }
 body {
   background-color: var(--bg);
@@ -1505,6 +1513,321 @@ a:focus {
 .route-gravel { stroke: var(--route-gravel); }
 .route-unpaved { stroke: var(--route-unpaved); }
 .route-unknown { stroke: var(--route-unknown); }
+.route-water { stroke: var(--route-water); }
+
+/* world map, "colour by activity": the id beats the surface classes above */
+#visitedMap.colour-by-sport .sport-bike { stroke: var(--sport-bike); }
+#visitedMap.colour-by-sport .sport-run { stroke: var(--sport-run); }
+#visitedMap.colour-by-sport .sport-swim { stroke: var(--sport-swim); }
+#visitedMap.colour-by-sport .sport-water { stroke: var(--sport-water); }
+#visitedMap.colour-by-sport .sport-other { stroke: var(--sport-other); }
+
+/* world map: surface legend (top right) and swim/bike/run stats (bottom left) */
+.leaflet-container .world-control {
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  color: #444;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.3rem;
+  line-height: 1.4;
+}
+
+.world-legend summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: blueviolet;
+}
+
+.world-colour-by {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+  margin-top: 0.4rem;
+}
+
+.world-colour-by label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.world-colour-by input {
+  margin: 0;
+}
+
+.world-legend-group {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  border: none;
+}
+
+.world-legend-group legend {
+  margin-bottom: 0.1rem;
+  padding: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+/* OpenStreetMap switch on the world map, like the overview map's (gpx_overview.css) */
+.leaflet-container .world-osm-btn {
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  color: var(--text-muted);
+  font-size: 1.3rem;
+  line-height: 3rem;
+  text-align: center;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.leaflet-container .world-osm-btn:hover,
+.leaflet-container .world-osm-btn.on {
+  color: blueviolet;
+}
+
+/* clicked lines and markers on the world map: no focus frame from the browser */
+#visitedMap .leaflet-interactive:focus,
+#visitedMap .leaflet-marker-icon:focus {
+  outline: none;
+}
+
+/* photo spots (addPhotos in gpx.html): a small camera; the tile is the trips' one */
+.leaflet-marker-icon.photo-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  color: var(--trip-highlight);
+  font-size: 1.2rem;
+}
+
+/* zoomed out: invisible, but still there to hover (addPhotos in gpx.html). No opacity
+   transition here: it would replace Leaflet's transform transition for the zoom animation */
+.leaflet-marker-icon.photo-marker.photo-far {
+  opacity: 0;
+}
+
+.leaflet-marker-icon.photo-marker.photo-far:hover {
+  opacity: 1;
+}
+
+/* Leaflet places markers with transform, so only the icon inside grows */
+.photo-marker i {
+  transition: transform 0.15s ease;
+}
+
+.photo-marker:hover i {
+  transform: scale(1.25);
+}
+
+/* trips (addTrips in gpx.html): highlighted line and the tile next to the cursor */
+.trip-line {
+  stroke: var(--trip-highlight);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9));
+}
+
+.leaflet-tooltip.trip-tile {
+  width: 22rem;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.96);
+  color: #444;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.leaflet-tooltip.trip-tile::before {
+  display: none;
+}
+
+.trip-tile img {
+  display: block;
+  width: 100%;
+  max-height: 13rem;
+  margin-bottom: 0.6rem;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.trip-tile-sub {
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.trip-tile-name {
+  margin: 0.1rem 0 0.2rem;
+  color: var(--trip-highlight);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.trip-tile-stats {
+  font-weight: 600;
+}
+
+.trip-tile p {
+  margin: 0.4rem 0 0;
+}
+
+.world-trip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.world-trip-tile {
+  margin-bottom: 0.7rem;
+}
+
+.leaflet-container .world-trip-link {
+  height: auto;
+  margin: 0;
+  padding: 0.1rem 0.7rem;
+  border: 1px solid var(--trip-highlight);
+  border-radius: 999px;
+  background: none;
+  color: var(--trip-highlight);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.leaflet-container .world-trip-link:hover,
+.leaflet-container .world-trip-link.active {
+  background: var(--trip-highlight);
+  color: #ffffff;
+}
+
+/* only the swatches of what the lines are coloured by are in colour */
+.world-legend details:not(.colour-by-sport) .sport-swatch,
+.world-legend details.colour-by-sport .surface-swatch {
+  opacity: 0.2;
+}
+
+.world-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.world-legend-item input {
+  margin: 0;
+}
+
+.world-legend-swatch {
+  width: 1.6rem;
+  height: 0.4rem;
+  border-radius: 2px;
+}
+
+.world-legend-km,
+.world-legend-total,
+.world-stats-note {
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.world-legend-km {
+  margin-left: auto;
+  padding-left: 0.8rem;
+}
+
+.world-legend-total {
+  max-width: 16rem;
+  margin-top: 0.4rem;
+}
+
+.leaflet-container .world-menus {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.leaflet-container .world-menu-toggle {
+  height: auto;
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  color: blueviolet;
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.world-menu-panel {
+  max-width: 24rem;
+  margin-bottom: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.world-menu-panel select {
+  height: auto;
+  margin: 0 0 0.3rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 1.3rem;
+}
+
+.world-menu-panel table {
+  margin: 0;
+  border-collapse: collapse;
+}
+
+.world-menu-panel th,
+.world-menu-panel td {
+  padding: 0.2rem 0.5rem 0.2rem 0;
+  border: none;
+  font-size: 1.3rem;
+  white-space: nowrap;
+}
+
+.world-menu-panel th {
+  font-weight: 600;
+  color: blueviolet;
+}
+
+.world-menu-panel td {
+  text-align: right;
+}
+
+.world-stats-note {
+  margin: 0.2rem 0 0;
+}
 
 /* direction arrows along each course */
 .course-arrow svg {
@@ -1731,6 +2054,15 @@ a:focus {
   align-items: center;
   margin-top: 30px;
   margin-bottom: 30px;
+}
+
+/* privacy hint below the world map, like .ov-note below the overview map */
+.map-note {
+  margin: 0.6rem 0 0;
+  color: var(--text-muted);
+  opacity: 0.7;
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
 #visitedMap {
@@ -2585,6 +2917,13 @@ html[data-theme="dark"] {
   --route-gravel: #c48f62;
   --route-unpaved: #8fae5a;
   --route-unknown: #4f4b5c;
+  --route-water: #6aa8e8;
+  --sport-bike: #a77bf0;
+  --sport-run: #f07ab5;
+  --sport-swim: #6aa8e8;
+  --sport-water: #4fc9bf;
+  --sport-other: #e8b960;
+  --trip-highlight: #ff7ab0;
 }
 
 /* ---------- Base (skeleton.css); :where() keeps the generic button rules weaker than specific ones ---------- */
@@ -3000,6 +3339,26 @@ html[data-theme="dark"] .leaflet-popup-content-wrapper,
 html[data-theme="dark"] .leaflet-popup-tip {
   background: var(--surface);
   color: var(--text); }
+
+html[data-theme="dark"] .leaflet-tooltip.trip-tile {
+  background: rgba(33, 31, 40, 0.96);
+  color: var(--text); }
+html[data-theme="dark"] .trip-tile-sub { color: var(--text-muted); }
+html[data-theme="dark"] .leaflet-marker-icon.photo-marker { background: rgba(33, 31, 40, 0.95); }
+html[data-theme="dark"] .trip-line { filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8)); }
+html[data-theme="dark"] .leaflet-container .world-control,
+html[data-theme="dark"] .leaflet-container .world-menu-toggle,
+html[data-theme="dark"] .world-menu-panel {
+  background: rgba(33, 31, 40, 0.9);
+  color: var(--text); }
+html[data-theme="dark"] .leaflet-container .world-menus { background: none; }
+html[data-theme="dark"] .world-legend summary,
+html[data-theme="dark"] .leaflet-container .world-menu-toggle,
+html[data-theme="dark"] .world-menu-panel th { color: var(--violet); }
+html[data-theme="dark"] .world-legend-group legend,
+html[data-theme="dark"] .world-legend-km,
+html[data-theme="dark"] .world-legend-total,
+html[data-theme="dark"] .world-stats-note { color: var(--text-muted); }
 
 html[data-theme="dark"] .leaflet-container .like-btn,
 html[data-theme="dark"] .leaflet-container .reverse-btn {

@@ -17,3 +17,6 @@ _snap_md5.txt
 *.zip
 # Wrangler local state (local D1 copy, temp files)
 .wrangler/
+
+# Python
+__pycache__/

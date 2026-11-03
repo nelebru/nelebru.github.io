@@ -139,7 +139,6 @@
 
 /* the privacy hint for it, small below the map */
 .ov-note {
-  max-width: 19rem;
   margin: 0.6rem 0 0;
   color: var(--text-muted);
   opacity: 0.7;
