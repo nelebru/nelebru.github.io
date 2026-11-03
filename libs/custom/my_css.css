@@ -804,6 +804,12 @@ body.recipes-page .navbar-link[href*="recipes"] {
   gap: 10px;
   font-size: 2.5em;
 }
+/* phones: smaller, so the longer names fit on one line */
+@media (max-width: 549px) {
+  .category-header {
+    font-size: 1.8em;
+  }
+}
 
 .category-header:hover {
   opacity: 0.7;
@@ -859,6 +865,10 @@ body.gpx-page .navbar-link[href*="gpx"] {
 /* more room above the instructions (and tips) below the ingredients tile */
 .recipe > h3 {
   margin-top: 7rem; }
+@media (max-width: 549px) {
+  .recipe > h3 {
+    margin-top: 4rem; }
+}
 
 .ingredients-list {
   flex: 2;

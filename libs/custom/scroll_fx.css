@@ -20,10 +20,16 @@
   min-width: 0;
   height: 22px;
   pointer-events: none; }
-/* small phones: the longest heading still fits on one line */
+/* small phones: the longest heading still fits on one line, and less room around them */
 @media (max-width: 549px) {
   .sfx-waved {
-    font-size: min(3rem, 6vw); }
+    font-size: min(3rem, 6vw);
+    margin: 5.5rem 0 2.5rem; }
+  #resume > .sfx-waved {
+    margin: 3rem 0 1.5rem; }
+  #publications > .sfx-waved,
+  #student-projects > .sfx-waved {
+    margin-bottom: 3.5rem; }
 }
 
 /* things slide up and fade in as they come into view */

@@ -176,6 +176,17 @@ html[data-theme="dark"] .ov-body .ov-map.leaflet-container {
 html[data-theme="dark"] .ov-list li.ov-hot {
   background-color: var(--surface); }
 
+/* phones: less room around the headings */
+@media (max-width: 549px) {
+  .gpx-overview {
+    margin-top: 6rem; }
+  .gpx-overview h3,
+  .gpx-list-heading {
+    margin-bottom: 2.5rem; }
+  .gpx-list-heading {
+    margin-top: 6rem; }
+}
+
 @media (max-width: 749px) {
   .ov-body {
     flex-direction: column;
