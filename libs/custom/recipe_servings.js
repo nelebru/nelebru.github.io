@@ -5,21 +5,26 @@
 // A − / + stepper under the "Ingredients" heading rescales all amounts. The chosen number
 // is kept in sessionStorage, like the ticks (recipe_ingredients.js).
 // An optional data-unit="pieces" counts something else than servings (singular: without the "s").
+// Recipes that don't feed a set number of people (cakes, cookies, bread) use data-scale
+// instead: the stepper then goes through half, single, 1½, double, triple and 4 batches;
+// data-scale="<note>" shows a note beside it whenever it isn't at 1 batch.
 (function () {
-    const list = document.querySelector(".ingredients-list[data-servings]");
+    const list = document.querySelector(".ingredients-list[data-servings], .ingredients-list[data-scale]");
     if (!list) return;
 
-    const base = parseFloat(list.dataset.servings);
+    const BATCHES = !list.dataset.servings;
+    const base = BATCHES ? 1 : parseFloat(list.dataset.servings);
     const qtys = [...list.querySelectorAll(".qty")];
     if (!base || !qtys.length) return;
 
-    const UNITS = list.dataset.unit || "servings";
-    const UNIT = UNITS.replace(/s$/, "");
+    const UNITS = BATCHES ? "batches" : list.dataset.unit || "servings";
+    const UNIT = BATCHES ? "batch" : UNITS.replace(/s$/, "");
+
+    // what the stepper goes through
+    const STEPS = BATCHES ? [0.5, 1, 1.5, 2, 3, 4] : Array.from({ length: 25 }, (_, i) => i + 1);
 
     const STORAGE_KEY = "servings:" + location.pathname;
-    const MIN = 1, MAX = 25;
-    const PARTY = 10; // more than this manygets a little celebration
-Can
+    const PARTY = 10; // more servings than this get a little celebration
     // "1/2" -> 0.5, "600" -> 600
     function parseNumber(s) {
         const [num, den] = s.split("/");
@@ -49,11 +54,12 @@ Can
             const ends = [...new Set(span.dataset.base.split(/[-–]/).map(part => format(parseNumber(part) * factor)))];
             span.textContent = ends.join("–");
         });
-        count.textContent = servings;
-        unit.textContent = servings === 1 ? UNIT : UNITS;
-        party.hidden = servings <= PARTY;
-        minus.disabled = servings <= MIN;
-        plus.disabled = servings >= MAX;
+        count.textContent = servings === 0.5 ? "½" : servings === 1.5 ? "1½" : servings;
+        unit.textContent = servings <= 1 ? UNIT : UNITS;
+        party.hidden = BATCHES || servings <= PARTY;
+        note.hidden = !note.textContent || servings === 1;
+        minus.disabled = servings <= STEPS[0];
+        plus.disabled = servings >= STEPS[STEPS.length - 1];
         try {
             sessionStorage.setItem(STORAGE_KEY, servings);
         } catch (e) { /* storage blocked: the number holds until the page is left */ }
@@ -76,16 +82,23 @@ Can
     party.textContent = "It's a party! 🎉🥳🎊";
     control.append(party);
 
+    // batches only, away from 1: an optional note from data-scale="…" (e.g. that a cake twice
+    // the size needs another tin and time)
+    const note = document.createElement("span");
+    note.className = "servings-note";
+    note.textContent = BATCHES ? list.dataset.scale : "";
+    control.append(note);
+
     // right under the heading, above the tick hint (recipe_ingredients.js)
     list.querySelector("h3").after(control);
 
-    let servings = base;
+    let step = Math.max(0, STEPS.indexOf(base));
     try {
-        const saved = parseInt(sessionStorage.getItem(STORAGE_KEY), 10);
-        if (saved >= MIN && saved <= MAX) servings = saved;
+        const saved = STEPS.indexOf(parseFloat(sessionStorage.getItem(STORAGE_KEY)));
+        if (saved >= 0) step = saved;
     } catch (e) { /* storage blocked: start with the base servings */ }
 
-    minus.addEventListener("click", () => render(servings = Math.max(MIN, servings - 1)));
-    plus.addEventListener("click", () => render(servings = Math.min(MAX, servings + 1)));
-    render(servings);
+    minus.addEventListener("click", () => render(STEPS[step = Math.max(0, step - 1)]));
+    plus.addEventListener("click", () => render(STEPS[step = Math.min(STEPS.length - 1, step + 1)]));
+    render(STEPS[step]);
 })();

@@ -36,6 +36,13 @@ scroll_fx: true
 # list to hover them (libs/custom/gpx_overview.js and .css; the lines come from
 # create_map/gpx_overview.py, rerun it after adding courses)
 gpx_overview: true
+# true: strip under each recipe's title with its time, servings and tags (libs/custom/recipe_strip.js,
+# styles in recipe_extras.css); time and tags come from the recipe's front matter (time: "45 min",
+# tags: [vegan, quick]; keep the tags in sync with data-tags in recipes.html)
+recipe_strip: true
+# true: cook mode on the recipes: tap the instruction steps off, the next one is highlighted
+# (libs/custom/recipe_steps.js, styles in recipe_extras.css)
+recipe_steps: true
 
 
 collections:

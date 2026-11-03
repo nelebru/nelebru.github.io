@@ -28,6 +28,9 @@
   {% if site.scroll_fx and page.title == "Home" or site.scroll_fx and page.url contains "/recipes/" %}
   <link rel="stylesheet" href={{ "/libs/custom/scroll_fx.css" | prepend: site.baseurl }}>
   {% endif %}
+  {% if page.url contains "/recipes/" %}{% if site.recipe_strip or site.recipe_steps %}
+  <link rel="stylesheet" href={{ "/libs/custom/recipe_extras.css" | prepend: site.baseurl }}>
+  {% endif %}{% endif %}
 
   <!-- JQuery
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -190,6 +193,13 @@
   <script src="{{ "/libs/custom/recipe_wakelock.js" | prepend: site.baseurl }}"></script>
   <script src="{{ "/libs/custom/recipe_ingredients.js" | prepend: site.baseurl }}"></script>
   <script src="{{ "/libs/custom/recipe_servings.js" | prepend: site.baseurl }}"></script>
+  {% if site.recipe_strip %}
+  <script>window.RECIPE = { time: {{ page.time | jsonify }}, tags: {{ page.tags | jsonify }} };</script>
+  <script src="{{ "/libs/custom/recipe_strip.js" | prepend: site.baseurl }}"></script>
+  {% endif %}
+  {% if site.recipe_steps %}
+  <script src="{{ "/libs/custom/recipe_steps.js" | prepend: site.baseurl }}"></script>
+  {% endif %}
   {% endif %}
 
   {% if page.url contains "/recipes/" and site.likes_api != "" %}

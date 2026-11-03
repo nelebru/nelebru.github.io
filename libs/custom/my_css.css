@@ -951,6 +951,17 @@ body.gpx-page .navbar-link[href*="gpx"] {
   font-weight: 600;
 }
 
+/* batches (data-scale) away from 1, next to the stepper */
+.servings-note[hidden] {
+  display: none;
+}
+
+.servings-note {
+  color: #8a8380;
+  font-size: 0.85em;
+  font-style: italic;
+}
+
 .servings-btn:disabled {
   opacity: 0.4;
   cursor: default;

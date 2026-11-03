@@ -1,0 +1,81 @@
+/* Recipe pages: the strip under the title (recipe_strip.js) and the cook mode for the steps
+   (recipe_steps.js), switched on with recipe_strip and recipe_steps in _config.yml */
+
+/* ---------- strip: time, servings, tags ---------- */
+
+.recipe-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6em 1.6em;
+  margin: 1.6rem 0 0;
+  color: #6e5f5e;
+  font-size: 0.95em; }
+.strip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  white-space: nowrap; }
+.strip-item i {
+  color: #a8a09d; }
+
+/* the tags as small pills in the colours of the filter chips on the overview */
+.strip-tag {
+  padding: 0.1em 0.75em;
+  border: 1px solid rgba(var(--chip-rgb, 150, 150, 150), 0.5);
+  border-radius: 999px;
+  background: rgba(var(--chip-rgb, 150, 150, 150), 0.07); }
+.strip-tag i {
+  color: rgb(var(--chip-rgb, 150, 150, 150)); }
+.strip-tag[data-tag="vegan"]      { --chip-rgb: 63, 157, 74; }
+.strip-tag[data-tag="quick"]      { --chip-rgb: 58, 134, 200; }
+.strip-tag[data-tag="plan-ahead"] { --chip-rgb: 138, 99, 210; }
+.strip-tag[data-tag="christmas"]  { --chip-rgb: 212, 63, 79; }
+.strip-tag[data-tag="autumn"]     { --chip-rgb: 210, 112, 42; }
+.strip-tag[data-tag="summer"]     { --chip-rgb: 224, 161, 0; }
+
+/* ---------- cook mode ---------- */
+
+.step-hint {
+  margin-top: -0.6em; }
+
+.recipe ol li.step {
+  margin-left: -0.6em;
+  padding: 0.35em 0.6em;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.25s ease, background-color 0.25s ease; }
+.recipe ol li.step::marker {
+  transition: color 0.25s ease; }
+
+/* the step to do next */
+.recipe ol li.step.current {
+  background-color: rgba(255, 105, 180, 0.08); }
+.recipe ol li.step.current::marker {
+  color: hotpink;
+  font-weight: 700; }
+
+/* the ones done */
+.recipe ol li.step.done {
+  opacity: 0.4; }
+.recipe ol li.step.done::marker {
+  color: hotpink; }
+
+.recipe ol li.step:focus-visible {
+  outline: 2px solid hotpink;
+  outline-offset: 2px; }
+
+.steps-cheer[hidden] {
+  display: none; }
+.steps-cheer {
+  color: hotpink;
+  font-weight: 600; }
+
+/* ---------- dark mode ---------- */
+
+html[data-theme="dark"] .recipe-strip { color: var(--text-muted); }
+html[data-theme="dark"] .strip-item i { color: var(--text-muted); }
+html[data-theme="dark"] .strip-tag i { color: rgb(var(--chip-rgb, 150, 150, 150)); }
+html[data-theme="dark"] .recipe ol li.step.current { background-color: rgba(255, 105, 180, 0.1); }
