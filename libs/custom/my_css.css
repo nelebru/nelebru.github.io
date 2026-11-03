@@ -372,6 +372,14 @@ html {
   margin: 1.5rem 0;
 }
 
+/* the bio's text centred, like its heading and tiles */
+#bio > p {
+  text-align: center; }
+
+/* "Feel free to reach out!" below the tiles */
+.bio-outro {
+  margin-top: 2.5rem; }
+
 .research-tile {
   flex: 1 1 220px;
   border-radius: 12px;
@@ -847,6 +855,10 @@ body.gpx-page .navbar-link[href*="gpx"] {
   flex-wrap: wrap; /* ensures mobile responsiveness */
   position: relative;
 }
+
+/* more room above the instructions (and tips) below the ingredients tile */
+.recipe > h3 {
+  margin-top: 7rem; }
 
 .ingredients-list {
   flex: 2;
@@ -1416,6 +1428,17 @@ a:focus {
   /* pastel rainbow alternative:
   background: linear-gradient(135deg,
     #ffe6ec, #fff0e2, #fff9db, #e8f8e4, #e4f1ff, #efe8ff); */
+}
+/* paler in the course cards: the same arc under a thin white veil */
+.course-card .course-map.leaflet-container {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)),
+    linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0) 35%,
+      rgba(255, 255, 255, 0) 65%, #ffffff 100%),
+    radial-gradient(ellipse 60% 65% at 50% 100%,
+      #ffffff 10%, #f1e9fd 48%, #e8f2fd 60%, #eaf8e8 71%,
+      #fffae3 82%, #fff0e3 92%, #fde7ea 101%, #ffffff 145%);
 }
 
 /* hide the empty attribution box while no OpenStreetMap tiles are loaded */

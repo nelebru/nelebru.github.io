@@ -25,6 +25,9 @@
   <link rel="stylesheet" href={{ "/libs/external/skeleton/normalize.css" | prepend: site.baseurl }}>
   <link rel="stylesheet" href={{ "/libs/external/skeleton/skeleton.css" | prepend: site.baseurl }}>
   <link rel="stylesheet" href={{ "/libs/custom/my_css.css" | prepend: site.baseurl }}>
+  {% if site.scroll_fx and page.title == "Home" or site.scroll_fx and page.url contains "/recipes/" %}
+  <link rel="stylesheet" href={{ "/libs/custom/scroll_fx.css" | prepend: site.baseurl }}>
+  {% endif %}
 
   <!-- JQuery
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -178,6 +181,10 @@
       </div>
     </div>
   </div>
+
+  {% if site.scroll_fx and page.title == "Home" or site.scroll_fx and page.url contains "/recipes/" %}
+  <script src="{{ "/libs/custom/scroll_fx.js" | prepend: site.baseurl }}" defer></script>
+  {% endif %}
 
   {% if page.url contains "/recipes/" %}
   <script src="{{ "/libs/custom/recipe_wakelock.js" | prepend: site.baseurl }}"></script>

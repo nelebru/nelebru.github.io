@@ -29,6 +29,13 @@ vita_ride_surf: true
 # only for "dots": "pollenca-lluc" for the real road and mountains from Port de Pollença to
 # Lluc on Mallorca (libs/custom/vita_ride_pollenca_lluc.js), "made-up" for the generated ones
 vita_ride_terrain: "pollenca-lluc"
+# true: scroll effects on the home page and recipes (libs/custom/scroll_fx.js and .css): wave lines
+# beside the section headings, and tiles, papers and headings sliding in as they come into view
+scroll_fx: true
+# true: overview map on the GPX page with all courses of one place on top of each other and a
+# list to hover them (libs/custom/gpx_overview.js and .css; the lines come from
+# create_map/gpx_overview.py, rerun it after adding courses)
+gpx_overview: true
 
 
 collections:

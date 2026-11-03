@@ -88,6 +88,9 @@
   <script src={{ "/libs/external/leaflet/leaflet.js" | prepend: site.baseurl }}></script>
   <script src={{ "/libs/external/leaflet/gpx.min.js" | prepend: site.baseurl }}></script>
   <script src={{ "/libs/custom/heart_burst.js" | prepend: site.baseurl }}></script>
+  {% if site.gpx_overview %}
+  <link rel="stylesheet" href={{ "/libs/custom/gpx_overview.css" | prepend: site.baseurl }}>
+  {% endif %}
 
   <style>
   .header-canvas-wrapper {

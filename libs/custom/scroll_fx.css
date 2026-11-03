@@ -1,0 +1,44 @@
+/* Scroll effects for the home page (libs/custom/scroll_fx.js), switched on with scroll_fx
+   in _config.yml */
+
+/* a wave line to the left and right of each section heading, on one line with it, with
+   more room around the heading (but not for Vitæ, which sits right above the ride) */
+.sfx-waved {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8em;
+  white-space: nowrap;
+  margin: 10rem 0 4rem; }
+#resume > .sfx-waved {
+  margin: 5rem 0 2rem; }
+#publications > .sfx-waved,
+#student-projects > .sfx-waved {
+  margin-bottom: 6rem; }
+.sfx-wave {
+  flex: 0 1 240px;
+  min-width: 0;
+  height: 22px;
+  pointer-events: none; }
+/* small phones: the longest heading still fits on one line */
+@media (max-width: 549px) {
+  .sfx-waved {
+    font-size: min(3rem, 6vw); }
+}
+
+/* things slide up and fade in as they come into view */
+.sfx-reveal {
+  opacity: 0;
+  transform: translateY(48px) scale(0.97);
+  transition: opacity 1s ease, transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--sfx-delay, 0ms); }
+.sfx-reveal.sfx-in {
+  opacity: 1;
+  transform: none; }
+
+/* when the system asks for less motion: only the fade, no sliding */
+@media (prefers-reduced-motion: reduce) {
+  .sfx-reveal {
+    transform: none;
+    transition: opacity 1s ease; }
+}
