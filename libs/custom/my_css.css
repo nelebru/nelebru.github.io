@@ -1692,6 +1692,72 @@ body.map-fullscreen-open {
   object-fit: cover;
 }
 
+/* a photo spot's tile: just the photo, with a thin frame */
+.leaflet-tooltip.photo-tile {
+  padding: 0.4rem;
+}
+
+.photo-tile img {
+  margin-bottom: 0;
+}
+
+/* one photo at a time; arrows step through the others */
+.trip-gallery {
+  position: relative;
+  margin-bottom: 0.6rem;
+}
+
+.trip-gallery img {
+  margin-bottom: 0;
+}
+
+.trip-gallery img[hidden] {
+  display: none;
+}
+
+.trip-tile .trip-gallery-arrow {
+  position: absolute;
+  top: 50%;
+  width: 2.6rem;
+  height: 2.6rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  color: #444;
+  font-size: 1.1rem;
+  line-height: 2.6rem;
+  text-align: center;
+  cursor: pointer;
+  transform: translateY(-50%);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.trip-tile .trip-gallery-arrow:hover {
+  background: #fff;
+}
+
+.trip-gallery-arrow[data-step="-1"] { left: 0.5rem; }
+.trip-gallery-arrow[data-step="1"] { right: 0.5rem; }
+
+.trip-gallery-count {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.6rem;
+}
+
+/* the tile that follows the cursor can't be clicked: no arrows there, only the count */
+.leaflet-tooltip .trip-gallery-arrow {
+  display: none;
+}
+
 .trip-tile-sub {
   color: #888;
   font-size: 1.1rem;

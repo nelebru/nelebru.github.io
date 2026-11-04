@@ -1,7 +1,6 @@
 [
   {
     "name": "Rallarvegen",
-    "caption": "Incredibly scenic national cykkel rute in Norway from Haugastøl to Flåm (and back).",
     "image": "assets/photos/rallarveggen.jpg",
     "date": "2026-07-10",
     "lat": 60.6016,
@@ -9,7 +8,6 @@
   },
   {
     "name": "Ogna beach",
-    "caption": "Stunning beach in Ogna, Norway.",
     "image": "assets/photos/ogna_beach_NOR.jpg",
     "date": "2026-06-29",
     "lat": 58.5291,
@@ -17,10 +15,338 @@
   },
   {
     "name": "Mittenwalder Höhenweg",
-    "caption": "A nice via ferrata between Germany and Austria.",
     "image": "assets/photos/mittenwald.jpg",
     "date": "2026-08-02",
     "lat": 47.4265,
     "lon": 11.2912
+  },
+  {
+    "name": "SUP tour near Tregde",
+    "image": "assets/photos/sup_norway.jpg",
+    "lat": 58.0057,
+    "lon": 7.5687
+  },
+  {
+    "name": "Rømø",
+    "image": "assets/photos/IMG-20230903-WA0004.jpg",
+    "date": "2023-09-03",
+    "lat": 55.146,
+    "lon": 8.488
+  },
+  {
+    "name": "Fanø",
+    "image": "assets/photos/fanoe_seals.jpg",
+    "lat": 55.333,
+    "lon": 8.42
+  },
+  {
+    "name": "Sæby",
+    "image": "assets/photos/saeby.jpg",
+    "date": "2022-04-12",
+    "lat": 57.333,
+    "lon": 10.523
+  },
+  {
+    "name": "Kegnæs",
+    "image": "assets/photos/kegnaes_kite.jpg",
+    "lat": 54.856,
+    "lon": 9.985
+  },
+  {
+    "name": "Sønderborg",
+    "image": "assets/photos/soenderborg_bike.jpg",
+    "lat": 54.91,
+    "lon": 9.789
+  },
+  {
+    "name": "Damp",
+    "image": "assets/photos/damp_harbour.jpg",
+    "lat": 54.5845,
+    "lon": 10.0225
+  },
+  {
+    "name": "Holm",
+    "image": "assets/photos/holm_schleswig.jpg",
+    "date": "2024-06-09",
+    "lat": 54.5139,
+    "lon": 9.57
+  },
+  {
+    "name": "Weseby",
+    "image": "assets/photos/weseby_kite.jpg",
+    "lat": 54.5043,
+    "lon": 9.7062
+  },
+  {
+    "name": "Bungsberg",
+    "image": "assets/photos/bungsberg_bikepacking.jpg",
+    "date": "2025-08-09",
+    "lat": 54.2108,
+    "lon": 10.7253
+  },
+  {
+    "name": "Vrouwenpolder",
+    "image": "assets/photos/vrouwenpolder_kite.jpg",
+    "lat": 51.585,
+    "lon": 3.57
+  },
+  {
+    "name": "Puig des Tossals Verds",
+    "image": "assets/photos/hike_mallorca.jpg",
+    "lat": 39.766,
+    "lon": 2.785
+  },
+  {
+    "name": "Puig de Randa",
+    "image": "assets/photos/puig_mallorca.jpg",
+    "lat": 39.5222,
+    "lon": 2.933
+  },
+  {
+    "name": "Petra",
+    "image": "assets/photos/mallorca_petra.jpg",
+    "date": "2024-07-03",
+    "lat": 39.613,
+    "lon": 3.111
+  },
+  {
+    "name": "Sineu",
+    "image": "assets/photos/sineu.jpg",
+    "lat": 39.642,
+    "lon": 3.011
+  },
+  {
+    "name": "Rhodes",
+    "image": "assets/photos/rhodes_kitesurf.jpg",
+    "date": "2023-06-13",
+    "lat": 36.388,
+    "lon": 28.045
+  },
+  {
+    "name": "Rhodes",
+    "image": "assets/photos/rhodes_kite2.jpg",
+    "lat": 36.384,
+    "lon": 28.04
+  },
+  {
+    "name": "Gardens by the Bay",
+    "image": "assets/photos/gardens_by_the_bay.jpg",
+    "date": "2022-05-21",
+    "lat": 1.2816,
+    "lon": 103.8636
+  },
+  {
+    "name": "Marina Bay",
+    "image": "assets/photos/marina_bay_singapore.jpg",
+    "date": "2022-05-24",
+    "lat": 1.2834,
+    "lon": 103.8607
+  },
+  {
+    "name": "Petronas Towers",
+    "image": "assets/photos/petronas_towers.jpg",
+    "lat": 3.1579,
+    "lon": 101.7116
+  },
+  {
+    "name": "Chiang Mai hike",
+    "image": "assets/photos/chiang_mai_hike.jpg",
+    "date": "2025-01-27",
+    "lat": 18.8048,
+    "lon": 98.9216
+  },
+  {
+    "name": "Chiang Mai run",
+    "image": "assets/photos/chiang_mai_run.jpg",
+    "date": "2025-01-28",
+    "lat": 18.7883,
+    "lon": 98.9853
+  },
+  {
+    "name": "Koh Yao Yai",
+    "image": "assets/photos/koh_yao_yai_run_north.jpg",
+    "date": "2025-01-30",
+    "lat": 8.08227,
+    "lon": 98.5987
+  },
+  {
+    "name": "Koh Lanta north",
+    "image": "assets/photos/koh_lanta_north.jpg",
+    "lat": 7.645,
+    "lon": 99.03
+  },
+  {
+    "name": "Koh Lanta south",
+    "image": "assets/photos/koh_lanta_south.jpg",
+    "lat": 7.483,
+    "lon": 99.095
+  },
+  {
+    "name": "Fanø",
+    "image": "assets/photos/fanoe_kite.JPG",
+    "date": "2025-09-17",
+    "lat": 55.4203,
+    "lon": 8.3657
+  },
+  {
+    "name": "Fanø",
+    "image": "assets/photos/fanoe_kite2.jpg",
+    "lat": 55.4215,
+    "lon": 8.3665
+  },
+  {
+    "name": "Fanø",
+    "image": "assets/photos/fanoe_kite3.JPG",
+    "date": "2025-09-18",
+    "lat": 55.4191,
+    "lon": 8.3649
+  },
+  {
+    "name": "Bristol",
+    "image": "assets/photos/bristol_bridge.jpg",
+    "date": "2025-08-23",
+    "lat": 51.4549,
+    "lon": -2.6278
+  },
+  {
+    "name": "Hohwacht",
+    "image": "assets/photos/bikepacking_hohwacht.jpg",
+    "date": "2025-08-10",
+    "lat": 54.30468,
+    "lon": 10.70219
+  },
+  {
+    "name": "Hubertsberg",
+    "image": "assets/photos/ostsee_panker_hubetsberg.jpg",
+    "date": "2026-05-01",
+    "lat": 54.37956,
+    "lon": 10.53803
+  },
+  {
+    "name": "Brodtener Ufer",
+    "image": "assets/photos/brodtener_ufer.jpg",
+    "date": "2026-02-07",
+    "lat": 53.977,
+    "lon": 10.88
+  },
+  {
+    "name": "Krummesse",
+    "image": "assets/photos/mohnfeld_krummesse.jpg",
+    "date": "2026-06-06",
+    "lat": 53.788,
+    "lon": 10.656
+  },
+  {
+    "name": "Ratzeburger See",
+    "image": "assets/photos/sailling_ratzeburger_see.jpg",
+    "date": "2025-10-03",
+    "lat": 53.72,
+    "lon": 10.77
+  },
+  {
+    "name": "Rieps",
+    "image": "assets/photos/rieps_rennen.jpg",
+    "date": "2026-05-10",
+    "lat": 53.7726,
+    "lon": 10.86735
+  },
+  {
+    "name": "Selker Noor",
+    "image": "assets/photos/selker_noor_bridge.jpg",
+    "date": "2026-04-04",
+    "lat": 54.4864,
+    "lon": 9.5777
+  },
+  {
+    "name": "Hüholz",
+    "image": "assets/photos/kappeln_cross.jpg",
+    "lat": 54.6518,
+    "lon": 9.9196
+  },
+  {
+    "name": "St. Peter-Ording",
+    "image": "assets/photos/st_peter_deich.jpg",
+    "date": "2025-04-13",
+    "lat": 54.305,
+    "lon": 8.64
+  },
+  {
+    "name": "Preikestolen",
+    "image": "assets/photos/preikestolen.jpg",
+    "lat": 58.9864,
+    "lon": 6.1903
+  },
+  {
+    "name": "MSR 300",
+    "image": "assets/photos/MSR300_MV.jpg",
+    "lat": 53.55743,
+    "lon": 13.26687
+  },
+  {
+    "name": "Königswiesen",
+    "image": "assets/photos/Schleswig_koenigswiesen.jpg",
+    "date": "2026-06-21",
+    "lat": 54.5119,
+    "lon": 9.55844
+  },
+  {
+    "name": "Barendorf",
+    "image": "assets/photos/barendorf_MV.jpg",
+    "lat": 53.97996,
+    "lon": 10.96957
+  },
+  {
+    "name": "Buarbreen",
+    "image": "assets/photos/buarbreen.jpg",
+    "lat": 60.04455,
+    "lon": 6.47744
+  },
+  {
+    "name": "Elbe-Lübeck-Kanal",
+    "image": "assets/photos/kanal_luebeck_run.jpg",
+    "lat": 53.85013,
+    "lon": 10.69453
+  },
+  {
+    "name": "Koh Hong",
+    "image": "assets/photos/koh_hong.jpg",
+    "lat": 8.0781,
+    "lon": 98.6773
+  },
+  {
+    "name": "Lauerholz",
+    "image": "assets/photos/lauerholz_luebeck.jpg",
+    "lat": 53.88109,
+    "lon": 10.74137
+  },
+  {
+    "name": "Lindesnes",
+    "image": "assets/photos/lindesnes.jpg",
+    "lat": 57.98368,
+    "lon": 7.04808
+  },
+  {
+    "name": "Lysebotn",
+    "image": "assets/photos/lysebotn.jpg",
+    "lat": 59.05516,
+    "lon": 6.6459
+  },
+  {
+    "name": "Above Lysebotn",
+    "image": "assets/photos/lysebotn_top_of_mountain.jpg",
+    "lat": 59.01521,
+    "lon": 6.65788
+  },
+  {
+    "name": "Myrdal",
+    "image": "assets/photos/myrdal_NOR.jpg",
+    "lat": 60.74053,
+    "lon": 7.12419
+  },
+  {
+    "name": "Rotwand",
+    "image": "assets/photos/rotwand.jpg",
+    "lat": 47.64862,
+    "lon": 11.93272
   }
 ]

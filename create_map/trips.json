@@ -4,7 +4,7 @@
     "name": "Aarhus",
     "subtitle": "Bikepacking",
     "text": "Parked the van in Kolding and biked to Aarhus through the surprisingly hilly Danish countryside. We saw bioluminescence in the ocean at night :)",
-    "image": "",
+    "image": ["assets/photos/bikepacking_aarhus.jpg", "assets/photos/bikepacking_aarhu2.jpg"],
     "from": "2025-09-19",
     "to": "2025-09-20",
     "sports": ["bike"]
@@ -14,7 +14,7 @@
     "name": "Wales",
     "subtitle": "Bikepacking",
     "text": "A crazy, rainy, amazing adventure through the mountains of Wales.",
-    "image": "assets/photos/wales.jpg",
+    "image": ["assets/photos/wales.jpg", "assets/photos/wales2.jpg", "assets/photos/bikepacking_wales.jpg"],
     "from": "2025-08-24",
     "to": "2025-09-05",
     "sports": ["bike"]
@@ -24,7 +24,7 @@
     "name": "MV Bikepacking",
     "subtitle": "Bikepacking",
     "text": "Mecklenburg-Vorpommern, Germany. A bikepacking trip through the beautiful landscapes of Müritzer Seenplatte in 32°C.",
-    "image": "",
+    "image": "assets/photos/mv_bikepacking.jpg",
     "from": "2024-07-19",
     "to": "2024-07-21",
     "sports": ["bike"]
@@ -44,7 +44,7 @@
     "name": "Bagenkop",
     "subtitle": "Sailing",
     "text": "Weekend sailing trip to Bagenkop on Langeland with Pernot II.",
-    "image": "",
+    "image": "assets/photos/bagenkop_sailing.jpg",
     "from": "2021-09-25",
     "to": "2021-09-26",
     "types": ["other", "running"]

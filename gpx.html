@@ -642,13 +642,9 @@ function addPhotos(map, photos) {
         });
         const image = photo.image
             ? `<img src="${baseUrl}/${photo.image}" alt="${escapeHtml(photo.name || "")}" loading="lazy" onerror="this.remove()">` : "";
-        const date = photo.date
-            ? new Date(photo.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "";
+        // only the image for now; name, date and caption stay in photos.json
         const marker = L.marker([photo.lat, photo.lon], { icon, title: photo.name || "", keyboard: false })
-            .bindTooltip(`${image}
-                ${date ? `<div class="trip-tile-sub">${escapeHtml(date)}</div>` : ""}
-                ${photo.name ? `<div class="trip-tile-name">${escapeHtml(photo.name)}</div>` : ""}
-                ${photo.caption ? `<p>${escapeHtml(photo.caption)}</p>` : ""}`,
+            .bindTooltip(image,
                 { direction: "top", offset: [0, -14], className: "trip-tile photo-tile" })
             .addTo(map);
         keepTooltipInside(map, marker);
@@ -681,8 +677,17 @@ function tripDates(from, to) {
 }
 
 function tripTile(trip) {
-    const image = trip.image
-        ? `<img src="${baseUrl}/${trip.image}" alt="" loading="lazy" onerror="this.remove()">` : "";
+    // "image" is one path or a list of them; several become a gallery with arrows
+    const images = [].concat(trip.image || []).filter(Boolean);
+    const many = images.length > 1;
+    const image = !images.length ? "" : `<div class="trip-gallery">
+        ${images.map((src, i) => `<img src="${baseUrl}/${src}" alt=""${i ? " hidden" : ""} loading="lazy">`).join("")}
+        ${many ? `<button type="button" class="trip-gallery-arrow" data-step="-1" aria-label="Previous photo">
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+          <button type="button" class="trip-gallery-arrow" data-step="1" aria-label="Next photo">
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+          <span class="trip-gallery-count">1 / ${images.length}</span>` : ""}
+      </div>`;
     const sub = [trip.subtitle, tripDates(trip.from, trip.to)].filter(Boolean).map(escapeHtml).join(" · ");
     return `${image}
         <div class="trip-tile-sub">${sub}</div>
@@ -693,6 +698,18 @@ function tripTile(trip) {
             `${trip.days} ${trip.days === 1 ? "day" : "days"}`
         ].filter(Boolean).join(" · ")}</div>
         ${trip.text ? `<p>${escapeHtml(trip.text)}</p>` : ""}`;
+}
+
+// the arrows of a trip tile's gallery: show the previous or next photo
+function stepGallery(event) {
+    const arrow = event.target.closest(".trip-gallery-arrow");
+    if (!arrow) return;
+    const gallery = arrow.closest(".trip-gallery");
+    const imgs = [...gallery.querySelectorAll("img")];
+    const current = imgs.findIndex(img => !img.hidden);
+    const next = (current + Number(arrow.dataset.step) + imgs.length) % imgs.length;
+    imgs.forEach((img, i) => { img.hidden = i !== next; });
+    gallery.querySelector(".trip-gallery-count").textContent = `${next + 1} / ${imgs.length}`;
 }
 
 // each trip: a highlight line (shown with the tile) and a wide invisible line to hover or tap
@@ -708,6 +725,7 @@ function addTrips(map, trips) {
         keepTooltipInside(map, hit);
         hit.on("tooltipopen", () => glow.setStyle({ opacity: 1 }).bringToFront());
         hit.on("tooltipclose", () => glow.setStyle({ opacity: 0 }));
+        // without the Trips menu, a click just zooms to the trip (the menu replaces this)
         hit.on("click", () => map.fitBounds(hit.getBounds(), { padding: [40, 40] }));
         return { trip, hit, glow };
     });
@@ -782,6 +800,7 @@ function addTripsMenu(map, slot, trips) {
     // the tile above the names, so the names stay put under the cursor when it appears
     const tile = L.DomUtil.create("div", "trip-tile world-trip-tile", panel);
     const list = L.DomUtil.create("div", "world-trip-list", panel);
+    tile.addEventListener("click", stepGallery);
     let selected = null;
 
     function show(entry) {
@@ -801,16 +820,25 @@ function addTripsMenu(map, slot, trips) {
         btn.addEventListener("mouseenter", () => show(entry));
         btn.addEventListener("mouseleave", () => show(null));
         btn.addEventListener("focus", () => show(entry));
-        btn.addEventListener("click", () => {
-            selected = entry;
-            show(entry);
-            // the open panel covers the lower left corner: keep the trip clear of it
-            map.fitBounds(entry.hit.getBounds(), {
-                paddingTopLeft: [panel.offsetWidth + 30, 30],
-                paddingBottomRight: [30, 30]
-            });
+        btn.addEventListener("click", () => select(entry));
+        // clicking the trip on the map opens this menu with the trip selected,
+        // where its tile stays put and the photo arrows can be clicked
+        entry.hit.off("click").on("click", () => {
+            if (panel.hidden) panel.parentElement.querySelector(".world-menu-toggle").click();
+            entry.hit.closeTooltip();
+            select(entry);
         });
     });
+
+    function select(entry) {
+        selected = entry;
+        show(entry);
+        // the open panel covers the lower left corner: keep the trip clear of it
+        map.fitBounds(entry.hit.getBounds(), {
+            paddingTopLeft: [panel.offsetWidth + 30, 30],
+            paddingBottomRight: [30, 30]
+        });
+    }
     tile.hidden = true;
 
     panel.addEventListener("menuclose", () => {
