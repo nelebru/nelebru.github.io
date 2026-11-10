@@ -150,7 +150,7 @@
     <section class="header">
       <div class="row">
         <div class="three columns">
-          <a href="{{ site.baseurl }}/"><img class="u-max-full-width" src='{{ site.baseurl }}{{ site.data.main_info.profile_pic_cycle }}'></a>
+          <a href="{{ site.baseurl }}/"><img class="u-max-full-width profile-pic" src='{{ site.baseurl }}{{ site.data.main_info.profile_pic_cycle }}' width="640" height="636" alt="{{ site.data.main_info.name }}"></a>
         </div>
         <div class="nine columns main-description">
             <h1>{{ site.data.main_info.name }}</h1>
@@ -331,19 +331,20 @@
       vy: Math.sin(angle) * 0.5,
       baseAngle: angle,
       hue: Math.random() * 360,
-      leader: isLeader
+      leader: isLeader,
+      // which way the bike faces (1 = right, -1 = left) and where the cranks are
+      side: Math.cos(angle) >= 0 ? 1 : -1,
+      phase: Math.random() * Math.PI * 2
     };
   }
 
   let cyclists = Array.from({ length: 25 }, (_, i) => createCyclist(i === 0));
 
-  // Headlight cone along the riding direction from the front wheel, red light at the back.
-  // The bike itself is drawn sideways, so "front" is the wheel on the side it rides towards.
-  function drawLights(c) {
-    const speed = Math.hypot(c.vx, c.vy);
-    const angle = speed > 0.01 ? Math.atan2(c.vy, c.vx) : c.baseAngle;
-    const side = Math.cos(angle) >= 0 ? 1 : -1;
-    const fx = c.x + 6 * side, fy = c.y - 3;
+  // Headlight cone along the riding direction from the handlebar, red light under the saddle.
+  // The bike itself is drawn sideways, so "front" is the side it faces (c.side).
+  function drawLights(c, angle) {
+    const side = c.side;
+    const fx = c.x + 5.4 * side, fy = c.y - 5.6;
     const reach = 38, spread = 0.34;
 
     const beam = ctx.createRadialGradient(fx, fy, 0, fx, fy, reach);
@@ -367,33 +368,105 @@
     ctx.shadowColor = 'rgba(220, 50, 50, 0.6)';
     ctx.fillStyle = '#d93d3d';
     ctx.beginPath();
-    ctx.arc(c.x - 6 * side, fy, 1.5, 0, Math.PI * 2);
+    ctx.arc(c.x - 3.6 * side, c.y - 5.2, 1.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
 
+  // A small road bike with its rider, seen from the side, in local coordinates: the bike faces
+  // +x, the wheel hubs sit on y = 0. Mirrored for cyclists riding to the left.
+  const REAR = [-6.5, 0], FRONT = [6.5, 0], BB = [-1, 0.6];     // hubs, bottom bracket
+  const SEAT = [-2.8, -5.4], HEAD = [4.4, -4.8], STEM = [4.1, -6.4];
+  const HIP = [-2.9, -7.2], SHOULDER = [2.5, -10.4], HANDS = [5.6, -6.2];
+  const WHEEL = 4.3, CRANK = 2, THIGH = 4.7, SHIN = 4.7;
+
+  function line(points) {
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], points[0][1]);
+    for (let i = 1; i < points.length; i++) ctx.lineTo(points[i][0], points[i][1]);
+    ctx.stroke();
+  }
+  function dot(x, y, r, fill) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    if (fill) ctx.fill(); else ctx.stroke();
+  }
+
+  // a leg from the hip to its pedal, the knee bent forwards (two-bone IK)
+  function drawLeg(crankAngle) {
+    const pedal = [BB[0] + Math.cos(crankAngle) * CRANK, BB[1] + Math.sin(crankAngle) * CRANK];
+    const dx = pedal[0] - HIP[0], dy = pedal[1] - HIP[1];
+    const d = Math.min(Math.hypot(dx, dy), THIGH + SHIN - 0.05);
+    const a = (THIGH * THIGH - SHIN * SHIN + d * d) / (2 * d);
+    const h = Math.sqrt(Math.max(0, THIGH * THIGH - a * a));
+    const ux = dx / Math.hypot(dx, dy), uy = dy / Math.hypot(dx, dy);
+    // of the two possible knees, the one in front
+    const nx = -uy, ny = ux, s = nx > 0 ? 1 : -1;
+    const knee = [HIP[0] + ux * a + nx * h * s, HIP[1] + uy * a + ny * h * s];
+    ctx.lineWidth = 1.3;
+    line([HIP, knee, pedal]);
+    ctx.lineWidth = 0.8;
+    line([BB, pedal]);
+  }
+
   function drawCyclist(c) {
-    // the leader uses the text colour; the others their hue, lighter in dark mode
     const dark = isDark();
-    if (dark && lightsOn) drawLights(c);
+    const speed = Math.hypot(c.vx, c.vy);
+    const angle = speed > 0.01 ? Math.atan2(c.vy, c.vx) : c.baseAngle;
+    // turn round only once clearly riding the other way, so it doesn't flicker when riding
+    // straight up or down
+    if (Math.cos(angle) * c.side < -0.15) c.side = -c.side;
+    // pedalling a little faster when riding faster
+    c.phase += 0.08 + Math.min(speed, 3) * 0.12;
+
+    if (dark && lightsOn) drawLights(c, angle);
+    // the leader uses the text colour; the others their hue, lighter in dark mode
     const color = c.leader ? (dark ? '#e6e3ea' : '#222') : `hsl(${c.hue}, 60%, ${dark ? 62 : 45}%)`;
+
+    ctx.save();
+    ctx.translate(c.x, c.y);
+    ctx.scale(c.side, 1);
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // the far leg first, fainter, behind the bike
+    ctx.globalAlpha = 0.5;
+    drawLeg(c.phase + Math.PI);
+    ctx.globalAlpha = 1;
+
+    // wheels with hubs
+    ctx.lineWidth = 1.1;
+    dot(REAR[0], REAR[1], WHEEL);
+    dot(FRONT[0], FRONT[1], WHEEL);
+    dot(REAR[0], REAR[1], 0.7, true);
+    dot(FRONT[0], FRONT[1], 0.7, true);
+
+    // frame: chainstay, seat tube, seatstay, top tube, down tube, fork, stem
+    ctx.lineWidth = 1.2;
+    line([REAR, BB, SEAT, REAR]);
+    line([SEAT, HEAD, BB]);
+    line([FRONT, HEAD, STEM]);
+    dot(BB[0], BB[1], 1.2);
+    // drop handlebar and saddle
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.arc(c.x - 6, c.y, 4, 0, Math.PI * 2);
+    ctx.moveTo(STEM[0], STEM[1]);
+    ctx.quadraticCurveTo(6.4, -6.5, 5.9, -5.1);
     ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(c.x + 6, c.y, 4, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(c.x - 6, c.y);
-    ctx.lineTo(c.x, c.y - 5);
-    ctx.lineTo(c.x + 6, c.y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(c.x, c.y - 8, 2, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.lineWidth = 1.5;
+    line([[-4.4, -6.3], [-1.7, -6.3]]);
+
+    // rider: near leg, back bent over the bike, arm to the bars, head
+    drawLeg(c.phase);
+    ctx.lineWidth = 1.7;
+    line([HIP, SHOULDER]);
+    ctx.lineWidth = 1.1;
+    line([SHOULDER, [4.4, -8.2], HANDS]);
+    dot(4.3, -12, 1.8, true);
+
+    ctx.restore();
   }
 
   let wasDark = isDark();

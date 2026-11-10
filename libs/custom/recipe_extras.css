@@ -39,29 +39,32 @@
 .step-hint {
   margin-top: -0.6em; }
 
+/* (the number badges themselves are in my_css.css; here they move in with the padding) */
 .recipe ol li.step {
   margin-left: -0.6em;
-  padding: 0.35em 0.6em;
+  padding: 0.35em 0.6em 0.35em 3.4em;
   border-radius: 8px;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.25s ease, background-color 0.25s ease; }
-.recipe ol li.step::marker {
-  transition: color 0.25s ease; }
+.recipe ol li.step::before {
+  left: 0.6em;
+  top: 0.4em; }
 
-/* the step to do next */
+/* the step to do next: a filled badge */
 .recipe ol li.step.current {
   background-color: rgba(255, 105, 180, 0.08); }
-.recipe ol li.step.current::marker {
-  color: hotpink;
-  font-weight: 700; }
+.recipe ol li.step.current::before {
+  background: hotpink;
+  border-color: hotpink;
+  color: #fff; }
 
-/* the ones done */
+/* the ones done: a tick instead of the number */
 .recipe ol li.step.done {
   opacity: 0.4; }
-.recipe ol li.step.done::marker {
-  color: hotpink; }
+.recipe ol li.step.done::before {
+  content: "\2713"; }
 
 .recipe ol li.step:focus-visible {
   outline: 2px solid hotpink;

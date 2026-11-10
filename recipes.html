@@ -165,4 +165,22 @@ function filterRecipes() {
 
   document.querySelector('.recipe-no-results').hidden = anyMatch;
 }
+
+// touch screens (no hover): a tapped tile shows its photo in full colour for a moment, then
+// opens the recipe (styles under @media (hover: none) in my_css.css)
+if (window.matchMedia('(hover: none)').matches) {
+  document.querySelectorAll('.recipe-tile').forEach(tile => {
+    if (!tile.style.getPropertyValue('--img')) return;
+    tile.addEventListener('click', e => {
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      if (tile.classList.contains('tile-open')) return;
+      tile.classList.add('tile-open');
+      setTimeout(() => { location.href = tile.href; }, 450);
+    });
+  });
+  // coming back with the back button: the page may be restored as it was left
+  window.addEventListener('pageshow', () =>
+    document.querySelectorAll('.recipe-tile.tile-open').forEach(t => t.classList.remove('tile-open')));
+}
 </script>

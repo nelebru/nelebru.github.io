@@ -618,8 +618,10 @@ function keepTooltipInside(map, layer) {
     }
     layer.on("tooltipopen", () => {
         fit();
-        const img = layer.getTooltip().getElement().querySelector("img");
-        if (img && !img.complete) img.addEventListener("load", fit, { once: true });
+        const tooltip = layer.getTooltip();
+        const img = tooltip.getElement().querySelector("img");
+        // (a photo tile takes its width from the photo: centre it over the marker again)
+        if (img && !img.complete) img.addEventListener("load", () => { tooltip.update(); fit(); }, { once: true });
     });
     // after Leaflet's own handler has moved a sticky tile to the cursor
     layer.on("mousemove", fit);
@@ -680,7 +682,8 @@ function tripTile(trip) {
     // "image" is one path or a list of them; several become a gallery with arrows
     const images = [].concat(trip.image || []).filter(Boolean);
     const many = images.length > 1;
-    const image = !images.length ? "" : `<div class="trip-gallery">
+    // (--bg: the photo shown, blurred behind it where it doesn't fill the frame)
+    const image = !images.length ? "" : `<div class="trip-gallery" style="--bg: url('${baseUrl}/${images[0]}')">
         ${images.map((src, i) => `<img src="${baseUrl}/${src}" alt=""${i ? " hidden" : ""} loading="lazy">`).join("")}
         ${many ? `<button type="button" class="trip-gallery-arrow" data-step="-1" aria-label="Previous photo">
             <i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
@@ -709,6 +712,7 @@ function stepGallery(event) {
     const current = imgs.findIndex(img => !img.hidden);
     const next = (current + Number(arrow.dataset.step) + imgs.length) % imgs.length;
     imgs.forEach((img, i) => { img.hidden = i !== next; });
+    gallery.style.setProperty("--bg", `url("${imgs[next].src}")`);
     gallery.querySelector(".trip-gallery-count").textContent = `${next + 1} / ${imgs.length}`;
 }
 

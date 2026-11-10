@@ -240,8 +240,8 @@
     "name": "Ratzeburger See",
     "image": "assets/photos/sailling_ratzeburger_see.jpg",
     "date": "2025-10-03",
-    "lat": 53.72,
-    "lon": 10.77
+    "lat": 53.78097,
+    "lon": 10.7658
   },
   {
     "name": "Rieps",
@@ -304,8 +304,8 @@
   {
     "name": "Elbe-Lübeck-Kanal",
     "image": "assets/photos/kanal_luebeck_run.jpg",
-    "lat": 53.85013,
-    "lon": 10.69453
+    "lat": 53.84519,
+    "lon": 10.64947
   },
   {
     "name": "Koh Hong",
@@ -348,5 +348,88 @@
     "image": "assets/photos/rotwand.jpg",
     "lat": 47.64862,
     "lon": 11.93272
+  },
+  {
+    "name": "Damrak",
+    "image": "assets/photos/amsterdam.jpg",
+    "date": "2023-10-16",
+    "lat": 52.37611,
+    "lon": 4.89805
+  },
+  {
+    "name": "Moesgård Strand",
+    "image": "assets/photos/aarhus_southern_beach.jpg",
+    "lat": 56.08794,
+    "lon": 10.24873
+  },
+  {
+    "name": "Palinger Heide",
+    "image": "assets/photos/luebeck_palinger_heide.jpg",
+    "date": "2024-11-16",
+    "lat": 53.86374,
+    "lon": 10.7839
+  },
+  {
+    "name": "Strait of Malacca",
+    "image": "assets/photos/malakka_street.jpg",
+    "date": "2022-05-21",
+    "lat": 2.83065,
+    "lon": 101.03988
+  },
+  {
+    "name": "Møns Klint",
+    "image": "assets/photos/moen_cliffs.jpg",
+    "date": "2022-08-14",
+    "lat": 54.967,
+    "lon": 12.54845
+  },
+  {
+    "name": "Rømø dunes",
+    "image": "assets/photos/IMG_20240902_200755.jpg",
+    "date": "2024-09-02",
+    "lat": 55.139,
+    "lon": 8.493
+  },
+  {
+    "name": "Bruges",
+    "image": "assets/photos/bruegge.jpg",
+    "date": "2023-10-19",
+    "lat": 51.2049,
+    "lon": 3.22533
+  },
+  {
+    "name": "Sønderho, Fanø",
+    "image": "assets/photos/fanoe_havn.jpg",
+    "date": "2024-09-03",
+    "lat": 55.34856,
+    "lon": 8.46898
+  },
+  {
+    "name": "Rydså, Odense",
+    "image": "assets/photos/odense_green_belt.jpg",
+    "date": "2023-09-24",
+    "lat": 55.42007,
+    "lon": 10.32438
+  },
+  {
+    "name": "Vintapperstræde, Odense",
+    "image": "assets/photos/vinetaepperstraede.jpg",
+    "date": "2023-09-23",
+    "lat": 55.39569,
+    "lon": 10.38342
+  },
+  {
+    "name": "Scheveningen",
+    "image": "assets/photos/scheveningen_beach.jpg",
+    "date": "2023-10-16",
+    "lat": 52.10999,
+    "lon": 4.27574
+  },
+  {
+    "name": "SUP on the canal, Lübeck",
+    "image": "assets/photos/sup_luebeck_canal.jpg",
+    "date": "2023-08-27",
+    "lat": 53.87055,
+    "lon": 10.6958
   }
 ]

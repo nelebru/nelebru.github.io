@@ -102,7 +102,7 @@
     <section class="header">
       <div class="row">
         <div class="three columns">
-          <a href="{{ site.baseurl }}/"><img class="u-max-full-width" src='{{ site.baseurl }}{{ site.data.main_info.profile_pic }}'></a>
+          <a href="{{ site.baseurl }}/"><img class="u-max-full-width profile-pic" src='{{ site.baseurl }}{{ site.data.main_info.profile_pic }}' width="640" height="640" alt="{{ site.data.main_info.name }}"></a>
         </div>
         <div class="nine columns main-description">
             <h1>{{ site.data.main_info.name }}</h1>
@@ -194,7 +194,7 @@
   <script src="{{ "/libs/custom/recipe_ingredients.js" | prepend: site.baseurl }}"></script>
   <script src="{{ "/libs/custom/recipe_servings.js" | prepend: site.baseurl }}"></script>
   {% if site.recipe_strip %}
-  <script>window.RECIPE = { time: {{ page.time | jsonify }}, tags: {{ page.tags | jsonify }} };</script>
+  <script>window.RECIPE = { time: {{ page.time | jsonify }}, stages: {{ page.stages | jsonify }}, tags: {{ page.tags | jsonify }} };</script>
   <script src="{{ "/libs/custom/recipe_strip.js" | prepend: site.baseurl }}"></script>
   {% endif %}
   {% if site.recipe_steps %}

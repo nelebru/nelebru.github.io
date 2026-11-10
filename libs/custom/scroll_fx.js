@@ -127,8 +127,10 @@
   }, { rootMargin: '0px 0px -12% 0px' });
 
   items.forEach(el => {
-    // what is already above the window when the page opens stays as it is
-    if (el.getBoundingClientRect().bottom < 0) return;
+    // what is already on screen (or above it) when the page opens stays as it is: it has
+    // been shown before this deferred script runs, and hiding it only to slide it back in
+    // would make it flicker and jump
+    if (el.getBoundingClientRect().top < window.innerHeight) return;
     el.classList.add('sfx-reveal');
     // once in place, back to the plain element (no transform left over)
     el.addEventListener('transitionend', function done(e) {

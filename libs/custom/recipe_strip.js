@@ -57,4 +57,34 @@
     });
 
     if (strip.children.length) title.append(strip);
+
+    // the stages behind the total time (stages: {prep: "20 min", bake: "50 min"} in the front
+    // matter, in the order they happen), as a second, quieter line under the strip
+    const STAGES = {
+        "prep":    "fa-spoon",
+        "brew":    "fa-mug-hot",
+        "soak":    "fa-droplet",
+        "rise":    "fa-hourglass-half",
+        "rest":    "fa-hourglass-half",
+        "chill":   "fa-snowflake",
+        "steam":   "fa-cloud",
+        "cook":    "fa-fire-burner",
+        "bake":    "fa-temperature-high",
+        "roast":   "fa-fire",
+        "ferment": "fa-flask"
+    };
+    const stages = Object.entries(meta.stages || {});
+    if (stages.length) {
+        const row = document.createElement("div");
+        row.className = "recipe-stages";
+        stages.forEach(([name, time]) => {
+            const span = document.createElement("span");
+            span.className = "stage";
+            span.innerHTML = `<i class="fa-solid ${STAGES[name] || "fa-clock"}" aria-hidden="true"></i> <span class="stage-name"></span> <span class="stage-time"></span>`;
+            span.querySelector(".stage-name").textContent = name;
+            span.querySelector(".stage-time").textContent = time;
+            row.append(span);
+        });
+        title.append(row);
+    }
 })();
