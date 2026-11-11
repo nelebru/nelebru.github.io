@@ -1,0 +1,91 @@
+/* ================ More room ================
+   A wider page with more space between things. Loaded last (in _layouts/default.html and
+   _layouts/gpx.html), so it only overrides my_css.css and gpx_overview.css.
+   To undo: remove the two <link> lines to this file. Phones (below 750px) are left as they were. */
+
+@media (min-width: 750px) {
+
+  /* ---------- page width ---------- */
+  .container {
+    max-width: 1080px; }
+  /* the vita card and track stay in the (now wider) text column */
+  .vita-hud {
+    width: min(1080px, 100%); }
+  /* still a comfortable line length for running text */
+  .recipes-intro p {
+    max-width: 68ch;
+    margin-left: auto;
+    margin-right: auto; }
+  /* the bio (text and research tiles) and the publications in one column of the same width */
+  #bio > p,
+  #bio .research-tiles,
+  #publications > * {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto; }
+
+  /* the student projects a little wider than that column */
+  #student-projects > * {
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto; }
+
+  /* ---------- navbar ---------- */
+  .navbar-link {
+    font-size: 12px; }
+  .navbar-list {
+    gap: 2.5rem; }
+
+  /* ---------- sections ---------- */
+  .docs-section {
+    padding: 7rem 0; }
+
+  /* ---------- bio (tiles keep their font sizes) ---------- */
+  .research-tiles {
+    gap: 2rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem; }
+  /* always all three side by side on desktop, however narrow the window */
+  .research-tiles {
+    flex-wrap: nowrap; }
+  .research-tile {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 2rem 1.75rem; }
+  .bio-outro {
+    margin-top: 3.5rem; }
+
+  /* ---------- recipes ---------- */
+  .recipe-title {
+    margin-bottom: 2rem; }
+  .recipes-intro {
+    margin-bottom: 3.5em; }
+  #recipeSearch {
+    margin: 1.5em 0 1.2em; }
+  .recipe-category {
+    margin: 2em 0; }
+  .recipe-category h3.category-header:not(.collapsed)::after {
+    width: 1040px; }
+  .recipe-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.6em; }
+
+  /* ---------- cycling ---------- */
+  /* description and filter tile: as wide as the student projects on the home page */
+  .gpx-header {
+    max-width: 880px;
+    gap: 3.5rem; }
+  .gpx-descr {
+    max-width: 60ch; }
+  .filters-tile {
+    padding: 2.5rem; }
+  .filters {
+    gap: 1.5rem; }
+  .filter-row {
+    gap: 2rem; }
+  .ov-body {
+    height: 560px;
+    gap: 3rem; }
+  .ov-list {
+    flex-basis: 300px; }
+}

@@ -1,0 +1,74 @@
+/* Water light behind the header of the recipe overview (libs/custom/recipe_water.js).
+   The layer spans the whole window width behind photo and name, down to the navbar, and fades
+   out at its bottom edge. It takes the place of the glitter there. */
+
+.header-canvas-wrapper .water-layer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  z-index: 0;
+  pointer-events: none;
+  /* fades out softly to the left and right, and a little towards the navbar
+     (the two gradients are intersected) */
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 75%, transparent),
+    linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+  -webkit-mask-composite: source-in;
+          mask-image:
+    linear-gradient(to bottom, #000 75%, transparent),
+    linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+          mask-composite: intersect; }
+
+.water-layer canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* fades in once the first frame is drawn */
+  opacity: 0;
+  transition: opacity 1.2s ease; }
+.water-layer canvas.water-on {
+  opacity: 1; }
+
+/* Light mode: the water instead of the glitter (the glitter canvas would fill up with white).
+   Dark mode: no water, the glitter and stars as on the home page.
+   (.water-header is set on <body> by recipe_water.js) */
+html:not([data-theme="dark"]) body.water-header #glitter-canvas,
+html:not([data-theme="dark"]) body.water-header #glitter-stars,
+html[data-theme="dark"] .water-layer {
+  display: none; }
+
+/* Recipe overview: a patch of water behind the hovered category heading (placed by
+   recipe_water.js), oval and fading out around it. Behind the page content, in front of the
+   page background. */
+.heading-water {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  /* a soft edge: fades out from close to the middle on */
+  -webkit-mask-image: radial-gradient(closest-side, #000 15%, rgba(0, 0, 0, 0.5) 55%, transparent);
+          mask-image: radial-gradient(closest-side, #000 15%, rgba(0, 0, 0, 0.5) 55%, transparent); }
+.heading-water.on {
+  opacity: 1;
+  transition-duration: 0.7s; }
+/* from one heading straight to the next: the patch glides over instead of fading out and in */
+.heading-water.on.glide {
+  transition: opacity 0.7s ease,
+              left 0.6s ease, top 0.6s ease, width 0.6s ease, height 0.6s ease; }
+
+/* the headings dim on hover (my_css.css); on the light water that's too pale */
+html:not([data-theme="dark"]) body.water-header .recipe-category .category-header:hover {
+  opacity: 1; }
+.heading-water canvas {
+  display: block;
+  width: 100%;
+  height: 100%; }
+html[data-theme="dark"] .heading-water {
+  display: none; }
+
+/* 100vw includes the scrollbar; don't let the layer cause a horizontal scrollbar */
+body.water-header {
+  overflow-x: clip; }

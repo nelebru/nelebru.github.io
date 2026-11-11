@@ -18,7 +18,7 @@
 .sfx-wave {
   flex: 0 1 240px;
   min-width: 0;
-  height: 22px;
+  height: 30px;
   pointer-events: none; }
 /* small phones: the longest heading still fits on one line, and less room around them */
 @media (max-width: 549px) {
@@ -31,6 +31,45 @@
   #student-projects > .sfx-waved {
     margin-bottom: 3.5rem; }
 }
+
+/* recipe overview: a wave line under each category heading in place of the straight line
+   (my_css.css; that one is hidden here already, so it doesn't flash up before scroll_fx.js has
+   run). Hidden until the heading is hovered; then it grows from the middle to the
+   width of the heading, and further when the category is opened. The line is drawn at its
+   full width; this window onto it widens, and its ends fade out. */
+.recipe-category h3::after {
+  display: none; }
+.sfx-underline {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  opacity: 0;
+  height: 32px;
+  overflow: hidden;
+  pointer-events: none;
+  color: #bbb;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent); }
+.sfx-underline canvas {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1040px;
+  max-width: 90vw;
+  height: 100%; }
+.recipe-category h3.collapsed:hover .sfx-underline {
+  width: 100%;
+  opacity: 1; }
+.recipe-category h3:not(.collapsed) .sfx-underline {
+  opacity: 1;
+  width: 440px;
+  max-width: 90vw; }
+html[data-theme="dark"] .sfx-underline {
+  color: var(--border); }
 
 /* things slide up and fade in as they come into view */
 .sfx-reveal {

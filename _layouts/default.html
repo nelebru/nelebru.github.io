@@ -88,6 +88,13 @@
   <link rel="icon" type="image/png" href={{ "/libs/icon.png" | prepend: site.baseurl }}>
   <link rel="shortcut icon" type="image/png" href={{ "/libs/icon.png" | prepend: site.baseurl }}>
 
+  <!-- more room (undo: remove this line) -->
+  <link rel="stylesheet" href={{ "/libs/custom/spacing.css" | prepend: site.baseurl }}>
+  {% if page.url contains "/recipes/" %}
+  <!-- water light behind the header of all recipe pages (undo: remove these two lines) -->
+  <link rel="stylesheet" href={{ "/libs/custom/recipe_water.css" | prepend: site.baseurl }}>
+  <script src={{ "/libs/custom/recipe_water.js" | prepend: site.baseurl }} defer></script>
+  {% endif %}
 </head>
 <body class="{{ page.title | downcase | replace: ' ', '-' }}-page">
 
