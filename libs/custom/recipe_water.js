@@ -417,9 +417,9 @@ function init() {
     canvas.classList.add('water-on');
   }
 
-  // ---------- category headings (overview; light mode, with a mouse, not with reduced motion) ----------
+  // ---------- category headings (overview; light mode, not with reduced motion) ----------
   const headings = document.querySelectorAll('.recipe-category .category-header');
-  if (headings.length && !reducedMotion && window.matchMedia('(hover: hover)').matches) setupHeadings();
+  if (headings.length && !reducedMotion) setupHeadings();
 
   function setupHeadings() {
     const PAD = 60;  // how far the water reaches out around the heading text (px)
@@ -471,34 +471,51 @@ function init() {
       requestAnimationFrame(frame);
     }
 
-    headings.forEach(heading => {
-      heading.addEventListener('mouseenter', () => {
-        if (isDark()) return;
-        clearTimeout(hideTimer);
-        current = heading;
-        if (shown) {
-          // still showing at the last heading: glide over (transitions in recipe_water.css)
-          halo.classList.add('glide');
-        } else {
-          // appearing: jump to the heading first, then fade in
-          halo.classList.remove('glide');
-          place(heading);
-          void halo.offsetWidth;
-        }
+    function show(heading) {
+      if (isDark()) return;
+      clearTimeout(hideTimer);
+      current = heading;
+      if (shown) {
+        // still showing at the last heading: glide over (transitions in recipe_water.css)
+        halo.classList.add('glide');
+      } else {
+        // appearing: jump to the heading first, then fade in
+        halo.classList.remove('glide');
         place(heading);
-        shown = true;
-        halo.classList.add('on');
-        start();
-      });
-      heading.addEventListener('mouseleave', () => {
-        if (current !== heading) return;
+        void halo.offsetWidth;
+      }
+      place(heading);
+      shown = true;
+      halo.classList.add('on');
+      start();
+    }
+    // fades out after `delay` ms (unless another heading is shown before)
+    function hide(heading, delay) {
+      if (current !== heading) return;
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
         current = null;
-        hideTimer = setTimeout(() => {
-          shown = false;
-          halo.classList.remove('on');
-          stopAt = performance.now() + 1500;  // a little longer than the fade out in recipe_water.css
-        }, LINGER);
-      });
+        shown = false;
+        halo.classList.remove('on');
+        stopAt = performance.now() + 1500;  // a little longer than the fade out in recipe_water.css
+      }, delay);
+    }
+
+    // with a mouse: while it is over a heading
+    // touch screens: a tap on a heading (opening or closing its category) lets the water well
+    // up behind it for a moment
+    const TAP_SHOW = 1400;  // ms
+    const hasHover = window.matchMedia('(hover: hover)').matches;
+    headings.forEach(heading => {
+      if (hasHover) {
+        heading.addEventListener('mouseenter', () => show(heading));
+        heading.addEventListener('mouseleave', () => hide(heading, LINGER));
+      } else {
+        heading.addEventListener('click', () => {
+          show(heading);
+          hide(heading, TAP_SHOW);
+        });
+      }
     });
   }
 }

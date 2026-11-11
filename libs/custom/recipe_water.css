@@ -73,9 +73,27 @@ html[data-theme="dark"] .heading-water {
 body.water-header {
   overflow-x: clip; }
 
-/* Phones: a taller header on the recipe pages, more room for the water
-   (my_css.css has margin-top: 60px and margin-bottom: 50px there) */
+/* Phones: the header is tall here (photo above the text), so fading out its bottom 25% would
+   swallow the room below the name: fade out only the last 40px instead. */
 @media (max-width: 549px) {
-  .header {
-    margin-top: 90px;
-    margin-bottom: 75px; } }
+  .header-canvas-wrapper .water-layer {
+    -webkit-mask-image:
+      linear-gradient(to bottom, #000 calc(100% - 40px), transparent),
+      linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+            mask-image:
+      linear-gradient(to bottom, #000 calc(100% - 40px), transparent),
+      linear-gradient(to right, transparent, #000 20%, #000 80%, transparent); } }
+
+/* Desktop: the water as wide as the navbar below it (my_css.css: the navbar sticks out 2vw on
+   both sides of the content column), fading out at its ends like the navbar's colours do
+   (white at 0% and 100%, full colour from 10% to 90%) */
+@media (min-width: 750px) {
+  .header-canvas-wrapper .water-layer {
+    left: -2vw;
+    width: calc(100% + 4vw);
+    -webkit-mask-image:
+      linear-gradient(to bottom, #000 75%, transparent),
+      linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+            mask-image:
+      linear-gradient(to bottom, #000 75%, transparent),
+      linear-gradient(to right, transparent, #000 10%, #000 90%, transparent); } }
