@@ -85,6 +85,19 @@ h4 {
   .header {
     margin-top: 100px;
     margin-bottom: 110px; }
+  /* the header area (with the glitter, water or cyclists behind it) fills the first screen
+     exactly, photo and name centred in it; svh: the height with the browser bars showing, so
+     it fits on first load. Grows on screens too small for photo and name. (body: the layouts
+     set display: flow-root on the wrapper after this file) */
+  body .header-canvas-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100svh; }
+  body .header-canvas-wrapper .header {
+    margin-top: 40px;
+    margin-bottom: 40px; }
   .header .row {
     flex-direction: column; }
   .header .row .three.columns,

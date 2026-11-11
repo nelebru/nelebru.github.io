@@ -59,6 +59,18 @@ document.addEventListener("DOMContentLoaded", function () {
   // Keep navbar outside wrapper so CSS position: sticky works correctly.
   container.insertBefore(navbar, wrapper.nextSibling);
 
+  // Recipe pages on phones: the header fills the first screen (my_css.css), so open them
+  // scrolled down to the recipe. The header is still there above it. Not when the address
+  // has a #anchor or the browser restores an earlier position (reload, back).
+  if (document.querySelector('.recipe-title2') &&
+      window.matchMedia('(max-width: 549px)').matches &&
+      !location.hash && window.scrollY === 0) {
+    const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if (!nav || nav.type === 'navigate') {
+      window.scrollTo(0, wrapper.getBoundingClientRect().bottom + window.scrollY);
+    }
+  }
+
   (function () {
     const ctx = canvas.getContext('2d');
     const starCtx = starCanvas.getContext('2d');
