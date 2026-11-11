@@ -94,13 +94,6 @@ function init() {
       return mix(field(p, t), field(ps, t), w) + rip;
     }
 
-    // Slope of the surface, and where a light ray hitting this point lands below.
-    vec4 refractRay(vec2 p, float t, float e){
-      vec2 g = vec2(height(p + vec2(e, 0.0), t) - height(p - vec2(e, 0.0), t),
-                    height(p + vec2(0.0, e), t) - height(p - vec2(0.0, e), t)) / (2.0 * e);
-      return vec4(p - uFocus * g, g);
-    }
-
     // Light concentration for a given focus strength, reusing the slopes already computed.
     float intensity(vec2 p, vec2 g0, vec2 gx, vec2 gy, float e, float k){
       vec2 a = p - k * g0;
@@ -121,9 +114,21 @@ function init() {
       float t = uTime;
       float e = 0.0035;
 
-      vec4 q  = refractRay(p, t, e);
-      vec4 qx = refractRay(p + vec2(e, 0.0), t, e);
-      vec4 qy = refractRay(p + vec2(0.0, e), t, e);
+      // Slopes at p, p + (e, 0) and p + (0, e) from forward differences on a small grid:
+      // 6 height samples instead of 12 for central differences (half the shader cost).
+      // The light lines move by half a sample (less than a pixel), they look the same.
+      float h00 = height(p, t);
+      float h10 = height(p + vec2(e, 0.0), t);
+      float h01 = height(p + vec2(0.0, e), t);
+      float h20 = height(p + vec2(2.0 * e, 0.0), t);
+      float h11 = height(p + vec2(e, e), t);
+      float h02 = height(p + vec2(0.0, 2.0 * e), t);
+      vec2 g0 = vec2(h10 - h00, h01 - h00) / e;
+      vec2 gx = vec2(h20 - h10, h11 - h10) / e;
+      vec2 gy = vec2(h11 - h01, h02 - h01) / e;
+      vec4 q  = vec4(p - uFocus * g0, g0);
+      vec4 qx = vec4(p + vec2(e, 0.0) - uFocus * gx, gx);
+      vec4 qy = vec4(p + vec2(0.0, e) - uFocus * gy, gy);
 
       // Light concentration = how much the refracted area shrinks.
       vec2 dx = qx.xy - q.xy, dy = qy.xy - q.xy;
@@ -208,6 +213,10 @@ function init() {
   const NO_DROPS = new Float32Array(DROPS * 3).fill(99);
   const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Phones and tablets (touch as the main input): header and heading water draw at most 30 times a
+  // second, half the load; the slow waves look the same. The slack lets 60, 90 and 120 Hz
+  // screens draw every 2nd, 3rd and 4th frame.
+  const MIN_FRAME_MS = window.matchMedia('(pointer: coarse)').matches ? 1000 / 30 - 4 : 0;
   // one clock for header and headings, so both waters move alike
   const clock = now => reducedMotion ? 12.0 : now / 1000 * S.speed;
 
@@ -328,7 +337,11 @@ function init() {
       drops.push({ x: x * perPx, y: y * perPx, t: now });
       if (drops.length > DROPS) drops.shift();
     }
+    // null once all ripples have died away (after 4 s, as in the shader): then the shader
+    // skips the ripple loop entirely
     function dropUniforms(now) {
+      while (drops.length && now - drops[0].t > 4000) drops.shift();
+      if (!drops.length) return null;
       dropData.fill(99);  // empty slots: long gone
       drops.forEach((d, i) => {
         dropData[i * 3] = d.x;
@@ -343,7 +356,7 @@ function init() {
     window.addEventListener('pointerup', ev => { if (ev.pointerType === 'pen') pointer.th = 0; }, { passive: true });
     window.addEventListener('pointercancel', ev => { if (ev.pointerType !== 'touch') pointer.th = 0; }, { passive: true });
 
-    // Touch screens: the rainbow follows the finger while it moves (also while the page
+    // Touch screens: the rainbow shows from the moment the finger touches and follows it (also while the page
     // scrolls; pointer events stop then), and only a tap drops ripples: a short touch that
     // hardly moved. Passive listeners, so scrolling keeps working.
     const TAP_MOVE = 10, TAP_TIME = 350;  // px, ms
@@ -352,12 +365,13 @@ function init() {
       if (ev.touches.length !== 1) { touch = null; return; }
       const t = ev.touches[0];
       touch = { x: t.clientX, y: t.clientY, time: performance.now(), moved: false };
+      hover(t.clientX, t.clientY);  // the rainbow shows as soon as the finger is down
     }, { passive: true });
     window.addEventListener('touchmove', ev => {
       const t = ev.touches[0];
       if (!t) return;
       if (touch && Math.hypot(t.clientX - touch.x, t.clientY - touch.y) > TAP_MOVE) touch.moved = true;
-      if (touch && touch.moved) hover(t.clientX, t.clientY);
+      hover(t.clientX, t.clientY);
     }, { passive: true });
     window.addEventListener('touchend', () => {
       pointer.th = 0;
@@ -379,7 +393,7 @@ function init() {
     }
 
     // Only animate while the header is on screen.
-    let visible = true, running = false, last = 0;
+    let visible = true, running = false, last = 0, lastDraw = -Infinity;
     function frame(now) {
       if (!visible) { running = false; return; }
       const dt = Math.min((now - last) / 1000, 0.1);
@@ -388,7 +402,8 @@ function init() {
       pointer.x += (pointer.tx - pointer.x) * kp;
       pointer.y += (pointer.ty - pointer.y) * kp;
       pointer.h += (pointer.th - pointer.h) * kh;
-      render(now);
+      // the pointer above still eases every frame (cheap), only the drawing is capped
+      if (now - lastDraw >= MIN_FRAME_MS) { lastDraw = now; render(now); }
       requestAnimationFrame(frame);
     }
     function start() {
@@ -436,7 +451,7 @@ function init() {
     const draw = makeWater(canvas);
     if (!draw) { halo.remove(); return; }
 
-    let current = null, shown = false, running = false, stopAt = 0, hideTimer = 0;
+    let current = null, shown = false, running = false, stopAt = 0, hideTimer = 0, lastDraw = -Infinity;
     // around the heading's text: the heading element itself spans the whole column
     function place(heading) {
       const range = document.createRange();
@@ -450,6 +465,9 @@ function init() {
     // runs while the water shows, and on until it has faded out
     function frame(now) {
       if (!shown && now > stopAt) { running = false; return; }
+      // phones: at most 30 draws a second, as in the header
+      if (now - lastDraw < MIN_FRAME_MS) { requestAnimationFrame(frame); return; }
+      lastDraw = now;
       // The pattern scales with the canvas height: match the size of the waves in the header.
       // And it stays put on the page while the patch glides from heading to heading: shift it
       // by the patch's page position (in pattern units, as in the shader).
@@ -504,7 +522,7 @@ function init() {
     // with a mouse: while it is over a heading
     // touch screens: a tap on a heading (opening or closing its category) lets the water well
     // up behind it for a moment
-    const TAP_SHOW = 1400;  // ms
+    const TAP_SHOW = 3000;  // ms
     const hasHover = window.matchMedia('(hover: hover)').matches;
     headings.forEach(heading => {
       if (hasHover) {
