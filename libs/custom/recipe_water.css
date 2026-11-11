@@ -72,3 +72,10 @@ html[data-theme="dark"] .heading-water {
 /* 100vw includes the scrollbar; don't let the layer cause a horizontal scrollbar */
 body.water-header {
   overflow-x: clip; }
+
+/* Phones: a taller header on the recipe pages, more room for the water
+   (my_css.css has margin-top: 60px and margin-bottom: 50px there) */
+@media (max-width: 549px) {
+  .header {
+    margin-top: 90px;
+    margin-bottom: 75px; } }

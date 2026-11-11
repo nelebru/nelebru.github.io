@@ -4,8 +4,19 @@
 //    pointer. In dark mode the header keeps its glitter and stars (_layouts/home.html).
 //  - Recipe overview: a small patch of the same water behind the category heading under the
 //    mouse, fading out around it.
-// Runs on DOMContentLoaded, after _layouts/home.html has built .header-canvas-wrapper.
+// The shaders are heavy to compile, which blocks the page while it does, so all WebGL work
+// waits until the page has loaded (see the end of this file).
 document.addEventListener('DOMContentLoaded', function () {
+  // The header shows the water, not the glitter, from the start: the glitter in
+  // _layouts/home.html pauses while body has .water-header. Removed again without WebGL.
+  if (document.querySelector('.header-canvas-wrapper')) document.body.classList.add('water-header');
+  const go = () => window.requestIdleCallback ? requestIdleCallback(init, { timeout: 1000 }) : setTimeout(init, 0);
+  if (document.readyState === 'complete') go();
+  else window.addEventListener('load', go, { once: true });
+});
+
+// Runs after the page has loaded, when _layouts/home.html has built .header-canvas-wrapper.
+function init() {
   const vert = `
     attribute vec2 a;
     void main(){ gl_Position = vec4(a, 0.0, 1.0); }`;
@@ -275,23 +286,36 @@ document.addEventListener('DOMContentLoaded', function () {
     area.insertBefore(layer, area.firstChild);
 
     const draw = makeWater(canvas);
-    if (!draw) { layer.remove(); return; }  // no WebGL: the header keeps its glitter
-    // the water works: it takes the place of the header glitter (recipe_water.css)
-    document.body.classList.add('water-header');
+    if (!draw) {  // no WebGL: the header keeps its glitter
+      layer.remove();
+      document.body.classList.remove('water-header');
+      return;
+    }
 
     // Pointer in canvas pixels (y from the bottom, as in the shader). The page content lies on
     // top of the canvas, so listen on the window. Passive: scrolling on phones keeps working.
     const pointer = { x: 0, y: 0, tx: 0, ty: 0, h: 0, th: 0 };
-    function track(ev) {
+    // Moves the rainbow shimmer to (x, y) in the window; true if that is inside the water.
+    function hover(x, y) {
       const r = canvas.getBoundingClientRect();
-      const inside = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
-      if (!inside) { pointer.th = 0; return; }
+      const inside = x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+      if (!inside) { pointer.th = 0; return false; }
       const s = canvas.width / r.width;
-      pointer.tx = (ev.clientX - r.left) * s;
-      pointer.ty = canvas.height - (ev.clientY - r.top) * s;
+      pointer.tx = (x - r.left) * s;
+      pointer.ty = canvas.height - (y - r.top) * s;
       if (pointer.h < 0.02) { pointer.x = pointer.tx; pointer.y = pointer.ty; }
       pointer.th = 1;
-      if (ev.type === 'pointerdown') dropAt(ev.clientX - r.left, ev.clientY - r.top, r.height);
+      return true;
+    }
+    function dropAtClient(x, y) {
+      const r = canvas.getBoundingClientRect();
+      dropAt(x - r.left, y - r.top, r.height);
+    }
+    // Mouse (and pen): the rainbow follows it, a click drops ripples.
+    // Touch is handled with the touch events below.
+    function track(ev) {
+      if (ev.pointerType === 'touch') return;
+      if (hover(ev.clientX, ev.clientY) && ev.type === 'pointerdown') dropAtClient(ev.clientX, ev.clientY);
     }
 
     // Ripples: each click drops a ring of waves into the water.
@@ -316,8 +340,36 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('pointermove', track, { passive: true });
     window.addEventListener('pointerdown', track, { passive: true });
     document.documentElement.addEventListener('pointerleave', () => { pointer.th = 0; });
-    window.addEventListener('pointerup', ev => { if (ev.pointerType !== 'mouse') pointer.th = 0; }, { passive: true });
-    window.addEventListener('pointercancel', () => { pointer.th = 0; }, { passive: true });
+    window.addEventListener('pointerup', ev => { if (ev.pointerType === 'pen') pointer.th = 0; }, { passive: true });
+    window.addEventListener('pointercancel', ev => { if (ev.pointerType !== 'touch') pointer.th = 0; }, { passive: true });
+
+    // Touch screens: the rainbow follows the finger while it moves (also while the page
+    // scrolls; pointer events stop then), and only a tap drops ripples: a short touch that
+    // hardly moved. Passive listeners, so scrolling keeps working.
+    const TAP_MOVE = 10, TAP_TIME = 350;  // px, ms
+    let touch = null;
+    window.addEventListener('touchstart', ev => {
+      if (ev.touches.length !== 1) { touch = null; return; }
+      const t = ev.touches[0];
+      touch = { x: t.clientX, y: t.clientY, time: performance.now(), moved: false };
+    }, { passive: true });
+    window.addEventListener('touchmove', ev => {
+      const t = ev.touches[0];
+      if (!t) return;
+      if (touch && Math.hypot(t.clientX - touch.x, t.clientY - touch.y) > TAP_MOVE) touch.moved = true;
+      if (touch && touch.moved) hover(t.clientX, t.clientY);
+    }, { passive: true });
+    window.addEventListener('touchend', () => {
+      pointer.th = 0;
+      if (touch && !touch.moved && performance.now() - touch.time < TAP_TIME) {
+        const r = canvas.getBoundingClientRect();
+        if (touch.x >= r.left && touch.x <= r.right && touch.y >= r.top && touch.y <= r.bottom) {
+          dropAtClient(touch.x, touch.y);
+        }
+      }
+      touch = null;
+    }, { passive: true });
+    window.addEventListener('touchcancel', () => { pointer.th = 0; touch = null; }, { passive: true });
 
     function render(now) {
       // dark mode: no water, the header shows the glitter and stars of the home page instead
@@ -449,4 +501,4 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
-});
+}

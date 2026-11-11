@@ -107,6 +107,8 @@ document.addEventListener("DOMContentLoaded", function () {
       mouseY = clientY - rect.top;
       // Ignore touches that have moved outside the header area.
       if (mouseX < 0 || mouseY < 0 || mouseX > rect.width || mouseY > rect.height) return;
+      // the water is shown instead (recipe pages, light mode): no glitter
+      if (waterShown()) return;
       mouseActive = true;
       // Only 2 particles per move — slow trickle, not explosion
       if (Math.random() < 3) {
@@ -246,7 +248,27 @@ document.addEventListener("DOMContentLoaded", function () {
       starCtx.fill();
     }
 
+    // Recipe pages in light mode show the water (libs/custom/recipe_water.js sets .water-header
+    // on body) and hide the glitter canvases, so the glitter loop pauses there. It starts again
+    // when switching to dark mode, or when the water drops out (no WebGL).
+    const waterShown = () => !isDark() && document.body.classList.contains('water-header');
+    let running = false;
+
+    function startGlitter() {
+      if (running || waterShown()) return;
+      running = true;
+      requestAnimationFrame(animate);
+    }
+
+    new MutationObserver(startGlitter).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    new MutationObserver(startGlitter).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
     function animate() {
+      if (waterShown()) {
+        running = false;
+        particles = [];
+        return;
+      }
       // Very slow fade so sparkles linger softly. In dark mode the canvas fades to
       // transparent instead: painting the dark background at this low alpha never
       // quite reaches it (8-bit rounding) and leaves the header darker than the page.
@@ -299,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
       requestAnimationFrame(animate);
     }
 
-    animate();
+    startGlitter();
   })();
 });
 </script>
