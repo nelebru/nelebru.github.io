@@ -3,11 +3,15 @@
    - the courses the page's filters let through on one map, on top of each other (the
      location filter starts at Lübeck while this is on), and listed beside it in the same order
    - hovering a course in the list (or its line on the map) brings it out and fades the
-     others; the arrow jumps to its card further down
+     others; clicking (tapping) it selects it: it stays out and marked in the list, which
+     scrolls to it. The arrow jumps to its card further down
+   - touch screens: the map starts locked so swipes scroll the page; a button unlocks it, and
+     a short hint says so when the map first comes into view (addPanLock in gpx.html)
    - a small button in the lower left corner switches the OpenStreetMap tiles on all maps
    - its heading, then the map with the list (in one piece), "All courses" and the course
      cards (all at once) slide up and fade in as they come into view
-   Uses registerMap, addOsmTiles, removeOsmTiles, osmEnabled, courseId and baseUrl from gpx.html,
+   Uses registerMap, addOsmTiles, removeOsmTiles, osmEnabled, courseId, baseUrl, addPanLock and
+   touchScreen from gpx.html,
    and listens for its "gpx:filtered" event. */
 (function () {
   'use strict';
@@ -19,6 +23,18 @@
   const listEl = root.querySelector('.ov-list');
 
   const map = registerMap(L.map(mapEl, { zoomSnap: 0.25, scrollWheelZoom: false }));
+
+  // touch screens: the map starts locked, so swipes scroll the page (addPanLock in gpx.html);
+  // the hint shows once, when the map first comes into view
+  addPanLock(map, 'To filter, use the sliders and filters above. To move the map, tap {icon}');
+  if (window.IntersectionObserver) {
+    const hintOnce = new IntersectionObserver(entries => {
+      if (!entries.some(e => e.isIntersecting)) return;
+      hintOnce.disconnect();
+      map.showPanHint();
+    }, { threshold: 0.6 });
+    hintOnce.observe(mapEl);
+  }
 
   /* ---------- Fading in ---------- */
 
@@ -77,7 +93,11 @@
 
   let lines = {};          // course id -> simplified points
   let latest = null;       // the last filter result, if it came before the lines
-  let entries = [];        // { course, points, line, item }
+  let entries = [];        // { course, points, line, hit, item }
+  // a click (or tap) selects a course: it stays highlighted, on the map and in the list,
+  // until another one is selected, it is clicked again, or the empty map is clicked.
+  // Hovering shows another course for as long as the pointer is on it.
+  let selected = null, hovered = null, shownEntry = null;
 
   fetch(`${baseUrl}/assets/data/gpx_overview.json`)
     .then(res => res.json())
@@ -93,8 +113,10 @@
   });
 
   function show(courses) {
-    highlight(null);
-    entries.forEach(e => e.line.remove());
+    // the selected course stays selected if the filter still lets it through
+    const keep = selected && selected.course.name;
+    selected = hovered = shownEntry = null;
+    entries.forEach(e => { e.line.remove(); e.hit.remove(); });
     listEl.innerHTML = '';
 
     entries = courses
@@ -106,11 +128,17 @@
       e.line = L.polyline(e.points, {
         className: `ov-line route-${gravel ? 'gravel' : 'road'}`,
         weight: 3,
-        opacity: 0.55
+        opacity: 0.55,
+        interactive: false
       }).addTo(map);
-      e.line.on('mouseover', () => highlight(e, true));
-      e.line.on('mouseout', () => highlight(null));
-      e.line.on('click', () => highlight(e, true));
+      // a wide invisible line on top to hover or tap (the drawn one is hard to hit by finger)
+      e.hit = L.polyline(e.points, { className: 'ov-hit', weight: 18, opacity: 0 }).addTo(map);
+      e.hit.on('mouseover', () => hover(e, true));
+      e.hit.on('mouseout', () => hover(null));
+      e.hit.on('click', ev => {
+        L.DomEvent.stopPropagation(ev);  // not a click on the empty map
+        select(e);
+      });
 
       e.item = document.createElement('li');
       e.item.innerHTML = `
@@ -125,37 +153,56 @@
         </button>`;
       e.item.querySelector('.ov-title').textContent = e.course.name;
       const name = e.item.querySelector('.ov-name');
-      name.addEventListener('mouseenter', () => highlight(e));
-      name.addEventListener('focus', () => highlight(e));
-      name.addEventListener('click', () => highlight(e));   // touch screens
+      name.addEventListener('mouseenter', () => hover(e));
+      name.addEventListener('focus', () => hover(e));
+      name.addEventListener('click', () => select(e));
       e.item.querySelector('.ov-jump').addEventListener('click', () => jumpTo(e.course));
       listEl.appendChild(e.item);
     });
-    listEl.onmouseleave = () => highlight(null);
+    listEl.onmouseleave = () => hover(null);
     root.classList.toggle('ov-empty', !entries.length);
 
     const bounds = L.latLngBounds(entries.flatMap(e => e.points));
     if (bounds.isValid()) map.fitBounds(bounds, { padding: [12, 12] });
+
+    const again = keep && entries.find(e => e.course.name === keep);
+    if (again) select(again);
   }
 
-  let current = null;
-  function highlight(entry, fromMap) {
-    if (entry === current) return;
-    current = entry;
+  function hover(entry, fromMap) {
+    // touch screens fake a hover on every tap, which would outlast the selection
+    if (touchScreen) return;
+    hovered = entry;
+    render();
+    if (entry && fromMap) scrollListTo(entry.item);
+  }
+
+  function select(entry) {
+    selected = selected === entry ? null : entry;
+    render();
+    if (selected) scrollListTo(selected.item);
+  }
+
+  map.on('click', () => { if (selected) select(selected); });
+
+  function render() {
+    const entry = hovered || selected;
     root.classList.toggle('ov-focus', !!entry);
     entries.forEach(e => {
       const on = e === entry;
       e.line.getElement()?.classList.toggle('ov-hot', on);
       e.item.classList.toggle('ov-hot', on);
+      e.item.classList.toggle('ov-selected', e === selected);
     });
-    if (!entry) return;
-    entry.line.bringToFront();
-    // keep the hovered line's name in sight in the list, without moving the page
-    if (fromMap) {
-      const item = entry.item, box = listEl;
-      if (item.offsetTop < box.scrollTop || item.offsetTop + item.offsetHeight > box.scrollTop + box.clientHeight)
-        box.scrollTo({ top: item.offsetTop - box.clientHeight / 2, behavior: 'smooth' });
-    }
+    if (entry && entry !== shownEntry) entry.line.bringToFront();
+    shownEntry = entry;
+  }
+
+  // the course's name into view inside the list, without moving the page
+  function scrollListTo(item) {
+    const box = listEl.getBoundingClientRect(), r = item.getBoundingClientRect();
+    if (r.top >= box.top && r.bottom <= box.bottom) return;
+    listEl.scrollBy({ top: r.top - box.top - (box.height - r.height) / 2, behavior: 'smooth' });
   }
 
   // its card further down (always there: both show the same filter result)

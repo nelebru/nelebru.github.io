@@ -60,14 +60,16 @@ document.addEventListener("DOMContentLoaded", function () {
   container.insertBefore(navbar, wrapper.nextSibling);
 
   // Recipe pages on phones: the header fills the first screen (my_css.css), so open them
-  // scrolled down to the recipe. The header is still there above it. Not when the address
+  // scrolled down to the recipe, past the header and the navbar below it (a static column on
+  // phones); both are still there above it. Not when the address
   // has a #anchor or the browser restores an earlier position (reload, back).
   if (document.querySelector('.recipe-title2') &&
       window.matchMedia('(max-width: 549px)').matches &&
       !location.hash && window.scrollY === 0) {
     const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
     if (!nav || nav.type === 'navigate') {
-      window.scrollTo(0, wrapper.getBoundingClientRect().bottom + window.scrollY);
+      const above = navbar.offsetParent ? navbar : wrapper;  // navbar hidden: just the header
+      window.scrollTo(0, above.getBoundingClientRect().bottom + window.scrollY);
     }
   }
 

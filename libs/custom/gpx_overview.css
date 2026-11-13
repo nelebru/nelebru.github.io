@@ -60,6 +60,9 @@
   transition: background-color 0.2s; }
 .ov-list li.ov-hot {
   background-color: lavender; }
+/* the selected course (clicked on the map or in the list) keeps a mark while others are hovered */
+.ov-list li.ov-selected {
+  box-shadow: inset 3px 0 0 blueviolet; }
 .ov-list button {
   height: auto;
   margin: 0;

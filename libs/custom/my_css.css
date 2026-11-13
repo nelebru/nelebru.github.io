@@ -1658,34 +1658,30 @@ a:focus {
   line-height: 1.4;
 }
 
-.world-legend summary {
+.world-legend > details > summary {
   cursor: pointer;
   font-weight: 600;
   color: blueviolet;
 }
 
-.world-colour-by {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.2rem 0.7rem;
-  margin-top: 0.4rem;
+/* Activities / Surfaces: one open at a time, the lines are coloured by the open one */
+.world-legend-section {
+  margin-top: 0.5rem;
 }
 
-.world-colour-by label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  margin: 0;
-  font-weight: normal;
+.world-legend-section > summary {
   cursor: pointer;
-}
-
-.world-colour-by input {
-  margin: 0;
+  padding: 0 0.3rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--trip-highlight);
+  color: #ffffff;
 }
 
 .world-legend-group {
-  margin: 0.5rem 0 0;
+  margin: 0.2rem 0 0;
   padding: 0;
   border: none;
 }
@@ -1719,8 +1715,52 @@ a:focus {
 }
 
 .leaflet-container .world-round-btn:hover,
-.leaflet-container .world-osm-btn.on {
+.leaflet-container .world-osm-btn.on,
+.leaflet-container .pan-lock-btn.on {
   color: blueviolet;
+}
+
+/* touch screens: "move the map" (gpx.html, addPanLock), under the zoom buttons */
+.leaflet-container .pan-lock-btn.on {
+  box-shadow: 0 0 0 2px blueviolet, 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* its hint, in the middle of the map for a few seconds */
+.pan-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1000;
+  width: max-content;
+  max-width: 80%;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  background: rgba(33, 31, 40, 0.85);
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+.pan-hint.on {
+  opacity: 1;
+  transition-duration: 0.3s;
+}
+
+.pan-hint-icon {
+  display: inline-block;
+  width: 2.2rem;
+  height: 2.2rem;
+  margin-left: 0.2rem;
+  border-radius: 50%;
+  background: #fff;
+  color: blueviolet;
+  line-height: 2.2rem;
+  vertical-align: middle;
 }
 
 /* the world map in fullscreen: the browser's (the inline 500 px height must give way), or,
@@ -1959,12 +1999,6 @@ body.map-fullscreen-open {
 .leaflet-container .world-trip-link.active {
   background: var(--trip-highlight);
   color: #ffffff;
-}
-
-/* only the swatches of what the lines are coloured by are in colour */
-.world-legend details:not(.colour-by-sport) .sport-swatch,
-.world-legend details.colour-by-sport .surface-swatch {
-  opacity: 0.2;
 }
 
 .world-legend-item {
@@ -3598,7 +3632,7 @@ html[data-theme="dark"] .world-menu-panel {
   background: rgba(33, 31, 40, 0.9);
   color: var(--text); }
 html[data-theme="dark"] .leaflet-container .world-menus { background: none; }
-html[data-theme="dark"] .world-legend summary,
+html[data-theme="dark"] .world-legend > details > summary,
 html[data-theme="dark"] .leaflet-container .world-menu-toggle,
 html[data-theme="dark"] .world-menu-panel th { color: var(--violet); }
 html[data-theme="dark"] .world-legend-group legend,

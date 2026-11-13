@@ -315,7 +315,10 @@ document.getElementById("showMapBtn").addEventListener("click", function () {
     this.textContent = opening ? "Hide world map" : "Show world map";
     // on mobile, the OSM toggle appears next to this button while the map is open
     document.querySelector(".gpx-title-block").classList.toggle("world-map-open", opening);
-    if (opening) initializeVisitedMap();
+    if (opening) {
+        initializeVisitedMap();
+        worldMap.showPanHint();
+    }
 });
 
 /* ---------- Road surfaces (course maps and world map) ---------- */
@@ -384,6 +387,7 @@ function initializeVisitedMap() {
     };
     osmControl.addTo(map);
 
+    addPanLock(map, "To move the map, tap {icon}");
     addFullscreenControl(map);
 
     // bottom left: the stats menu with the trips menu below it; each fills its slot once loaded
@@ -486,7 +490,7 @@ function addWorldLegend(map, layers, surfaces, info) {
 
     function group(parent, title, kind, keys, entry, km) {
         const box = L.DomUtil.create("fieldset", `world-legend-group world-legend-${kind}`, parent);
-        box.innerHTML = `<legend>${title}</legend>`;
+        box.innerHTML = `<legend class="sr-only">${title}</legend>`;
         keys.forEach(key => {
             const { label, swatch } = entry(key);
             const item = L.DomUtil.create("label", "world-legend-item", box);
@@ -507,31 +511,36 @@ function addWorldLegend(map, layers, surfaces, info) {
         const details = L.DomUtil.create("details", "", el);
         details.open = window.innerWidth > 700;
         details.innerHTML = `<summary>Legend</summary>`;
-        if (hasSurfaces) {
-            details.insertAdjacentHTML("beforeend", `
-                <div class="world-colour-by" role="radiogroup" aria-label="Colour by">
-                  Colour by
-                  <label><input type="radio" name="worldColourBy" value="surface" checked> surface</label>
-                  <label><input type="radio" name="worldColourBy" value="sport"> activity</label>
-                </div>`);
-        }
+
+        // the lines are coloured by the open section: activities (default) or surfaces.
+        // Opening one closes the other; closing the open one keeps its colours
         function colourBySport(bySport) {
             map.getContainer().classList.toggle("colour-by-sport", bySport);
-            details.classList.toggle("colour-by-sport", bySport);
         }
-        details.querySelectorAll("input[name=worldColourBy]").forEach(radio =>
-            radio.addEventListener("change", () => colourBySport(radio.value === "sport" && radio.checked)));
-        colourBySport(!hasSurfaces);
+        const sections = [];
+        function section(title, bySport, open) {
+            const box = L.DomUtil.create("details", "world-legend-section", details);
+            box.open = open;
+            box.innerHTML = `<summary>${title}</summary>`;
+            box.addEventListener("toggle", () => {
+                if (!box.open) return;
+                sections.forEach(other => { if (other !== box) other.open = false; });
+                colourBySport(bySport);
+            });
+            sections.push(box);
+            return box;
+        }
+        colourBySport(true);
 
         const sportKeys = Object.keys(SPORTS).filter(k => shown.sport[k]);
-        group(details, "Activities", "sport", sportKeys, key => ({
+        group(section("Activities", true, true), "Activities", "sport", sportKeys, key => ({
             label: `<i class="fa-solid ${SPORTS[key].icon}" aria-hidden="true"></i> ${SPORTS[key].label}`,
             swatch: `<span class="world-legend-swatch sport-swatch" style="background:var(--sport-${key})"></span>`
         }), info.km_by_sport);
 
         if (hasSurfaces) {
             const catKeys = Object.keys(surfaces).filter(k => shown.cat[k]);
-            group(details, "Surfaces", "cat", catKeys, key => ({
+            group(section("Surfaces", false, false), "Surfaces", "cat", catKeys, key => ({
                 label: surfaces[key].label,
                 swatch: `<span class="world-legend-swatch surface-swatch" style="background:${surfaces[key].color}"></span>`
             }), info.km);
@@ -561,6 +570,7 @@ function addFullscreenControl(map) {
         btn.title = full ? "Exit fullscreen" : "Fullscreen";
         btn.setAttribute("aria-pressed", String(full));
         document.body.classList.toggle("map-fullscreen-open", !native && full);
+        if (map.setPanLock) map.setPanLock(full);  // nothing to scroll in fullscreen
         map.invalidateSize();
     }
 
@@ -587,6 +597,55 @@ function addFullscreenControl(map) {
 
     if (native) document.addEventListener("fullscreenchange", sync);
     else document.addEventListener("keydown", e => { if (e.key === "Escape" && isFull()) toggle(); });
+}
+
+/* ---------- Touch screens: the map moves only when asked to ---------- */
+
+// On phones and tablets a map would catch every swipe that should scroll the page. There it
+// starts locked (taps still work), and a button on the map (top left, under the zoom) lets it
+// pan and pinch-zoom. map.showPanHint() shows a short note on how, which fades by itself.
+// In fullscreen the map is always movable. Nothing changes with a mouse.
+const PAN_ICON = `<i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i>`;
+const touchScreen = window.matchMedia("(pointer: coarse)").matches;
+
+function addPanLock(map, hintHtml) {
+    map.showPanHint = () => {};
+    map.setPanLock = () => {};
+    if (!touchScreen) return;
+
+    let unlocked = false, fullscreen = false, btn;
+    function apply() {
+        const movable = unlocked || fullscreen;
+        ["dragging", "touchZoom"].forEach(h => movable ? map[h].enable() : map[h].disable());
+        btn.classList.toggle("on", unlocked);
+        btn.setAttribute("aria-pressed", String(unlocked));
+        btn.title = unlocked ? "Lock the map (scroll the page)" : "Move the map";
+    }
+
+    const control = L.control({ position: "topleft" });
+    control.onAdd = () => {
+        btn = L.DomUtil.create("button", "world-round-btn pan-lock-btn");
+        btn.type = "button";
+        btn.innerHTML = PAN_ICON;
+        L.DomEvent.disableClickPropagation(btn);
+        btn.addEventListener("click", () => { unlocked = !unlocked; apply(); hint.classList.remove("on"); });
+        return btn;
+    };
+    control.addTo(map);
+    apply();
+
+    const hint = L.DomUtil.create("div", "pan-hint", map.getContainer());
+    hint.innerHTML = hintHtml.replace("{icon}", `<span class="pan-hint-icon">${PAN_ICON}</span>`);
+    hint.setAttribute("aria-hidden", "true");  // the button has its own title
+    let timer;
+    map.showPanHint = () => {
+        if (unlocked || fullscreen) return;
+        hint.classList.add("on");
+        clearTimeout(timer);
+        timer = setTimeout(() => hint.classList.remove("on"), 4000);
+    };
+    // (called by the fullscreen control)
+    map.setPanLock = full => { fullscreen = full; apply(); };
 }
 
 /* ---------- Tiles inside the map ---------- */

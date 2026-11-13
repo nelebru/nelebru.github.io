@@ -1,13 +1,16 @@
 """World map ("visited streets") and yearly swim/bike/run stats from Garmin Connect.
 
 Each run:
-  1. fetches the full activity list from Garmin Connect (summaries only, cheap) and keeps it in
-     DATA_DIR/activities.json,
+  1. fetches the new part of the activity list from Garmin Connect (newest first, until a
+     whole page is already known; --full: the whole list) into DATA_DIR/activities.json,
   2. downloads the GPX files that are not in DATA_DIR/tmp_gpx yet (they are kept, so the map
      can always be rebuilt from scratch),
-  3. rebuilds the map from all GPX files: tracks are walked in chronological order and only
+  3. adds the new activities to the map: tracks are walked in chronological order and only
      the parts that are not already on the map are added (lines, no buffers, so nothing
-     grows from update to update),
+     grows from update to update). The state of the map is kept in DATA_DIR/map_state.pkl,
+     so only new GPX files are read. The map is rebuilt from all files with --full, and
+     automatically when the map code changed or an activity already on the map changed
+     (new GPX, other name/type, override, deleted),
   4. gives every new stretch a road surface from OpenStreetMap (create_map/osm_surfaces.py,
      cached in DATA_DIR/osm_ways.json),
   5. writes to assets/data/:
@@ -16,18 +19,22 @@ Each run:
         activity_stats.json   swim/bike/run per year and in total
 
 Run from anywhere (paths are relative to this file):
-    python create_map/update_routes.py              # Garmin + rebuild
-    python create_map/update_routes.py --offline    # rebuild from the local cache only
+    python create_map/update_routes.py              # Garmin + add new activities
+    python create_map/update_routes.py --full       # whole Garmin list + map from scratch
+    python create_map/update_routes.py --offline    # update from the local cache only
 
 .env (next to this file): GARMIN_EMAIL, GARMIN_PASS, DATA_DIR
 """
 import argparse
+import hashlib
 import html
+import inspect
 import io
 import json
 import logging
 import math
 import os
+import pickle
 import random
 import re
 import sys
@@ -37,6 +44,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 import numpy as np
+import shapely
 from dotenv import load_dotenv
 from requests.exceptions import HTTPError
 
@@ -44,7 +52,7 @@ HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parent
 sys.path.insert(0, str(REPO_ROOT / "read_gpx_py"))
 from surfaces import smooth, to_runs  # noqa: E402  (same smoothing as the course surfaces)
-from osm_surfaces import SurfaceMatcher, simplify_indices  # noqa: E402
+from osm_surfaces import SurfaceMatcher, run_key, simplify_indices  # noqa: E402
 
 # =========================
 # CONFIG
@@ -60,6 +68,8 @@ GPX_DIR = DATA_DIR / "tmp_gpx"
 TOKENSTORE = DATA_DIR / "garmin_tokens"
 ACTIVITIES_FILE = DATA_DIR / "activities.json"
 OSM_CACHE = DATA_DIR / "osm_ways.json"
+MAP_STATE = DATA_DIR / "map_state.pkl"  # the map so far, to only add new activities
+MAP_STATE_FORMAT = 1                    # raise when the layout of the state changes
 
 ROUTES_FILE = OUT_DIR / "all_routes.geojson"
 INFO_FILE = OUT_DIR / "map_info.json"
@@ -94,6 +104,10 @@ MIN_NEW_M = 15         # shorter new bits are noise
 MIN_COVER_M = 25       # a street counts once this much of it (or 60 % of a short one) was followed
 TIE_END_M = 20         # covered parts this close to a way's end / to each other are joined
 JOIN_M = 30            # new pieces reach this far into what is already drawn, so lines meet
+BRIDGE_M = 80          # street lines ending this close to a junction on the map / a dead end
+                       # are drawn on to it, gaps this short along a street are closed
+END_STUB_M = 100       # shorter bits off the streets at a track's start / end are left out
+CONNECT_M = 30         # a land line ending this close to another line is drawn on to it
 OUT_SIMPLIFY_M = 3     # simplification of the published lines
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -182,19 +196,27 @@ def summary_from_details(d, parent_id):
     }
 
 
-def sync_activities(api):
-    """Full activity list -> ACTIVITIES_FILE (id -> summary). Returns the dict."""
+def sync_activities(api, full=False):
+    """Activity list -> ACTIVITIES_FILE (id -> summary). Returns the dict.
+    The list comes newest first; without `full` it is read until a whole page is already
+    known (changes to older activities and deletions only show up with `full`)."""
     old = json.loads(ACTIVITIES_FILE.read_text(encoding="utf-8")) if ACTIVITIES_FILE.exists() else {}
-    acts = {}
-    offset = 0
+    acts = {} if full or not old else dict(old)
+    offset, n_new = 0, 0
     while offset <= MAX_ACTIVITIES:
         chunk = retry_call(api.get_activities, offset, CHUNK_SIZE)
         if not chunk:
             break
+        known = 0
         for a in chunk:
-            acts[str(a["activityId"])] = summary_from_list(a)
-        logger.info("Activity list: %d", len(acts))
+            aid = str(a["activityId"])
+            known += aid in old
+            n_new += aid not in old
+            acts[aid] = summary_from_list(a)
+        logger.info("Activity list: %d read, %d new", offset + len(chunk), n_new)
         offset += CHUNK_SIZE
+        if not full and old and known == len(chunk):
+            break
         time.sleep(0.5)
 
     # multisport (triathlon): the legs count for swim/bike/run. The list has neither them nor
@@ -473,17 +495,25 @@ def snap_track(pts, sport, matcher, cover, off_network):
         if k <= start:
             continue
         if way < 0:
+            # short bits off the streets where a track starts or ends (GPS still settling,
+            # yard, house) would mark the start point: left out
+            if (start == 0 or k >= len(dists) - 1) and b - a < END_STUB_M:
+                continue
             off_network.append((pts[max(0, start - 1):k + 2], sport))
         else:
             pos = matcher.positions(way, points[start:k + 1])
             cover.setdefault((way, sport), []).append((float(pos.min()), float(pos.max())))
 
 
-def covered_parts(way, intervals, matcher):
-    """Merged covered intervals of one way, as (lat, lon) lists."""
+def covered_intervals(way, intervals, matcher, open_ends=(False, False)):
+    """Merged covered intervals [a, b] of one way (merc units along it). Line ends up to
+    BRIDGE_M from a way end in `open_ends` (where the map goes on, or a dead end) are drawn
+    on to it, and gaps up to BRIDGE_M are closed, so routes that start or end there don't
+    leave loose ends."""
     total, scale = matcher.length(way)
     min_len = min(MIN_COVER_M, 0.6 * total * scale) / scale
     tie = TIE_END_M / scale
+    bridge = BRIDGE_M / scale
     keep = []
     for a, b in sorted(intervals):
         if b - a < min_len:
@@ -495,36 +525,116 @@ def covered_parts(way, intervals, matcher):
         b = min(total, b + JOIN_M / 3 / scale)
         a = 0.0 if a < tie else a
         b = total if total - b < tie else b
-        if keep and a - keep[-1][1] < tie:
+        if keep and a - keep[-1][1] < bridge:
             keep[-1][1] = max(keep[-1][1], b)
         else:
             keep.append([a, b])
-    return [p for a, b in keep if (p := matcher.substring(way, a, b))]
+    if keep and open_ends[0] and keep[0][0] < bridge:
+        keep[0][0] = 0.0
+    if keep and open_ends[1] and total - keep[-1][1] < bridge:
+        keep[-1][1] = total
+    return keep
 
 
-def build_map(acts, online):
-    files = gpx_files_by_id()
-    if acts:
-        ids = [aid for aid in files if aid in acts and wants_map(acts[aid]["type"])]
-        types = {aid: acts[aid]["type"] for aid in ids}
-        starts = {aid: acts[aid]["start"] or "" for aid in ids}
-    else:  # no activity list yet: everything in the folder, type from the file name
-        ids = [aid for aid, f in files.items()
-               if wants_map(f.stem.split("_", 1)[1].rsplit("_", 1)[0])]
-        types = {aid: files[aid].stem.split("_", 1)[1].rsplit("_", 1)[0] for aid in ids}
-        starts = {aid: files[aid].stem[:10] for aid in ids}
-    ids.sort(key=lambda aid: (starts[aid], int(aid)))
-    logger.info("Building the map from %d activities ...", len(ids))
+def covered_parts(way, intervals, matcher, open_ends=(False, False)):
+    """Merged covered intervals of one way, as (lat, lon) lists."""
+    return [p for a, b in covered_intervals(way, intervals, matcher, open_ends)
+            if (p := matcher.substring(way, a, b))]
 
-    overrides = {}
-    if OVERRIDES_FILE.exists():
-        overrides = {k: v for k, v in json.loads(OVERRIDES_FILE.read_text(encoding="utf-8")).items()
-                     if not k.startswith("_")}
 
-    # 1) read all tracks; the deduplicated land tracks tell where OSM ways are needed
+def open_way_ends(per_way, matcher):
+    """way -> (start open, end open): the way's end is a dead end, or a junction with a
+    way that is on the map there."""
+    nodes = {}  # OSM node position -> ways through it
+    for way, way_id in enumerate(matcher.ids):
+        for c in matcher.ways[way_id][1]:
+            nodes.setdefault((c[0], c[1]), []).append(way)
+    drawn = {way: covered_intervals(way, iv, matcher) for way, iv in per_way.items()}
+
+    def is_open(way, end):
+        c = matcher.ways[matcher.ids[way]][1][end]
+        others = [w for w in nodes[(c[0], c[1])] if w != way]
+        if not others:
+            return True  # dead end
+        point = shapely.get_point(matcher.lines[way], end)
+        for w in others:
+            if w not in drawn:
+                continue
+            pos = matcher.positions(w, point)
+            tie = TIE_END_M / matcher.length(w)[1]
+            if any(a - tie <= pos <= b + tie for a, b in drawn[w]):
+                return True
+        return False
+
+    return {way: (is_open(way, 0), is_open(way, -1)) for way in per_way}
+
+
+def map_code_version():
+    """Hash of the code and settings that decide what goes into the saved state; a change
+    there draws the map from scratch. Settings only used for drawing (BRIDGE_M, TIE_END_M,
+    MIN_COVER_M, OUT_SIMPLIFY_M, covered_intervals, ...) apply on the next run as they are."""
+    h = hashlib.sha1(str(MAP_STATE_FORMAT).encode())
+    for fn in (wants_map, discipline, sport_of, is_water, looks_like_kiting, haversine,
+               gpx_name, read_tracks, even_spacing, cell, new_stretches, cumulative_m,
+               snap_track, track_km, add_activities):
+        h.update(inspect.getsource(fn).encode())
+    h.update(repr((NO_MAP, WATER, WATER_NAMES, KITE_MIN_KMH, KITE_MIN_RATIO, SPACING_M, GAP_M,
+                   CELL_M, LAG_M, MIN_NEW_M, JOIN_M, END_STUB_M)).encode())
+    for f in (HERE / "osm_surfaces.py", REPO_ROOT / "read_gpx_py" / "surfaces.py"):
+        h.update(f.read_bytes().replace(b"\r\n", b"\n"))
+    return h.hexdigest()
+
+
+def empty_map_state():
+    return {
+        "version": map_code_version(),
+        "done": {},        # activity id -> fingerprint of what was drawn
+        "visited": set(),  # grid cells of all land tracks (what needed an OSM lookup)
+        "cover": {},       # (OSM way id, sport) -> covered intervals along the way
+        "raw": {},         # ("unknown" | "water", sport) -> raw GPS lines without repeats
+        "seen": {},        # ("unknown" | "water", sport) -> grid cells of these lines
+        "seen_all": {},    # "unknown" | "water" -> grid cells, whatever the sport
+        "km_raw": {},      # "unknown" | "water" -> distinct km
+        "osm_missing": [], # stretches drawn without OSM data (lookup failed / offline)
+    }
+
+
+def load_map_state(fingerprints):
+    """The saved map, or None if it has to be rebuilt from scratch."""
+    if not MAP_STATE.exists():
+        logger.info("No saved map yet: drawing it from all activities")
+        return None
+    try:
+        with open(MAP_STATE, "rb") as f:
+            state = pickle.load(f)
+    except Exception as e:
+        logger.warning("Saved map unreadable (%s): drawing it from all activities", e)
+        return None
+    if state.get("version") != map_code_version():
+        logger.info("The map code changed: drawing the map from all activities")
+        return None
+    changed = [aid for aid, fp in state["done"].items() if fingerprints.get(aid) != fp]
+    if changed:
+        logger.info("%d activities on the map changed or are gone (e.g. %s): drawing the map "
+                    "from all activities", len(changed), changed[0])
+        return None
+    return state
+
+
+def save_map_state(state):
+    tmp = MAP_STATE.with_suffix(".tmp")
+    with open(tmp, "wb") as f:
+        pickle.dump(state, f, protocol=pickle.HIGHEST_PROTOCOL)
+    tmp.replace(MAP_STATE)
+    logger.info("Saved the map state (%.1f MB)", MAP_STATE.stat().st_size / 1e6)
+
+
+def add_activities(state, todo, files, acts, types, overrides, fingerprints, matcher):
+    """Adds the activities in `todo` to the state, in chronological order."""
+    # 1) read the new tracks; their parts not on the map yet tell where OSM ways are needed
     land, water, query_areas = [], [], []
-    visited = set()
-    for n, aid in enumerate(ids, 1):
+    for n, aid in enumerate(todo, 1):
+        state["done"][aid] = fingerprints[aid]
         try:
             segments = read_tracks(files[aid])
         except Exception as e:
@@ -545,12 +655,16 @@ def build_map(acts, online):
                     water.append((piece, sport))
                 else:
                     land.append((np.array(piece), sport))
-                    query_areas += new_stretches(piece, visited)
+                    query_areas += new_stretches(piece, state["visited"])
         if n % 200 == 0:
-            logger.info("  read %d/%d activities", n, len(ids))
+            logger.info("  read %d/%d activities", n, len(todo))
 
-    matcher = SurfaceMatcher(OSM_CACHE, online=online)
     matcher.fetch(query_areas)
+    # stretches without OSM data stay "unknown" for now; they are remembered, and the map is
+    # drawn again once OSM has them
+    state["osm_missing"] = [q for q in state["osm_missing"] + query_areas
+                            if run_key(q) not in matcher.queried]
+    matcher.ensure_tree()
 
     # 2) streets: the parts of OSM ways the tracks followed, per sport, in the way's surface
     cover, off_network = {}, []
@@ -558,24 +672,93 @@ def build_map(acts, online):
         snap_track(pts, sport, matcher, cover, off_network)
         if n % 1000 == 0:
             logger.info("  snapped %d/%d track pieces", n, len(land))
-    lines = {}  # (surface, sport) -> list of point lists
-    for (way, sport), intervals in cover.items():
-        lines.setdefault((matcher.cats[way], sport), []).extend(
-            covered_parts(way, intervals, matcher))
+    for (way, sport), intervals in cover.items():  # tree index -> OSM id (stays the same)
+        state["cover"].setdefault((matcher.ids[way], sport), []).extend(intervals)
 
     # 3) off the street network and on the water: raw GPS, without repeats (per sport)
-    seen = {}
     for cat, pieces in (("unknown", off_network), ("water", water)):
+        seen_all = state["seen_all"].setdefault(cat, set())
         for piece, sport in pieces:
             piece = [tuple(p) for p in piece]
-            lines.setdefault((cat, sport), []).extend(
-                new_stretches(piece, seen.setdefault((cat, sport), set())))
+            state["raw"].setdefault((cat, sport), []).extend(
+                new_stretches(piece, state["seen"].setdefault((cat, sport), set())))
+            # distinct km per surface, whatever the sport
+            state["km_raw"][cat] = state["km_raw"].get(cat, 0) + track_km(
+                new_stretches(piece, seen_all))
 
-    features, km_sport = [], {}
+
+def build_map(acts, online, full=False):
+    files = gpx_files_by_id()
+    if acts:
+        ids = [aid for aid in files if aid in acts and wants_map(acts[aid]["type"])]
+        types = {aid: acts[aid]["type"] for aid in ids}
+        starts = {aid: acts[aid]["start"] or "" for aid in ids}
+    else:  # no activity list yet: everything in the folder, type from the file name
+        ids = [aid for aid, f in files.items()
+               if wants_map(f.stem.split("_", 1)[1].rsplit("_", 1)[0])]
+        types = {aid: files[aid].stem.split("_", 1)[1].rsplit("_", 1)[0] for aid in ids}
+        starts = {aid: files[aid].stem[:10] for aid in ids}
+    ids.sort(key=lambda aid: (starts[aid], int(aid)))
+
+    overrides = {}
+    if OVERRIDES_FILE.exists():
+        overrides = {k: v for k, v in json.loads(OVERRIDES_FILE.read_text(encoding="utf-8")).items()
+                     if not k.startswith("_")}
+
+    # everything an activity's lines depend on; if one of them changes, the map is redrawn
+    def fingerprint(aid):
+        st = files[aid].stat()
+        a = acts.get(aid) or {}
+        return (types[aid], a.get("name", ""), a.get("distance_m"), a.get("duration_s"),
+                overrides.get(aid), files[aid].name, st.st_size, st.st_mtime_ns)
+
+    fingerprints = {aid: fingerprint(aid) for aid in ids}
+    matcher = SurfaceMatcher(OSM_CACHE, online=online)
+    state = None if full else load_map_state(fingerprints)
+    if state is not None and state["osm_missing"]:
+        # stretches drawn without streets: once OSM has them, everything is drawn again
+        before = len(state["osm_missing"])
+        matcher.fetch(state["osm_missing"])
+        if matcher.missing(state["osm_missing"]) < before:
+            logger.info("OSM streets arrived for stretches drawn without them: drawing the map "
+                        "from all activities")
+            state = None
+    rebuilt = state is None
+    if state is None:
+        state = empty_map_state()
+    todo = [aid for aid in ids if aid not in state["done"]]
+    logger.info("Map: %d activities already drawn, %d to add", len(state["done"]), len(todo))
+
+    add_activities(state, todo, files, acts, types, overrides, fingerprints, matcher)
+
+    # the whole map from the state (drawing only: nothing here goes into the state)
+    lines = {}  # (surface, sport) -> list of point lists
+    per_way = {}
+    for (way_id, _), intervals in state["cover"].items():
+        if (way := matcher.index.get(way_id)) is not None:
+            per_way.setdefault(way, []).extend(intervals)
+    open_ends = open_way_ends(per_way, matcher)
+    for (way_id, sport), intervals in state["cover"].items():
+        way = matcher.index.get(way_id)
+        if way is None:
+            continue
+        lines.setdefault((matcher.cats[way], sport), []).extend(
+            covered_parts(way, intervals, matcher, open_ends[way]))
+    for key, parts in state["raw"].items():
+        lines.setdefault(key, []).extend(list(map(list, parts)))
+    # km per sport before the connectors below, which are drawn but weren't done
+    km_sport = {}
+    for (_, sport), parts in lines.items():
+        km_sport[sport] = km_sport.get(sport, 0) + track_km(parts)
+    # loose ends just short of another land line (streets and off-street, any sport) are
+    # drawn on to it; water lines start and end anywhere and stay as they are
+    connect_loose_ends([pts for (cat, _), parts in lines.items() if cat != "water"
+                        for pts in parts])
+
+    features = []
     for (cat, sport), parts in sorted(lines.items()):
         if not parts:
             continue
-        km_sport[sport] = km_sport.get(sport, 0) + track_km(parts)
         coords = []
         for pts in parts:
             thin = [pts[i] for i in simplify_indices(pts, OUT_SIMPLIFY_M)]
@@ -584,21 +767,19 @@ def build_map(acts, online):
                          "geometry": {"type": "MultiLineString", "coordinates": coords}})
 
     # distinct km per surface, whatever the sport (streets done on foot and by bike once)
-    km_surface = {}
-    per_way = {}
-    for (way, _), intervals in cover.items():
-        per_way.setdefault(way, []).extend(intervals)
+    km_surface = dict(state["km_raw"])
     for way, intervals in per_way.items():
         cat = matcher.cats[way]
-        km_surface[cat] = km_surface.get(cat, 0) + track_km(covered_parts(way, intervals, matcher))
-    for cat, pieces in (("unknown", off_network), ("water", water)):
-        seen_all = set()
-        for piece, _ in pieces:
-            km_surface[cat] = km_surface.get(cat, 0) + track_km(
-                new_stretches([tuple(p) for p in piece], seen_all))
+        km_surface[cat] = km_surface.get(cat, 0) + track_km(
+            covered_parts(way, intervals, matcher, open_ends[way]))
 
     ROUTES_FILE.write_text(json.dumps({"type": "FeatureCollection", "features": features},
                                       separators=(",", ":")), encoding="utf-8")
+    if state["osm_missing"]:
+        logger.warning("%d stretches have no OSM data yet; they are looked up again next run",
+                       len(state["osm_missing"]))
+    if todo or rebuilt:
+        save_map_state(state)
 
     def tidy(km):
         return {k: round(v, 1) for k, v in sorted(km.items(), key=lambda kv: -kv[1]) if v}
@@ -608,6 +789,56 @@ def build_map(acts, online):
     logger.info("  surfaces: %s", ", ".join(f"{c} {v:.0f} km" for c, v in km_surface.items()))
     logger.info("  sports:   %s", ", ".join(f"{c} {v:.0f} km" for c, v in km_sport.items()))
     return len(ids), km_surface, km_sport
+
+
+def to_merc(pts):
+    """(lat, lon) points -> Web Mercator x, y (true metres = merc units * cos(lat))."""
+    a = np.asarray(pts, dtype=float)
+    lat = np.radians(np.clip(a[:, 0], -85, 85))
+    return np.column_stack([6378137 * np.radians(a[:, 1]),
+                            6378137 * np.log(np.tan(np.pi / 4 + lat / 2))])
+
+
+def from_merc(xy):
+    lon = np.degrees(xy[:, 0] / 6378137)
+    lat = np.degrees(2 * np.arctan(np.exp(xy[:, 1] / 6378137)) - np.pi / 2)
+    return list(zip(lat.tolist(), lon.tolist()))
+
+
+def connect_loose_ends(parts):
+    """Line ends that stop just short of another line (a switch between a road and the
+    cycleway next to it, matching that starts a few metres late) are drawn on to the nearest
+    point of that line, up to CONNECT_M. `parts`: lists of (lat, lon), extended in place."""
+    parts = [p for p in parts if len(p) >= 2]
+    if len(parts) < 2:
+        return
+    geoms = np.empty(len(parts), dtype=object)
+    geoms[:] = [shapely.linestrings(to_merc(p)) for p in parts]
+    tree = shapely.STRtree(geoms)
+    ends = [(i, k) for i in range(len(parts)) for k in (0, -1)]
+    end_pts = to_merc([parts[i][k] for i, k in ends])
+    scale = np.cos(np.radians([parts[i][k][0] for i, k in ends]))
+    points = shapely.points(end_pts)
+    src, dst = tree.query(points, predicate="dwithin", distance=CONNECT_M / scale)
+    owner = np.array([i for i, _ in ends])
+    keep = owner[src] != dst  # not the line itself
+    src, dst = src[keep], dst[keep]
+    dist = shapely.distance(points[src], geoms[dst]) * scale[src]
+    best = {}
+    for s_, d_, m_ in zip(src.tolist(), dst.tolist(), dist.tolist()):
+        if m_ < best.get(s_, (None, np.inf))[1]:
+            best[s_] = (d_, m_)
+    for s_, (d_, m_) in best.items():
+        if m_ < 2:  # touches already
+            continue
+        target = shapely.line_interpolate_point(
+            geoms[d_], shapely.line_locate_point(geoms[d_], points[s_]))
+        (lat, lon), = from_merc(np.array([[target.x, target.y]]))
+        i, k = ends[s_]
+        if k == 0:
+            parts[i].insert(0, (lat, lon))
+        else:
+            parts[i].append((lat, lon))
 
 
 def track_km(parts):
@@ -667,6 +898,8 @@ def main():
                         help="Sync Garmin, but don't look up new streets on OpenStreetMap")
     parser.add_argument("--offline", action="store_true",
                         help="Don't contact Garmin or OpenStreetMap; rebuild from the local cache")
+    parser.add_argument("--full", action="store_true",
+                        help="Read the whole Garmin activity list and draw the map from scratch")
     parser.add_argument("--trips-only", action="store_true",
                         help="Only rebuild the trips (after editing create_map/trips.json)")
     args = parser.parse_args()
@@ -679,7 +912,7 @@ def main():
         return
     if not args.offline:
         api = get_api()
-        acts = sync_activities(api)
+        acts = sync_activities(api, full=args.full)
         download_missing_gpx(api, acts)
 
     if acts:
@@ -689,7 +922,8 @@ def main():
         logger.warning("No activity list yet (run once without --offline); stats not written.")
 
     build_trips(acts)
-    n_acts, km_surface, km_sport = build_map(acts, online=not (args.offline or args.no_osm))
+    n_acts, km_surface, km_sport = build_map(acts, online=not (args.offline or args.no_osm),
+                                             full=args.full)
     INFO_FILE.write_text(json.dumps({
         "last_update": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "activities": n_acts,

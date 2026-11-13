@@ -1,24 +1,24 @@
 {
- "updated": "2026-11-03T15:04:45+00:00",
+ "updated": "2026-11-13T13:11:54+00:00",
  "years": {
   "2026": {
    "swim": {
-    "count": 59,
-    "km": 229.2,
-    "hours": 45.5,
+    "count": 60,
+    "km": 232.0,
+    "hours": 46.4,
     "elevation_m": 0
    },
    "bike": {
-    "count": 124,
-    "km": 6907.9,
-    "hours": 242.8,
-    "elevation_m": 52227
+    "count": 125,
+    "km": 6940.5,
+    "hours": 243.8,
+    "elevation_m": 52497
    },
    "run": {
-    "count": 107,
-    "km": 1352.0,
-    "hours": 105.3,
-    "elevation_m": 7287
+    "count": 112,
+    "km": 1413.9,
+    "hours": 110.1,
+    "elevation_m": 7550
    }
   },
   "2025": {
@@ -164,22 +164,22 @@
  },
  "total": {
   "swim": {
-   "count": 362,
-   "km": 950.3,
-   "hours": 634.9,
+   "count": 363,
+   "km": 953.1,
+   "hours": 635.8,
    "elevation_m": 134
   },
   "bike": {
-   "count": 699,
-   "km": 28614.0,
-   "hours": 1127.0,
-   "elevation_m": 174352
+   "count": 700,
+   "km": 28646.6,
+   "hours": 1128.0,
+   "elevation_m": 174622
   },
   "run": {
-   "count": 815,
-   "km": 8607.3,
-   "hours": 703.9,
-   "elevation_m": 37956
+   "count": 820,
+   "km": 8669.1,
+   "hours": 708.8,
+   "elevation_m": 38219
   }
  }
 }

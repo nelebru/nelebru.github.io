@@ -263,6 +263,14 @@ class SurfaceMatcher:
         self.save()
         self.tree = None
 
+    def missing(self, runs):
+        """How many of the runs have not been looked up on OSM (yet)."""
+        return sum(run_key(pts) not in self.queried for pts in runs)
+
+    def ensure_tree(self):
+        if self.tree is None:
+            self._build_tree()
+
     def _overpass(self, query):
         return overpass(query)
 
@@ -270,13 +278,15 @@ class SurfaceMatcher:
     # 2) snap points to the cached ways. Ways are kept in Web Mercator; its units are metres
     #    times 1/cos(lat), so true lengths are merc lengths times `scale`.
     def _build_tree(self):
-        self.cats, lines = [], []
-        for cat, coords in self.ways.values():
+        self.cats, self.ids, lines = [], [], []
+        for way_id, (cat, coords) in self.ways.items():
             if len(coords) < 2:
                 continue
             xs, ys = self.to_merc.transform([c[1] for c in coords], [c[0] for c in coords])
             lines.append(shapely.linestrings(np.column_stack([xs, ys])))
             self.cats.append(cat)
+            self.ids.append(way_id)
+        self.index = {way_id: i for i, way_id in enumerate(self.ids)}  # OSM id -> tree index
         self.lines = np.array(lines, dtype=object)
         self.scales = np.array([math.cos(math.radians(c[0][0])) for _, c in self.ways.values()
                                 if len(c) >= 2])
