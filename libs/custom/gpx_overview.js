@@ -6,11 +6,12 @@
      others; clicking (tapping) it selects it: it stays out and marked in the list, which
      scrolls to it. The arrow jumps to its card further down
    - touch screens: the map starts locked so swipes scroll the page; a button unlocks it, and
-     a short hint says so when the map first comes into view (addPanLock in gpx.html)
+     a short hint says so when the map first comes into view (addMapHint in gpx.html),
+     together with what the OpenStreetMap button does (on all screens)
    - a small button in the lower left corner switches the OpenStreetMap tiles on all maps
    - its heading, then the map with the list (in one piece), "All courses" and the course
      cards (all at once) slide up and fade in as they come into view
-   Uses registerMap, addOsmTiles, removeOsmTiles, osmEnabled, courseId, baseUrl, addPanLock and
+   Uses registerMap, addOsmTiles, removeOsmTiles, osmEnabled, courseId, baseUrl, addMapHint and
    touchScreen from gpx.html,
    and listens for its "gpx:filtered" event. */
 (function () {
@@ -24,17 +25,11 @@
 
   const map = registerMap(L.map(mapEl, { zoomSnap: 0.25, scrollWheelZoom: false }));
 
-  // touch screens: the map starts locked, so swipes scroll the page (addPanLock in gpx.html);
-  // the hint shows once, when the map first comes into view
-  addPanLock(map, 'To filter, use the sliders and filters above. To move the map, tap {icon}');
-  if (window.IntersectionObserver) {
-    const hintOnce = new IntersectionObserver(entries => {
-      if (!entries.some(e => e.isIntersecting)) return;
-      hintOnce.disconnect();
-      map.showPanHint();
-    }, { threshold: 0.6 });
-    hintOnce.observe(mapEl);
-  }
+  // touch screens: the map starts locked, so swipes scroll the page (addMapHint in gpx.html);
+  // the hints show once, when the map first comes into view
+  addMapHint(map, '.ov-osm-btn',
+             ['To filter, use the sliders and filters above.', 'To move the map, tap {pan}']);
+  map.showMapHint();
 
   /* ---------- Fading in ---------- */
 

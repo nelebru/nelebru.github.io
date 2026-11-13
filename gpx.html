@@ -317,7 +317,7 @@ document.getElementById("showMapBtn").addEventListener("click", function () {
     document.querySelector(".gpx-title-block").classList.toggle("world-map-open", opening);
     if (opening) {
         initializeVisitedMap();
-        worldMap.showPanHint();
+        worldMap.showMapHint();
     }
 });
 
@@ -387,7 +387,7 @@ function initializeVisitedMap() {
     };
     osmControl.addTo(map);
 
-    addPanLock(map, "To move the map, tap {icon}");
+    addMapHint(map, ".world-osm-btn", ["To move the map, tap {pan}"]);
     addFullscreenControl(map);
 
     // bottom left: the stats menu with the trips menu below it; each fills its slot once loaded
@@ -599,22 +599,34 @@ function addFullscreenControl(map) {
     else document.addEventListener("keydown", e => { if (e.key === "Escape" && isFull()) toggle(); });
 }
 
-/* ---------- Touch screens: the map moves only when asked to ---------- */
+/* ---------- Map hints; touch screens: the map moves only when asked to ---------- */
 
 // On phones and tablets a map would catch every swipe that should scroll the page. There it
 // starts locked (taps still work), and a button on the map (top left, under the zoom) lets it
-// pan and pinch-zoom. map.showPanHint() shows a short note on how, which fades by itself.
-// In fullscreen the map is always movable. Nothing changes with a mouse.
+// pan and pinch-zoom; in fullscreen it is always movable. Nothing changes with a mouse.
+// map.showMapHint() waits until the map is in view, then draws a small violet arrow with
+// "OpenStreetMap" at that button (`osmSelector`, on all screens, while OpenStreetMap is off),
+// and on touch screens shows a
+// note in the middle of the map: the lines of `touchHints`, {pan} standing for the move
+// button's icon. Both fade after a few seconds.
 const PAN_ICON = `<i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i>`;
 const touchScreen = window.matchMedia("(pointer: coarse)").matches;
+// from the label (right) bending left and down onto the button's side, drawn by hand: the
+// line, then the two strokes of the head (pathLength 1: the CSS draws each from 0 to 1).
+// The tip is at (3.8, 14.2) of the viewBox; placeOsmHint puts it at the button
+const BENT_ARROW = `<svg class="osm-hint-arrow" viewBox="0 0 30 18" aria-hidden="true">
+    <path pathLength="1" d="M28.5 3.6 C 21.5 1.6, 11.0 4.6, 3.8 14.2" />
+    <path pathLength="1" d="M4.2 8.6 C 4.0 10.5, 3.9 12.3, 3.8 14.4" />
+    <path pathLength="1" d="M3.9 14.1 C 5.7 13.0, 7.5 12.3, 9.5 11.8" /></svg>`;
+const OSM_HINT_MS = 3200;   // from the start of the drawing to the start of the fade
+const NOTE_HINT_MS = 5000;
+const OSM_HINT_GAP_PX = 7;  // between the arrow's tip and the button's edge
 
-function addPanLock(map, hintHtml) {
-    map.showPanHint = () => {};
-    map.setPanLock = () => {};
-    if (!touchScreen) return;
-
-    let unlocked = false, fullscreen = false, btn;
+function addMapHint(map, osmSelector, touchHints = []) {
+    const box = map.getContainer();
+    let unlocked = false, fullscreen = false, btn = null;
     function apply() {
+        if (!btn) return;
         const movable = unlocked || fullscreen;
         ["dragging", "touchZoom"].forEach(h => movable ? map[h].enable() : map[h].disable());
         btn.classList.toggle("on", unlocked);
@@ -622,30 +634,89 @@ function addPanLock(map, hintHtml) {
         btn.title = unlocked ? "Lock the map (scroll the page)" : "Move the map";
     }
 
-    const control = L.control({ position: "topleft" });
-    control.onAdd = () => {
-        btn = L.DomUtil.create("button", "world-round-btn pan-lock-btn");
-        btn.type = "button";
-        btn.innerHTML = PAN_ICON;
-        L.DomEvent.disableClickPropagation(btn);
-        btn.addEventListener("click", () => { unlocked = !unlocked; apply(); hint.classList.remove("on"); });
-        return btn;
-    };
-    control.addTo(map);
-    apply();
+    let note = null;
+    if (touchScreen) {
+        const control = L.control({ position: "topleft" });
+        control.onAdd = () => {
+            btn = L.DomUtil.create("button", "world-round-btn pan-lock-btn");
+            btn.type = "button";
+            btn.innerHTML = PAN_ICON;
+            L.DomEvent.disableClickPropagation(btn);
+            btn.addEventListener("click", () => { unlocked = !unlocked; apply(); hide(); });
+            return btn;
+        };
+        control.addTo(map);
+        apply();
 
-    const hint = L.DomUtil.create("div", "pan-hint", map.getContainer());
-    hint.innerHTML = hintHtml.replace("{icon}", `<span class="pan-hint-icon">${PAN_ICON}</span>`);
-    hint.setAttribute("aria-hidden", "true");  // the button has its own title
-    let timer;
-    map.showPanHint = () => {
-        if (unlocked || fullscreen) return;
-        hint.classList.add("on");
-        clearTimeout(timer);
-        timer = setTimeout(() => hint.classList.remove("on"), 4000);
+        note = L.DomUtil.create("div", "pan-hint", box);
+        note.innerHTML = touchHints
+            .map(s => s.replace("{pan}", `<span class="pan-hint-icon">${PAN_ICON}</span>`))
+            .join("<br>");
+        note.setAttribute("aria-hidden", "true");  // the button has its own title
+    }
+
+    // the OpenStreetMap label sits right of its button, at its height (the menus above it on
+    // the world map stay clear), the arrow bending onto the button's side
+    const osmHint = L.DomUtil.create("div", "osm-hint", box);
+    osmHint.innerHTML = `${BENT_ARROW}<span class="osm-hint-text">OpenStreetMap</span>`;
+    osmHint.setAttribute("aria-hidden", "true");
+    // switched on (on this map or any other) while the arrow shows: away with it
+    osmToggleBtns.forEach(b => b.addEventListener("click", () => osmHint.classList.remove("on")));
+    function placeOsmHint() {
+        const osmBtn = box.querySelector(osmSelector);
+        if (!osmBtn) return false;
+        const b = osmBtn.getBoundingClientRect(), c = box.getBoundingClientRect();
+        const arrow = osmHint.querySelector("svg").getBoundingClientRect();
+        const unit = (arrow.width || 26) / 30;  // px per viewBox unit
+        // the tip stops short of the button, pointing at it without touching it
+        osmHint.style.left = `${b.right - c.left + OSM_HINT_GAP_PX - 3.8 * unit}px`;
+        osmHint.style.top = `${b.top - c.top + b.height / 2 - 14.2 * unit}px`;
+        return true;
+    }
+
+    const timers = [];
+    function hide() {
+        timers.splice(0).forEach(clearTimeout);
+        if (note) note.classList.remove("on");
+        osmHint.classList.remove("on");
+        // undrawn again once faded, ready for the next time
+        timers.push(setTimeout(() => osmHint.classList.remove("drawn"), 900));
+    }
+    function show() {
+        if (fullscreen) return;
+        timers.splice(0).forEach(clearTimeout);
+        if (note && !unlocked) {
+            note.classList.add("on");
+            timers.push(setTimeout(() => note.classList.remove("on"), NOTE_HINT_MS));
+        }
+        // only while OpenStreetMap is off: once it's on, the button has done its job
+        if (!osmEnabled && placeOsmHint()) {
+            osmHint.classList.remove("drawn");
+            void osmHint.offsetWidth;  // restart the drawing
+            osmHint.classList.add("drawn", "on");
+            timers.push(setTimeout(() => {
+                osmHint.classList.remove("on");
+                timers.push(setTimeout(() => osmHint.classList.remove("drawn"), 900));
+            }, OSM_HINT_MS));
+        }
+    }
+
+    // only once the map is (mostly) on screen, so the drawing is seen
+    let waiting = false;
+    const inView = window.IntersectionObserver && new IntersectionObserver(entries => {
+        if (!waiting || !entries.some(e => e.isIntersecting)) return;
+        waiting = false;
+        inView.unobserve(box);
+        show();
+    }, { threshold: 0.6 });
+    map.showMapHint = () => {
+        if (!inView) return show();
+        waiting = true;
+        inView.unobserve(box);
+        inView.observe(box);  // reports the current state right away
     };
     // (called by the fullscreen control)
-    map.setPanLock = full => { fullscreen = full; apply(); };
+    map.setPanLock = full => { fullscreen = full; apply(); if (full) hide(); };
 }
 
 /* ---------- Tiles inside the map ---------- */
