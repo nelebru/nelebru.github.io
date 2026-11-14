@@ -626,7 +626,8 @@ body.recipes-page .navbar-link[href*="recipes"] {
   isolation: isolate;
 }
 
-/* Recipe image preview on hover (set via style="--img: url(...)") */
+/* recipe photo behind the name (set via style="--img: url(...)"): always visible but muted,
+   in full colour on hover */
 .recipe-tile::before {
   content: "";
   position: absolute;
@@ -635,14 +636,16 @@ body.recipes-page .navbar-link[href*="recipes"] {
   background-image: var(--img, none);
   background-size: cover;
   background-position: center;
-  filter: saturate(0.65) brightness(0.8);
-  opacity: 0;
-  transition: opacity 0.25s ease;
+  filter: saturate(0.5) brightness(0.75);
+  opacity: 0.45;
+  transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
 .recipe-tile:hover::before {
   opacity: 1;
+  filter: saturate(1) brightness(0.8);
 }
+
 
 /* like count in the upper right corner of a tile (set by recipe_likes.js);
    the name is centered in the space left of it */
@@ -825,19 +828,19 @@ body.recipes-page .navbar-link[href*="recipes"] {
   background-color: #333333;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   color: white;
+}
+
+/* the name stays readable on top of the photo */
+.recipe-tile {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
-/* touch screens have no hover: the photo shows faintly all the time, and a tapped tile
-   lights up in full colour for a moment before its recipe opens (see recipes.html) */
+/* touch screens have no hover: a tapped tile lights up in full colour for a moment
+   before its recipe opens (see recipes.html) */
 @media (hover: none) {
-  .recipe-tile {
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
-  }
-  .recipe-tile::before {
+  .recipe-tile:hover::before {
     opacity: 0.45;
     filter: saturate(0.5) brightness(0.75);
-    transition: opacity 0.3s ease, filter 0.3s ease;
   }
   .recipe-tile.tile-open::before {
     opacity: 1;
@@ -883,6 +886,47 @@ body.recipes-page .navbar-link[href*="recipes"] {
   content: '';
 }
 /* END RECIPE COLLAPSIBLE VIEW ADDON */
+
+/* recipe overview: a faint photo of the category behind its heading (set via style="--bg: url(...)",
+   transparent cut-out images), a little clearer on hover and while the category is open */
+.recipe-category {
+  /* room above the heading, so the photo isn't cut off (.recipe-category hides what sticks out) */
+  padding-top: 3rem;
+}
+.recipe-category .category-header {
+  isolation: isolate;
+}
+.recipe-category .category-header::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  width: 6em;
+  height: 3em;
+  transform: translate(-50%, -50%);
+  background: var(--bg, none) center / contain no-repeat;
+  opacity: 0.2;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.6s ease;
+}
+.recipe-category .category-header:hover::before,
+.recipe-category .category-header:not(.collapsed)::before {
+  opacity: 0.3;
+  transform: translate(-50%, -50%) scale(1.08);
+}
+.recipe-category .category-header:focus-visible {
+  outline: 2px solid hotpink;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+html[data-theme="dark"] .recipe-category .category-header::before {
+  opacity: 0.12;
+}
+html[data-theme="dark"] .recipe-category .category-header:hover::before,
+html[data-theme="dark"] .recipe-category .category-header:not(.collapsed)::before {
+  opacity: 0.22;
+}
 
 
 body.gpx-page .navbar-link[href*="gpx"] {
@@ -959,6 +1003,22 @@ body.gpx-page .navbar-link[href*="gpx"] {
   margin-bottom: 2em;
   flex-wrap: wrap; /* ensures mobile responsiveness */
   position: relative;
+}
+
+/* a recipe (ingredients tile, instructions, tips) doesn't need the full page width
+   (desktop/tablet): a centered column; a tile without an image, where only the list remains,
+   is narrower still */
+@media (min-width: 701px) {
+  .recipe {
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .ingredients-tile:not(:has(> [class*="ingredients-image"])) {
+    max-width: 46rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 /* more room above the instructions (and tips) below the ingredients tile */
