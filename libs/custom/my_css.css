@@ -862,10 +862,11 @@ body.recipes-page .navbar-link[href*="recipes"] {
   gap: 10px;
   font-size: 2.5em;
 }
-/* phones: smaller, so the longer names fit on one line */
+/* phones: smaller, and grows with the screen width so the longest name
+   ("Soups, Dips & Drinks") still fits on one line */
 @media (max-width: 549px) {
   .category-header {
-    font-size: 1.8em;
+    font-size: min(2.2em, 7vw);
   }
 }
 
